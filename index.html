@@ -876,6 +876,80 @@ select.xc{padding:0 2px 0 6px;cursor:pointer;font-size:13px;-webkit-appearance:a
 .lb-cal.vacio p{margin-top:4px}
 .lb-h4{margin:6px 0 8px;color:#3b4a34}
 .xl td a.xbtn{display:inline-block;text-decoration:none}
+
+/* ===== v7: se llena como Excel, pero se ve más limpio ===== */
+.libro{background:#F4F3EE}
+.lb-top{background:#A8B389;padding:10px 20px;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.lb-tabs{order:0;background:#fff;border-top:0;border-bottom:1px solid #E3E2DA;padding:8px 14px;gap:6px;box-shadow:0 2px 10px rgba(35,43,30,.04)}
+.lb-tabs button{display:inline-flex;align-items:center;gap:7px;font:500 13.5px 'Jost',system-ui,sans-serif;letter-spacing:.01em;color:#4c5444;padding:8px 14px;border-radius:999px;border:1px solid transparent;border-bottom:1px solid transparent}
+.lb-tabs button .ic{width:16px;height:16px;opacity:.8}
+.lb-tabs button:hover{background:#F1F3EA}
+.lb-tabs button.on{background:#4B5D43;color:#fff;border-color:#4B5D43}
+.lb-tabs button.on .ic{opacity:1}
+.lb-hoja{padding:18px 20px 28px}
+.lb-help{display:flex;gap:8px;font-size:13.5px;color:#5f6656;background:#fff;border:1px solid #E7E6DE;border-radius:12px;padding:10px 14px;margin-top:12px;max-width:110ch}
+/* la hoja */
+.libro .lb-sheet{border:1px solid #E2E1D8;border-radius:14px;overflow:clip;background:#fff;box-shadow:0 1px 2px rgba(35,43,30,.04),0 8px 24px rgba(35,43,30,.05)}
+.libro table.xl{font-family:'Jost',system-ui,sans-serif;font-size:14.5px;color:#262b22;border-collapse:separate;border-spacing:0}
+.libro .xl th,.libro .xl td{border:0;border-bottom:1px solid #EEEDE6;border-right:1px solid #F3F2EC;height:40px}
+.libro .xl .hdr th{background:#4B5D43;color:#fff;font:600 11.5px 'Jost',system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase;height:42px;border-right:1px solid rgba(255,255,255,.08);border-bottom:0}
+.libro .xl th.rn{background:#FAFAF6;color:#A3A898;font:500 12px 'Jost',sans-serif}
+.libro .xl thead th.rn{background:#4B5D43;color:#fff}
+.libro .xl tbody tr:nth-child(even) td{background:#FBFBF8}
+.libro .xl tbody tr:hover td{background:#F3F6EC}
+.libro .xl td:focus-within{outline:0;box-shadow:inset 0 0 0 2px #7F926A;background:#fff;border-radius:4px}
+.libro .xc{font:inherit;color:#262b22;padding:0 10px;min-height:38px}
+.libro .xc::placeholder{color:#a7ac9c}
+.libro select.xc{-webkit-appearance:none;appearance:none;padding-right:26px;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237F926A' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;font-size:13.5px}
+.libro .xl td.cas-on{background:#E8EFDD!important}
+.libro .xl td.cas-on .xc{font-weight:600;color:#3B4A34}
+.libro .xl tr.nueva td{background:#FFFBEF!important}
+.libro .xl tr.nueva th.rn{background:#FFF3D6;color:#9a7a1c;font-weight:700}
+.libro .xl tr.nueva th.rn::before{content:'+ '}
+.libro .xl tr.fuera td,.libro .xl tr.fuera td .xc{color:#9a9f90}
+.libro .xl td.ok{background:#E8F2E3!important}
+.libro .xl td.pend{background:#FBEEE4!important}
+.libro .xl tr.bajo td{background:#FBEEE4!important}
+.libro .xl th.rn.warn{background:#FBEEE4;color:#B4561A}
+.libro .xl tr.xempty td{background:#fff!important;height:34px}
+.libro .xl td .xbtn{border-radius:999px;border-color:#E6D08A}
+.libro .xnow{border-radius:999px;border-color:#D5DBC8;color:#4B5D43}
+.ih-tipo{display:block;font-size:11.5px;color:#8b9180;font-weight:400;line-height:1.1}
+/* bloques de la derecha */
+.libro .lb-blk{border-radius:14px;overflow:clip;border:1px solid #E2E1D8;box-shadow:0 8px 24px rgba(35,43,30,.05)}
+.libro .lb-blk .hdr th{background:#4B5D43;color:#fff;font:600 12px 'Jost',sans-serif;letter-spacing:.07em}
+.libro .lb-blk td{font-family:'Jost',sans-serif;height:34px}
+.libro .lb-blk td.l{font:600 12px 'Jost',sans-serif;color:#4c5444;letter-spacing:.02em}
+.libro .lb-blk tr.tot td{background:#EEF2E4;color:#2f3a29}
+.libro .lb-letras button{border-radius:8px;font-family:'Jost',sans-serif;border-color:#E2E1D8}
+.libro .lb-letras button.on{background:#4B5D43;border-color:#4B5D43}
+.libro .lb-cal{border-radius:14px;border-color:#E2E1D8}
+/* guía rápida */
+.lb-guia{max-width:1180px}
+.lg-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-end;margin-bottom:16px}
+.lg-head h2{font-size:30px}
+.lg-head p{color:#5f6656;margin:4px 0 0}
+.lg-hoy{display:flex;flex-wrap:wrap;gap:10px}
+.lg-hoy div{background:#fff;border:1px solid #E2E1D8;border-radius:12px;padding:8px 14px;min-width:120px}
+.lg-hoy small{display:block;font-size:11.5px;color:#7a8070;text-transform:uppercase;letter-spacing:.06em}
+.lg-hoy b{font-size:20px;font-weight:500}
+.lg-pasos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:18px}
+.lg-pasos div{background:#4B5D43;color:#fff;border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:34px 1fr;column-gap:10px;align-items:start}
+.lg-pasos span{grid-row:span 2;width:30px;height:30px;border-radius:50%;background:#A8B389;color:#1f2a17;display:grid;place-items:center;font-weight:700}
+.lg-pasos b{font-weight:600}
+.lg-pasos small{font-size:13px;opacity:.88;line-height:1.35}
+.lg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.lg-card{text-align:left;background:#fff;border:1px solid #E2E1D8;border-radius:16px;padding:16px;cursor:pointer;font:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;transition:border-color .15s,box-shadow .15s,transform .15s}
+.lg-card:hover{border-color:#A8B389;box-shadow:0 10px 26px rgba(35,43,30,.08);transform:translateY(-1px)}
+.lg-ic{width:38px;height:38px;border-radius:12px;background:#EEF2E4;color:#4B5D43;display:grid;place-items:center}
+.lg-card b{font-size:15px;letter-spacing:.03em}
+.lg-que{color:#4c5444;font-size:14px}
+.lg-card ol{margin:2px 0 0;padding-left:18px;color:#6b7262;font-size:13px;line-height:1.4}
+@media (max-width:700px){.lb-tabs button span{display:none}.lb-tabs button.on span{display:inline}}
+.lb-hoja{padding-top:0}
+.lb-hoja>:first-child{margin-top:18px}
+.lb-tabs{gap:3px;padding:7px 10px}
+.lb-tabs button{padding:7px 10px;font-size:13px;gap:6px}
 </style>
 </head>
 <body>
@@ -987,7 +1061,7 @@ const bgi=(k,w=900,h)=>`background-image:url('${k==='pool'?POOL:UNS(IMG[k],w,h)}
 const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]||''}"/></svg>`;
 
 /* =================== catálogo fijo =================== */
-const VERSION=6;
+const VERSION=7;
 const CABINAS=['Cabina 1','Cabina 2','Cabina 3'];
 const HORAS_ING=['15:00','16:00','17:00','18:00','19:00','20:00'];
 const HORAS_MAS=['15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
@@ -2094,12 +2168,12 @@ function importarLibro(hojas,opt={}){if(Object.keys(hojas).some(n=>/^BAR DIARIO/
  return res}
 
 /* =================== PANEL DEL PERSONAL: un libro como el Excel, con pocas hojas =================== */
-const HOJAS={diario:'DIARIO',bar:'BAR',masajes:'MASAJES',inventario:'INVENTARIO BAR',gastos:'GASTOS',bd:'BASE DE DATOS',reservas:'RESERVAS',gift:'GIFT CARD',memb:'MEMBRESÍAS',resumen:'RESUMEN',ajustes:'AJUSTES'};
+const HOJAS={guia:'GUÍA',invh:'INVENTARIO TOALLAS',diario:'DIARIO',bar:'BAR',masajes:'MASAJES',inventario:'INVENTARIO BAR',gastos:'GASTOS',bd:'BASE DE DATOS',reservas:'RESERVAS',gift:'GIFT CARD',memb:'MEMBRESÍAS',resumen:'RESUMEN',ajustes:'AJUSTES'};
 const LROL={
- admin:{nombre:'Recepción y administración',desc:'Todas las hojas: diario, bar, masajes, reservas, gastos, clientes, resumen y ajustes.',hojas:['diario','bar','masajes','reservas','gastos','bd','gift','memb','inventario','resumen','ajustes']},
- bar:{nombre:'Bar',desc:'Ventas del bar, su inventario y sus gastos.',hojas:['bar','inventario','gastos']},
+ admin:{nombre:'Recepción y administración',desc:'Todas las hojas: diario, bar, masajes, reservas, gastos, clientes, resumen y ajustes.',hojas:['guia','diario','bar','masajes','reservas','gastos','bd','gift','memb','invh','inventario','resumen','ajustes']},
+ bar:{nombre:'Bar',desc:'Ventas del bar, su inventario y sus gastos.',hojas:['guia','bar','inventario','gastos']},
 };
-const HOJA_DIA=['diario','bar','masajes','inventario','gastos'];
+const HOJA_DIA=['diario','bar','masajes','invh','inventario','gastos'];
 const B_PAGO=['EFECTIVO','YAPE','PLIN','QR','TARJETA','CORTESIA','NO CANCELO'];
 const G_MEDIO=['EFECTIVO','YAPE','PLIN','BCP','TRANSFERENCIA','DEUDA'];
 const CARTA_CATS=['CÓCTELES','CERVEZAS','SIN ALCOHOL','BEBIDAS'];
@@ -2114,12 +2188,60 @@ const bloque=(titulo,L)=>`<table class="xl lb-blk"><colgroup><col><col style="wi
 const n2=x=>(Math.round((+x||0)*100)/100).toLocaleString('es-PE',{maximumFractionDigits:2});
 
 function vLoginLibro(){return `<div class="wrap"><div class="login"><div class="center mb"><span class="lb-logo big" role="img" aria-label="Hammam Wellness Center"></span><h2 class="mt">Sistema de Hammam</h2><p class="muted">¿Quién eres?</p></div><div class="grid g2">${Object.entries(LROL).map(([k,r])=>`<button class="role" data-a="rol" data-v="${k}"><b>${r.nombre}</b><span>${r.desc}</span></button>`).join('')}</div><p class="xs muted center mt">En la versión real cada persona entra con su usuario y contraseña.</p></div></div>`}
+const HOJA_IC={guia:'book',diario:'sheet',bar:'glass',masajes:'leaf',reservas:'cal',gastos:'card',bd:'users',gift:'gift',memb:'repeat',invh:'towel',inventario:'box',resumen:'chart',ajustes:'gear'};
 function vPersonal(){if(!U.rol||!LROL[U.rol])return vLoginLibro();const R=LROL[U.rol];if(!R.hojas.includes(U.hoja))U.hoja=R.hojas[0];
- const V={diario:hDiario,bar:hBar,masajes:hMasajes,inventario:hInv,gastos:hGastos,bd:hBD,reservas:hReservas,gift:hGift,memb:hMemb,resumen:hResumen,ajustes:hAjustes};
+ const V={guia:hGuia,diario:hDiario,bar:hBar,masajes:hMasajes,inventario:hInv,invh:hInvH,gastos:hGastos,bd:hBD,reservas:hReservas,gift:hGift,memb:hMemb,resumen:hResumen,ajustes:hAjustes};
  const tot=U.hoja==='diario'?`Total del día ${sol(cuadreDia(U.dd).total)}`:U.hoja==='bar'?`Total del bar ${sol(cuadreBar(U.dd).tot)}`:'';
  return `<div class="libro"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${QUIEN[U.rol]} · ${R.nombre} <button class="lnk" data-a="salir">cambiar</button></div></header>
- <main class="lb-hoja">${V[U.hoja]()}</main>
- <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}">${HOJAS[h]}</button>`).join('')}</nav></div>${U.drawer?drawer():''}`}
+ <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}">${ic(HOJA_IC[h],'sm')}<span>${HOJAS[h]}</span></button>`).join('')}</nav>
+ <main class="lb-hoja">${V[U.hoja]()}</main></div>${U.drawer?drawer():''}`}
+
+/* ---------- GUÍA RÁPIDA: las hojas explicadas en una pantalla ---------- */
+const GUIA={
+ diario:['Cada persona que entra, en una fila.','Escribe el DNI en la fila de abajo: el nombre sale solo.','Elige casillero, servicio y pago con la flechita. Al salir, toca el reloj.'],
+ bar:['Lo que se vende en el bar.','Elige el casillero (el nombre sale solo) y el producto.','Si no paga en el momento, pon «NO CANCELO»: se le cobra al salir.'],
+ masajes:['Los masajes del día y el Google Calendar.','Los de la web y del DIARIO aparecen solos.','Para uno nuevo, elige la hora y escribe el nombre en la fila de abajo.'],
+ reservas:['Las reservas de la web y de WhatsApp.','Cuando el cliente llega, cambia ESTADO a «LLEGÓ».','Pasa solo al DIARIO; ahí eliges su casillero.'],
+ gastos:['Lo que se paga en el día.','Escribe el gasto y el monto en la fila de abajo.','Lo pagado en efectivo se descuenta solo de la caja.'],
+ bd:['Todos los clientes, de la A a la Z.','Busca por nombre, DNI o celular, o toca una letra.','Marca su trago, su masaje y cómo nos conoció.'],
+ gift:['Las gift cards vendidas.','Escribe el comprador en la fila de arriba para crear una.','Se marca usada sola cuando se usa en el DIARIO.'],
+ memb:['Las membresías y sus usos.','Crea una con el DNI y el nombre.','Cada ingreso con «MEMBRESIA» en el DIARIO llena una casilla.'],
+ invh:['Toallas, sandalias, shorts y más.','Se descuentan solas con lo que se registra en el DIARIO.','Las toallas vuelven solas al día siguiente; corrige si volvieron menos.'],
+ inventario:['Las bebidas del bar.','Se descuentan solas con las ventas de la hoja BAR.','Anota en INGRESO lo que llega.'],
+ resumen:['Cómo va el mes, día por día.','Ingresos de Hammam y del bar, gastos y ganancia.','Toca un día para abrir su DIARIO.'],
+ ajustes:['Precios, carta del bar, inventarios y conexiones.','Cambia un precio y se aplica al instante.','Aquí se importan los Excel y se conecta Google.'],
+};
+function hGuia(){const R=LROL[U.rol];const q=cuadreDia(HOY),d=dentro(),I=invHDia(HOY),t=I&&I.toalla;const porLl=S.reservas.filter(r=>r.fecha===HOY&&r.estado==='por llegar').length;
+ const hoy=U.rol==='admin'?[['Dentro ahora',d.a+d.n],['Total del día',sol(q.total)],['Reservas por llegar',porLl],['Toallas disponibles',t?t.fin:'—']]:[['Total del bar',sol(cuadreBar(HOY).tot)],['Por cobrar al salir',sol(cuadreBar(HOY).pend)]];
+ return `<div class="lb-guia"><div class="lg-head"><div><h2>Guía rápida</h2><p>Toca una tarjeta para abrir esa hoja. Todas se llenan como el Excel: celdas y listas con flechita.</p></div><div class="lg-hoy">${hoy.map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('')}</div></div>
+ ${U.rol==='admin'?`<div class="lg-pasos">${[['1','Llega el cliente','DIARIO: DNI, casillero, servicio y pago.'],['2','Consume algo','BAR: casillero y producto. «NO CANCELO» si paga al salir.'],['3','Se va','DIARIO: toca el reloj. Si debe algo, te pide cobrarlo.'],['4','Cierra el día','DIARIO: anota el depósito y revisa «Caja cierra».']].map(([n,tt,dd])=>`<div><span>${n}</span><b>${tt}</b><small>${dd}</small></div>`).join('')}</div>`:''}
+ <div class="lg-cards">${R.hojas.filter(h=>h!=='guia').map(h=>{const g=GUIA[h];return `<button class="lg-card" data-a="hoja" data-v="${h}"><span class="lg-ic">${ic(HOJA_IC[h])}</span><b>${HOJAS[h]}</b><span class="lg-que">${g[0]}</span><ol><li>${g[1]}</li><li>${g[2]}</li></ol></button>`}).join('')}</div></div>`}
+
+/* ---------- INVENTARIO TOALLAS (y lo que se entrega o vende en recepción) ---------- */
+function salidasH(desde,hasta){const por={};S.diario.forEach(r=>{if(r.anulado||r.fecha<desde||r.fecha>hasta)return;(por[r.fecha]=por[r.fecha]||[]).push(r)});return por}
+function salidaDia(rows,it){let n=0;(rows||[]).forEach(r=>{(it.sale||[]).forEach(s=>{if(s==='adulto'){if(r.cas&&r.serv!=='PISCINA'&&r.serv!=='EXTRA')n++}else n+=(r.ext||[]).filter(e=>e===s).length})});return n}
+function invHDia(f){const H=S.invH;if(!H||f<H.desde)return null;const por=salidasH(H.desde,f);const st={},prev={};H.items.forEach(it=>{st[it.id]=+it.base||0;prev[it.id]=0});let d=H.desde,row=null;
+ while(d<=f){const man=H.ing[d]||{};row={};H.items.forEach(it=>{const sal=salidaDia(por[d],it);const manual=man[it.id]!==undefined&&man[it.id]!=='';const ing=manual?+man[it.id]:(it.tipo==='vuelve'?prev[it.id]:0);const ini=st[it.id];const fin=ini+ing-sal;row[it.id]={ini,ing,sal,fin,auto:!manual&&it.tipo==='vuelve'};st[it.id]=fin;prev[it.id]=sal});d=addDays(d,1)}
+ return row}
+function hInvH(){const f=U.dd;const I=invHDia(f);if(!I)return `<p class="lb-help">El inventario empieza el ${fmtFL(S.invH.desde)}.</p>`;
+ const cols=[['ARTÍCULO',250],['INICIO',80],['VOLVIÓ O INGRESÓ',140],['SALIDA',80],['QUEDA',86],['MÍNIMO',76]];const man=S.invH.ing[f]||{};
+ const body=S.invH.items.map((it,i)=>{const x=I[it.id];const bajo=x.fin<=it.min;return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(it.nombre)}</b><small class="ih-tipo">${it.tipo==='vuelve'?'se lava y vuelve':'se gasta'}</small></td>${ro(x.ini)}<td class="num">${kIn(`ih:${it.id}|ing`,man[it.id]??'',`inputmode="numeric" placeholder="${x.ing}"`)}</td>${ro(x.sal)}<td class="ro"><b>${x.fin}</b>${bajo?' · reponer':''}</td>${ro(it.min)}</tr>`}).join('');
+ const t=I.toalla;const L=t?[['TOALLAS AL EMPEZAR',t.ini+t.ing],['USADAS HOY',t.sal],['DISPONIBLES AHORA',t.fin,'tot'],['VUELVEN MAÑANA',t.sal]]:[];
+ return `<div class="lb-grid"><div>${tabla(cols,body)}<p class="lb-help">SALIDA se llena sola con el DIARIO: una toalla y un par de sandalias por cada adulto con casillero, más los extras vendidos (short, shampoo, bikini…). Las toallas y las batas vuelven solas al día siguiente; si volvieron menos, escribe el número real en VOLVIÓ O INGRESÓ. También ahí se anota lo que llega nuevo.</p></div>${L.length?`<aside class="lb-side">${bloque('TOALLAS HOY',L)}</aside>`:''}</div>`}
+function initInvH(){S.invH={desde:addDays(HOY,-15),ing:{},items:[
+ {id:'toalla',nombre:'TOALLAS',tipo:'vuelve',base:120,min:25,sale:['adulto','TOALLA']},
+ {id:'sandalia',nombre:'SANDALIAS',tipo:'gasta',base:450,min:40,sale:['adulto','SANDALIAS']},
+ {id:'bata',nombre:'BATAS',tipo:'vuelve',base:12,min:3,sale:['ALQUILER DE BATA']},
+ {id:'short',nombre:'SHORTS (VENTA)',tipo:'gasta',base:24,min:8,sale:['SHORT']},
+ {id:'bikini',nombre:'BIKINIS (VENTA)',tipo:'gasta',base:8,min:3,sale:['BIKINI COMPRA']},
+ {id:'bikinia',nombre:'BIKINIS (ALQUILER)',tipo:'vuelve',base:6,min:2,sale:['BIKINI ALQUILER']},
+ {id:'shampoo',nombre:'SHAMPOO',tipo:'gasta',base:30,min:10,sale:['SHAMPOO']},
+ {id:'maquina',nombre:'MÁQUINAS DE AFEITAR',tipo:'gasta',base:20,min:5,sale:['MAQUINA DE AFEITAR']},
+ {id:'panal',nombre:'PAÑALES',tipo:'gasta',base:12,min:4,sale:['PAÑAL']}]};
+ (S.invH.ing[addDays(HOY,-6)]={}).short=12;(S.invH.ing[addDays(HOY,-4)]={}).sandalia=100}
+function hAjInvH(){return `<h4>Inventario de toallas e insumos</h4>${tabla([['ARTÍCULO',200],['TIPO',150],['STOCK INICIAL',100],['MÍNIMO',80],['SALE CON',190]],S.invH.items.map((it,i)=>`<tr><th class="rn">${i+1}</th><td>${kIn(`ihc:${it.id}|nombre`,it.nombre)}</td><td>${kSel(`ihc:${it.id}|tipo`,it.tipo,[['vuelve','Se lava y vuelve'],['gasta','Se gasta']],'Tipo')}</td><td class="num">${kIn(`ihc:${it.id}|base`,it.base,'inputmode="numeric"')}</td><td class="num">${kIn(`ihc:${it.id}|min`,it.min,'inputmode="numeric"')}</td>${ro((it.sale||[]).map(s=>s==='adulto'?'cada adulto con casillero':exn(s).toLowerCase()).join(' y '))}</tr>`).join(''))}<p class="lb-help">El stock inicial es lo que había el ${fmtFL(S.invH.desde)}.</p>`}
+function celdaInvH(tipo,id,k,v){if(tipo==='ih'){const f=U.dd;const m=S.invH.ing[f]=S.invH.ing[f]||{};if(String(v).trim()==='')delete m[id];else m[id]=+String(v).replace(/\D/g,'')||0;return}
+ const it=S.invH.items.find(x=>x.id===id);if(!it)return;if(k==='base'||k==='min')it[k]=+String(v).replace(/\D/g,'')||0;else if(k==='nombre')it.nombre=String(v).trim().toUpperCase()||it.nombre;else it[k]=v}
 
 /* ---------- DIARIO ---------- */
 const D_COLS=[['INGRESO',72],['SALIDA',80],['NOMBRE',188],['DNI',94],['TELÉFONO',98],['N° BOLETA',96],['CASILLERO',88],['SERVICIO',162],['COMENTARIOS',140],['EXTRA',146],['MÉTODO DE PAGO',148],['S/. TOTAL',78]];
@@ -2275,7 +2397,7 @@ function hAjustes(){const c=S.cfg;const num=(path,val)=>`<input class="xc num" t
  <section><h4>Precios del Hammam</h4>${tabla([['CONCEPTO',260],['PRECIO S/',96]],precios.map(([t,p,v],i)=>`<tr><th class="rn">${i+1}</th>${ro(t)}<td class="num">${num(p,v)}</td></tr>`).join(''))}
  <h4>Extras</h4>${tabla([['EXTRA',220],['PRECIO S/',96]],c.extras.map((e,i)=>`<tr><th class="rn">${i+1}</th>${ro(exn(e.n))}<td class="num">${num(`S.cfg.extras.${i}.p`,e.p)}</td></tr>`).join(''))}</section>
  <section><h4>Carta del bar</h4>${tabla([['PRODUCTO',200],['TIPO',130],['PRECIO S/',86],['DESCUENTA DEL INVENTARIO',190]],S.carta.map((p,i)=>`<tr><th class="rn" data-a="filaBorrar" data-v="cb:${p.id}" title="Quitar de la carta">${i+1}</th><td>${kIn(`cb:${p.id}|nombre`,p.nombre)}</td><td>${kSel(`cb:${p.id}|cat`,p.cat,CARTA_CATS,'Tipo')}</td><td class="num">${kIn(`cb:${p.id}|precio`,p.precio,'inputmode="decimal"')}</td><td>${kSel(`cb:${p.id}|usa`,Object.keys(p.usa||{})[0]||'',S.invItems.map(it=>[it.id,it.nombre]),'Inventario')}</td></tr>`).join('')+`<tr class="nueva"><th class="rn">${S.carta.length+1}</th><td>${kIn('cb:new|nombre',NC.nombre,'placeholder="Producto nuevo"')}</td><td>${kSel('cb:new|cat',NC.cat,CARTA_CATS,'Tipo')}</td><td class="num">${kIn('cb:new|precio',NC.precio,'inputmode="decimal"')}</td><td></td></tr>`)}
- <h4>Inventario del bar: mínimos</h4>${tabla([['BEBIDA',220],['MÍNIMO',90]],S.invItems.map((it,i)=>`<tr><th class="rn">${i+1}</th><td>${kIn(`it:${it.id}|nombre`,it.nombre)}</td><td class="num">${kIn(`it:${it.id}|min`,it.min,'inputmode="numeric"')}</td></tr>`).join(''))}</section>
+ <h4>Inventario del bar: mínimos</h4>${tabla([['BEBIDA',220],['MÍNIMO',90]],S.invItems.map((it,i)=>`<tr><th class="rn">${i+1}</th><td>${kIn(`it:${it.id}|nombre`,it.nombre)}</td><td class="num">${kIn(`it:${it.id}|min`,it.min,'inputmode="numeric"')}</td></tr>`).join(''))}${hAjInvH()}</section>
  <section><h4>Opciones de las listas</h4>${['tragos','masaje','conocio','comentarios'].map(k=>`<div class="optbox mb"><b>${OPC_T[k]}</b><div class="chips mt">${c.opciones[k].map((o,i)=>`<span class="chip mini on optc">${esc(o)}<button data-a="opcDel" data-v="${k}|${i}" aria-label="Quitar ${esc(o)}">×</button></span>`).join('')}</div><div class="row mt"><input class="inp sm grow" data-in="U.opcNew.${k}" data-enter="opcAdd" data-k="${k}" value="${esc(U.opcNew[k]||'')}" placeholder="Nueva opción"><button class="btn xs" data-a="opcAdd" data-v="${k}">Agregar</button></div></div>`).join('')}
  <h4>Google Calendar y Google Drive</h4><div class="optbox mb"><p class="small m0">1. ID del calendario de masajes, para verlo en la hoja MASAJES (en Google Calendar: Configuración del calendario → «ID del calendario»).</p><input class="inp mt" data-in="S.cfg.gcal.id" data-live value="${esc((c.gcal||{}).id||'')}" placeholder="xxxx@group.calendar.google.com">
  <p class="small m0 mt">2. Para que los masajes se pasen solos al calendario y las copias vayan a Drive: enlace del Apps Script y su clave (ver el archivo «Hammam_Google_Calendar_Drive.gs»).</p><input class="inp mt" data-in="S.cfg.gcal.url" data-live value="${esc((c.gcal||{}).url||'')}" placeholder="https://script.google.com/macros/s/…/exec"><input class="inp mt" data-in="S.cfg.gcal.clave" value="${esc((c.gcal||{}).clave||'')}" placeholder="Clave" autocomplete="off">
@@ -2339,6 +2461,7 @@ function celdaMasaje(id,k,v){const f=U.dd;
 /* ---------- celdas de las demás hojas ---------- */
 function celdaLibro(tipo,id,k,v){
  if(tipo==='ms'){celdaMasaje(id,k,v);return}
+ if(tipo==='ih'||tipo==='ihc'){celdaInvH(tipo,id,k,v);return}
  if(tipo==='b'){if(id==='new'){U.nb[k]=v;if((k==='prod'&&v)||(k==='total'&&v!=='')){const b=crearBar(U.dd,U.nb);U.nb=newNb();U.focus=`[data-cell="b:${b.id}|pago"]`}return}const b=S.barRows.find(x=>x.id===+id);if(b)barSet(b,k,v);return}
  if(tipo==='gs'){if(id==='new'){U.ng2[k]=v;if((k==='desc'&&String(v).trim().length>=2)||(k==='total'&&+String(v).replace(',','.')>0)){const N=U.ng2;const g={id:S.seq.gasto++,fecha:U.dd,caja:N.caja||'HAMMAM',cat:N.cat||'',desc:String(N.desc).trim().toUpperCase(),medio:N.medio||'EFECTIVO',total:+String(N.total).replace(',','.')||0,por:quien()};S.gastos.push(g);U.ng2=newNg2();U.focus=`[data-cell="gs:${g.id}|${k==='desc'?'total':'desc'}"]`;log(`Registró un gasto: ${g.desc||g.cat} (${sol(g.total)}).`)}return}
   const g=S.gastos.find(x=>x.id===+id);if(!g)return;if(k==='total')g.total=+String(v).replace(',','.')||0;else if(k==='desc')g.desc=String(v).trim().toUpperCase();else g[k]=v;return}
@@ -2370,7 +2493,7 @@ function initLibro(){const rnd=rng('libro-'+HOY);const pick=a=>a[Math.floor(rnd(
  S.carta=[P('tinto','TINTO DE VERANO','CÓCTELES',35),P('mojito','MOJITO','CÓCTELES',35),P('chilcano','CHILCANO','CÓCTELES',35),P('gintonic','GIN TONIC','CÓCTELES',35,'aton'),P('aperol','APEROL SPRITZ','CÓCTELES',35),P('cuba','CUBA LIBRE','CÓCTELES',35),
   P('stella','STELLA','CERVEZAS',14,'stel'),P('corona','CORONA','CERVEZAS',14,'coro'),P('coronaz','CORONA ZERO','CERVEZAS',10,'corz'),P('mocktail','MOCKTAIL','SIN ALCOHOL',20,'mock'),
   P('asg','AGUA SIN GAS','BEBIDAS',5,'asg'),P('acg','AGUA CON GAS','BEBIDAS',5,'acg'),P('alim','AGUA DE LIMÓN','BEBIDAS',5,'alim'),P('aman','AGUA DE MANZANA','BEBIDAS',5,'aman'),P('aton','AGUA TÓNICA','BEBIDAS',8,'aton'),P('sporade','SPORADE','BEBIDAS',8,'spor'),P('gatorade','GATORADE','BEBIDAS',8,'gato'),P('coca','COCA COLA','BEBIDAS',8,'coca'),P('inca','INCA KOLA','BEBIDAS',8,'inca'),P('limon','LIMÓN','BEBIDAS',1)];
- S.barRows=[];S.cuadreBar={};S.seq.barRow=1;S.cfg.gcal={id:'',url:'',clave:''};
+ S.barRows=[];S.cuadreBar={};S.seq.barRow=1;S.cfg.gcal={id:'',url:'',clave:''};initInvH();
  const desde=addDays(HOY,-15);S.inv={desde,base:{asg:30,acg:18,alim:12,aman:12,aton:20,mock:14,stel:30,coro:24,corz:10,coca:12,inca:20,gato:22,spor:18},ing:{}};
  const peso=[['asg',30],['acg',16],['tinto',9],['sporade',8],['stella',8],['coca',5],['mocktail',4],['chilcano',4],['mojito',3],['corona',3],['inca',3],['gintonic',2],['aperol',2],['cuba',1],['gatorade',2],['coronaz',1],['alim',1]];const tot=sum(peso,x=>x[1]);
  const prodAl=()=>{let r=rnd()*tot;for(const [id,w] of peso){if((r-=w)<0)return id}return 'asg'};
@@ -2546,7 +2669,7 @@ const A={
  rcNuevo:()=>{U.rcDone=null;U.rc=freshU().rc},
  /* personal: navegación */
  rol:v=>{U.rol=v;U.hoja=LROL[v].hojas[0];U.nb=newNb();U.ng2=newNg2();top0()},
- hoja:v=>{U.hoja=v;U.drawer=null},
+ hoja:v=>{U.hoja=v;U.drawer=null;U.arriba=true},
  bdMas:()=>{U.bdN+=100},
  bdLetra:v=>{U.bdL=v;U.bdN=80},
  gcalProbar:()=>gcalProbar(),gcalRespaldo:()=>gcalRespaldo(),gcalTraer:()=>gcalTraer(false),
@@ -2748,15 +2871,30 @@ function confirmarReserva(){const R=U.R,q=cotizar(R);const code='HM-'+(S.seq.res
  R.codigo=code;R.paso=4;U.pc=null;toast(R.pago==='local'?'Reserva registrada.':'Pago aprobado (simulado).')}
 
 /* =================== render y eventos =================== */
-function render(){const ae=document.activeElement;const key=ae&&ae.dataset?(ae.dataset.in||ae.dataset.merma||ae.dataset.cell):null;let pos=null,pos2=null;try{pos=ae.selectionStart;pos2=ae.selectionEnd}catch(e){}const sh=document.querySelector('.lb-hoja')||document.querySelector('.xl-sheet');const shs=sh?[sh.className,sh.scrollLeft,sh.scrollTop]:null;
- const tb=document.querySelector('[data-tbody]');const had=!!document.querySelector('.tmodal,.drawer,.modal');const tbs=tb&&U.cons?[U.cons.paso,tb.scrollTop]:null;const db=document.querySelector('.drawer .db');const dbs=db&&U.drawer?[JSON.stringify(U.drawer),db.scrollTop]:null;
+/* el redibujo solo cambia lo que cambió: no cierra listas abiertas, no pierde el foco ni recarga el calendario */
+function morph(a,b){
+ if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName){a.replaceWith(b);return}
+ if(a.nodeType===3||a.nodeType===8){if(a.nodeValue!==b.nodeValue)a.nodeValue=b.nodeValue;return}
+ if(a.nodeType!==1)return;
+ const act=a===document.activeElement,abierto=a.nodeName==='DETAILS'&&a.open;
+ for(const at of [...a.attributes])if(!b.hasAttribute(at.name))a.removeAttribute(at.name);
+ for(const at of [...b.attributes])if(a.getAttribute(at.name)!==at.value)a.setAttribute(at.name,at.value);
+ if(abierto)a.open=true;
+ if(a.nodeName==='IFRAME')return;
+ morphHijos(a,b);
+ if(a.nodeName==='INPUT'){if(a.type==='checkbox'||a.type==='radio')a.checked=b.hasAttribute('checked');else if(!act){const v=b.getAttribute('value')??'';if(a.value!==v)a.value=v}}
+ else if(a.nodeName==='TEXTAREA'){if(!act&&a.value!==b.value)a.value=b.value}
+ else if(a.nodeName==='SELECT'&&!act){const i=[...b.options].findIndex(o=>o.hasAttribute('selected'));const j=i<0?0:i;if(a.selectedIndex!==j)a.selectedIndex=j}}
+function morphHijos(a,b){const ac=[...a.childNodes],bc=[...b.childNodes];for(let i=0;i<bc.length;i++){if(i<ac.length)morph(ac[i],bc[i]);else a.appendChild(bc[i])}for(let i=bc.length;i<ac.length;i++)ac[i].remove()}
+function render(){const ae=document.activeElement;const key=ae&&ae.dataset?(ae.dataset.in||ae.dataset.merma||ae.dataset.cell):null;
  document.querySelectorAll('.demobar [data-a="view"]').forEach(b=>b.classList.toggle('on',b.dataset.v===U.view));
- app.innerHTML=(U.view==='cliente'?vCliente():vPersonal())+(U.cons?consentModal():'');
- if(had)document.querySelectorAll('.tmodal,.drawer,.modal,.backdrop').forEach(x=>x.classList.add('noanim'));
- if(dbs&&U.drawer&&dbs[0]===JSON.stringify(U.drawer)){const b=document.querySelector('.drawer .db');if(b)b.scrollTop=dbs[1]}
- if(tbs&&U.cons&&tbs[0]===U.cons.paso){const b=document.querySelector('[data-tbody]');if(b)b.scrollTop=tbs[1]}
- if(shs){const s2=document.querySelector('.'+shs[0].split(' ')[0]);if(s2){s2.scrollLeft=shs[1];s2.scrollTop=shs[2]}}
- if(key){const el=document.querySelector(`[data-in="${CSS.escape(key)}"],[data-merma="${CSS.escape(key)}"],[data-cell="${CSS.escape(key)}"]`);if(el){el.focus({preventScroll:true});try{if(pos!=null)el.setSelectionRange(pos,pos2??pos)}catch(e){}}}
+ const html=(U.view==='cliente'?vCliente():vPersonal())+(U.cons?consentModal():'');
+ const tmp=document.createElement('div');
+ if(tmp.childNodes===undefined||!app.childNodes){app.innerHTML=html}else{tmp.innerHTML=html;morphHijos(app,tmp)}
+ const dk=U.drawer?JSON.stringify(U.drawer):'';if(dk!==render.dk){const b=document.querySelector('.drawer .db');if(b)b.scrollTop=0;render.dk=dk}
+ const ck=U.cons?U.cons.paso:-1;if(ck!==render.ck){const b=document.querySelector('[data-tbody]');if(b)b.scrollTop=0;render.ck=ck}
+ if(U.arriba){const h=document.querySelector('.lb-hoja');if(h){h.scrollTop=0;h.scrollLeft=0}U.arriba=false}
+ if(key&&document.activeElement!==ae){const el=document.querySelector(`[data-in="${CSS.escape(key)}"],[data-merma="${CSS.escape(key)}"],[data-cell="${CSS.escape(key)}"]`);if(el&&el!==document.activeElement)el.focus({preventScroll:true})}
  if(U.focus){const el=document.querySelector(U.focus);if(el){el.focus();try{el.select()}catch(e){}}U.focus=null}
  if(U.cons)consMarcarVisto()}
 function setPath(path,val){const p=path.split('.');let o=p[0]==='S'?S:U;for(let i=1;i<p.length-1;i++){if(o[p[i]]==null)o[p[i]]={};o=o[p[i]]}o[p[p.length-1]]=val}
