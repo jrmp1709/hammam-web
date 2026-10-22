@@ -983,10 +983,36 @@ h4{font-family:'Montserrat',sans-serif}
 .pagehead{background-position:center 55%}
 /* logo del sistema en verde oscuro para que se lea sobre la barra clara */
 .lb-logo{background:#33402D;-webkit-mask:var(--logoh) left center/contain no-repeat;mask:var(--logoh) left center/contain no-repeat}
+/* ===== revisión 22/10 ===== */
+/* portada en celular: que se vea el muro de luces */
+@media (max-width:700px){.hero-lux{background-image:var(--hm)!important;background-position:center top}}
+/* barra de aviso más corta en celular */
+@media (max-width:560px){
+ .demobar{font-size:11.5px;gap:4px 10px;padding:6px 10px}
+ .demobar>span{flex-basis:100%;text-align:center;line-height:1.35}
+ .demobar .dm-x,.demobar [data-a="ventana"]{display:none}
+ .demobar{gap:4px 8px}
+ .demobar .seg button{padding:4px 8px;font-size:11.5px}
+ .site-head .logo-h{height:38px}
+}
+/* carta del bar como la impresa */
+.menu-nom{font-weight:500;letter-spacing:.03em;font-size:14px}
+/* pestañas del sistema: en laptop se quitan los íconos de las que no están abiertas para que entren todas */
+@media (max-width:1440px){.lb-tabs button:not(.on) .ic{display:none}.lb-tabs button{padding:7px 11px}}
+/* AJUSTES: las tablas ya no se montan unas sobre otras */
+.lb-cols{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-start}
+.lb-cols>section{flex:0 1 auto;max-width:100%;min-width:0}
+.lb-cols>section:last-child{flex:1 1 380px;max-width:620px}
+/* botones dentro de las tablas con la misma letra */
+.libro .xl td .xbtn{font:600 12px 'Jost',system-ui,sans-serif}
+.libro .xl .comprar{display:inline-block;margin-left:6px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#B4561A;background:#fff;border:1px solid #F0C9AE;border-radius:999px;padding:1px 8px}
+/* nombres en mayúscula como en el Excel */
+.libro input[data-cell^="c:"][data-cell$="|nombre"],.libro input[data-cell^="m:"][data-cell$="|nombre"]{text-transform:uppercase}
+@media (max-width:1320px){.demobar .dm-x{display:none}}
 </style>
 </head>
 <body>
-<div class="demobar"><span><b>Versión de prueba</b> · las reservas y los pagos todavía no son reales; para reservar, escríbenos por <a href="https://wa.me/51984587616" target="_blank" rel="noopener" style="color:inherit">WhatsApp</a></span><div class="seg" role="tablist" aria-label="Lado"><button data-a="view" data-v="cliente" class="on">Web de clientes</button><button data-a="view" data-v="personal">Panel del personal</button></div><button class="lnk" data-a="ventana">Abrir el otro lado en otra ventana</button><button class="lnk" data-a="reset">Reiniciar demo</button></div>
+<div class="demobar"><span><b>Versión de prueba</b> · las reservas y los pagos todavía no son reales<span class="dm-x">; para reservar, escríbenos por <a href="https://wa.me/51984587616" target="_blank" rel="noopener" style="color:inherit">WhatsApp</a></span></span><div class="seg" role="tablist" aria-label="Lado"><button data-a="view" data-v="cliente" class="on">Web de clientes</button><button data-a="view" data-v="personal">Panel del personal</button></div><button class="lnk" data-a="ventana">Abrir el otro lado en otra ventana</button><button class="lnk" data-a="reset">Reiniciar demo</button></div>
 <div id="app"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -1089,7 +1115,7 @@ const IC={
 };
 /* fotos reales de Hammam (carpeta img/ junto a la página) */
 const FOTO='img/';
-const IMG={hero:'piscina-bar',pool:'piscina',vapor:'vapor',marmol:'vapor2',seco:'sauna',vaporPiedras:'sauna2',cupula:'lounge2',piedras:'masaje',piedras2:'masaje2',aceite:'masaje3',bar:'bar',bar2:'bar2',lounge:'lounge',lockers:'lockers',recepcion:'recepcion',relax:'sauna-relax'};
+const IMG={hero:'piscina-bar',heroMovil:'hero-movil',pool:'piscina',vapor:'vapor',marmol:'vapor2',seco:'sauna',vaporPiedras:'sauna2',cupula:'lounge2',piedras:'masaje',piedras2:'masaje2',aceite:'masaje3',bar:'bar',bar2:'bar2',lounge:'lounge',lockers:'lockers',recepcion:'recepcion',relax:'sauna-relax'};
 const fotoUrl=(k,w=900)=>`${FOTO}${w>900?'':'sm/'}${IMG[k]||k}.jpg`;
 const bgi=(k,w=900)=>`background-image:url('${fotoUrl(k,w)}')`;
 const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]||''}"/></svg>`;
@@ -1357,7 +1383,7 @@ function mkGrupo(g,rows){const t=rows.find(r=>r.dni)||rows[0];const extra=rows.l
   salida:rows.every(r=>r.sal)?rows.map(r=>r.sal).sort().slice(-1)[0]:null,m:rows.filter(r=>!r.sal&&r.cas&&r.cas[0]==='D').length,v:rows.filter(r=>!r.sal&&r.cas&&r.cas[0]==='V').length,n:rows.filter(r=>!r.sal&&r.serv==='PISCINA').length,
   mT:rows.filter(r=>r.cas&&r.cas[0]==='D').length,vT:rows.filter(r=>r.cas&&r.cas[0]==='V').length,nT:rows.filter(r=>r.serv==='PISCINA').length,
   lockers:rows.filter(r=>!r.sal).map(r=>r.cas).filter(Boolean),res:(rows.find(r=>r.res)||{}).res||null,pin:pinDe(g)}}
-const titulo=s=>String(s||'').toLowerCase().replace(/(^|\s|-)(\p{L})/gu,(m,a,b)=>a+b.toUpperCase());
+const titulo=s=>String(s||'').toLowerCase().replace(/(^|\s|-)(\p{L})/gu,(m,a,b)=>a+b.toUpperCase()).replace(/ (De|Del|La|Las|Los|Y|E|Con|En|Al|A|Su|Sin|Por|Para)(?= )/g,m=>m.toLowerCase());
 const abiertos=()=>grupos().filter(g=>!g.salida);
 const cerrados=()=>grupos().filter(g=>g.salida);
 const grupoDe=t=>grupos().find(g=>g.ticket===+t)||null;
@@ -1438,7 +1464,7 @@ const XP=()=>{const c=S.cfg;return [
 
 /* ---------- inicio ---------- */
 function cHero(){const c=S.cfg,e=estadoAforo(),B=U.bk;const libres=sum(CABINAS,cb=>HORAS_MAS.filter(h=>!S.agenda[sk(HOY,cb,h)]&&!pasada(HOY,h)).length);const fechas=proximas(8);
- return `<section class="hero-lux" style="${bgi('hero',1900)}"><div class="in">
+ return `<section class="hero-lux" style="${bgi('hero',1900)};--hm:url('${fotoUrl('heroMovil',1800)}')"><div class="in">
   <p class="eyebrow">Wellness center · Palmas del Golf, Trujillo</p>
   <h1>El momento de relajo que necesitas</h1>
   <p class="lead">Sauna seco, cámara de vapor, piscina térmica con hidromasaje y masajes. Reserva en un minuto y paga con Yape.</p>
@@ -1500,10 +1526,10 @@ function cBar(){const cats=[...new Set(S.bar.productos.map(p=>p.cat))];const B=U
  return `<div class="pagehead" style="${bgi('bar',1600)}"><div><p class="eyebrow" style="color:#D9E2C4">Bar y lounge</p><h2>Algo rico después del circuito</h2><p>Pide desde tu celular sin salir de la piscina. Se carga a tu locker y pagas todo al salir.</p></div></div>
  <div class="split wide mt"><div class="card pad-lg">${cats.map(ct=>`<div class="menu-cat"><h4 style="margin-top:0">${ct}</h4>${S.bar.productos.filter(p=>p.cat===ct).map(p=>`<div class="menu-item"><div><b>${p.nombre}</b><div class="xs muted">${p.desc}</div></div><div class="row"><span class="nowrap">${sol(p.precio)}</span>${cta?ctr('bpq',B.cart[p.id]||0,p.id+'|',0,9):''}</div></div>`).join('')}</div>`).join('')}<p class="xs muted">Carta de ejemplo. No se venden bebidas alcohólicas a menores de 18 años.</p></div>
  <aside class="card sticky">${cta?bpCart(cta):bpLogin(hint)}</aside></div>`}
-function bpLogin(hint){const B=U.bp;return `<h3>${ic('qr')} Pide desde tu locker</h3><p class="small muted">En la versión real escaneas el QR de tu pulsera y entras directo. Aquí escribe tu casillero (por ejemplo, D3 o V12) y el PIN de tu ticket.</p><div class="form"><label class="fld">Casillero<input class="bigin" data-in="U.bp.locker" maxlength="3" value="${esc(B.locker)}" style="text-transform:uppercase" autocomplete="off"></label><label class="fld">PIN de 4 dígitos<input class="bigin" data-in="U.bp.pin" inputmode="numeric" maxlength="4" value="${esc(B.pin)}"></label><button class="btn" data-a="bpEntrar">Entrar</button></div>${hint?`<p class="xs muted mt">Para probar: casillero ${hint.lockers[0]} y PIN ${hint.pin}.</p>`:''}`}
+function bpLogin(hint){const B=U.bp;return `<h3>${ic('qr')} Pide desde tu locker</h3><p class="small muted">En la versión real escaneas el QR de tu pulsera y entras directo. Aquí escribe tu locker (por ejemplo, D3 o V12) y el PIN de tu ticket.</p><div class="form"><label class="fld">Locker<input class="bigin" data-in="U.bp.locker" maxlength="3" value="${esc(B.locker)}" style="text-transform:uppercase" autocomplete="off"></label><label class="fld">PIN de 4 dígitos<input class="bigin" data-in="U.bp.pin" inputmode="numeric" maxlength="4" value="${esc(B.pin)}"></label><button class="btn" data-a="bpEntrar">Entrar</button></div>${hint?`<p class="xs muted mt">Para probar: locker ${hint.lockers[0]} y PIN ${hint.pin}.</p>`:''}`}
 function bpCart(c){const B=U.bp;const lines=Object.entries(B.cart).filter(([k,q])=>q>0);const tot=sum(lines,([k,q])=>prod(k).precio*q);const peds=S.bar.pedidos.filter(p=>p.ticket===c.ticket&&p.estado!=='entregado');
  const items=c.rows.flatMap(r=>[{d:`${SERV_CORTO[r.serv]||r.serv} · ${titulo(r.nombre).split(' ')[0]}`,m:r.total,pag:r.pagado},...(r.cons||[]).map(x=>({d:x.d,m:x.m,pag:x.pag}))]);
- return `<div class="detail-h"><div><h3 class="m0">Hola, ${esc(titulo(c.titular.nombre).split(' ')[0])}</h3><p class="small muted m0">Casillero ${c.lockers.join(', ')} · ticket #${c.ticket}</p></div><button class="btn xs ghost" data-a="bpSalir">Salir</button></div>
+ return `<div class="detail-h"><div><h3 class="m0">Hola, ${esc(titulo(c.titular.nombre).split(' ')[0])}</h3><p class="small muted m0">Locker ${c.lockers.join(', ')} · ticket #${c.ticket}</p></div><button class="btn xs ghost" data-a="bpSalir">Salir</button></div>
  ${lines.length?`<div class="items">${lines.map(([k,q])=>`<div><span>${prod(k).nombre} × ${q}</span><span>${sol(prod(k).precio*q)}</span></div>`).join('')}</div><div class="totline"><span>Total del pedido</span><b>${sol(tot)}</b></div><button class="btn block mt" data-a="bpEnviar">Enviar pedido al bar</button>`:'<p class="muted small mt">Usa los botones + de la carta para armar tu pedido.</p>'}
  ${peds.length?`<h4>Tus pedidos en curso</h4>${peds.map(p=>`<div class="row between small" style="padding:4px 0"><span>#${p.id} · ${p.items.map(([k,q])=>prod(k).nombre+' × '+q).join(', ')}</span>${pill(p.estado==='nuevo'?'Recibido':'Preparando',p.estado==='nuevo'?'wood':'info')}</div>`).join('')}`:''}
  <h4>Tu cuenta hasta ahora</h4><div class="items">${items.map(i=>`<div class="${i.pag?'paid':''}"><span>${esc(i.d)}</span><span>${sol(i.m)}</span></div>`).join('')}</div><div class="totline"><span>Por pagar al salir</span><b>${sol(pendienteG(c))}</b></div>`}
@@ -1652,10 +1678,10 @@ const dressBox=()=>`<div class="dress"><div class="si"><b>${ic('check','sm')} S�
 function termsSecciones(){const c=S.cfg;return [
  {t:'Convivencia',ic:'users',h:`<p>Con el fin de garantizar una experiencia agradable, segura y armoniosa para todos nuestros visitantes, te pedimos tener en cuenta estas normas:</p>${regla(2,3,5,6)}<p class="small muted">El personal puede pedir que se retire quien no las respete.</p>`},
  {t:'Vestimenta e higiene',ic:'towel',h:`${regla(1,7,8,9,10,12)}${dressBox()}<p class="note">¿No tienes short de baño? En recepción puedes comprar uno (${sol(precioExtra('SHORT'))}) o alquilar un bikini (${sol(precioExtra('BIKINI ALQUILER'))}).</p>`},
- {t:'Niños',ic:'child',h:`<ul class="rlist"><li>Pueden venir niños de hasta 14 años, siempre acompañados por un adulto responsable.</li><li>Solo usan la piscina, de ${h12(c.horario.abre)} a ${h12(c.horario.ninosHasta)}. No ingresan al sauna seco ni a la cámara de vapor.</li><li>No incluye casillero: trae toalla y sandalias para tu menor.</li><li><b>Regla 11.</b> ${REGLAS[10]}</li><li>El adulto responde por el cuidado y la conducta del niño en todo momento.</li></ul>`},
- {t:'Salud y cuidado',ic:'heart',h:`${regla(4)}<ul class="rlist"><li>Si estás embarazada, tienes presión alta, problemas del corazón u otra condición de salud, consulta antes con tu médico y avísanos.</li><li>No uses el sauna ni el vapor si consumiste alcohol. Si te sientes mareado, sal, siéntate y avisa al personal.</li><li>Cuéntanos si tienes alergias o lesiones: la masajista lo verá antes de atenderte.</li><li>Guarda tus objetos de valor en tu casillero. Si pierdes la llave, la reposición cuesta ${sol(precioExtra('LLAVE PERDIDA'))}.</li></ul>`},
+ {t:'Niños',ic:'child',h:`<ul class="rlist"><li>Pueden venir niños de hasta 14 años, siempre acompañados por un adulto responsable.</li><li>Solo usan la piscina, de ${h12(c.horario.abre)} a ${h12(c.horario.ninosHasta)}. No ingresan al sauna seco ni a la cámara de vapor.</li><li>No incluye locker: trae toalla y sandalias para tu menor.</li><li><b>Regla 11.</b> ${REGLAS[10]}</li><li>El adulto responde por el cuidado y la conducta del niño en todo momento.</li></ul>`},
+ {t:'Salud y cuidado',ic:'heart',h:`${regla(4)}<ul class="rlist"><li>Si estás embarazada, tienes presión alta, problemas del corazón u otra condición de salud, consulta antes con tu médico y avísanos.</li><li>No uses el sauna ni el vapor si consumiste alcohol. Si te sientes mareado, sal, siéntate y avisa al personal.</li><li>Cuéntanos si tienes alergias o lesiones: la masajista lo verá antes de atenderte.</li><li>Guarda tus objetos de valor en tu locker. Si pierdes la llave, la reposición cuesta ${sol(precioExtra('LLAVE PERDIDA'))}.</li></ul>`},
  {t:'Reservas y pagos',ic:'cal',h:`<ul class="rlist"><li>El circuito dura ${c.horario.horas} horas desde tu ingreso y termina, como máximo, a la hora de cierre (${h12(c.horario.cierra)}).</li><li>Los paquetes y masajes se pagan al reservar para separar la cabina. El circuito también se puede pagar al llegar.</li><li>Puedes cambiar o cancelar tu reserva desde «Mi reserva». (La política de devoluciones la define Hammam.)</li><li>Las tarjetas de regalo valen ${c.giftDias} días desde su compra.</li><li>Recibes boleta o factura electrónica por cada pago.</li></ul>`},
- {t:'Tus datos personales',ic:'shield',h:`<p>Conforme a la Ley 29733, de Protección de Datos Personales, y su reglamento:</p><ul class="rlist"><li><b>Quién los trata:</b> Hammam Wellness Center, Palmas del Golf II, Mz. F Lt. 24, Víctor Larco Herrera (titular: razón social y RUC por confirmar).</li><li><b>Qué datos:</b> nombre, DNI, celular y correo; tus visitas, servicios y consumos; tus preferencias, si nos las das; y las notas de salud que tú nos indiques para tu masaje.</li><li><b>Para qué:</b> registrar tu ingreso y tu casillero, gestionar reservas, pagos y comprobantes, atender reclamos y darte tus puntos. Solo te enviamos promociones si lo aceptas aparte.</li><li><b>Con quién:</b> no vendemos tus datos. Solo los usan los proveedores que nos ayudan a operar (pagos, mensajería, sistema), con la misma reserva.</li><li><b>Tus derechos:</b> puedes pedir acceder a tus datos, corregirlos, borrarlos u oponerte a su uso (derechos ARCO), en recepción o a hammamsaunayspa@gmail.com.</li></ul><p class="xs muted">Texto de ejemplo para la demo: Hammam debe revisar la versión final e inscribir su banco de datos.</p>`},
+ {t:'Tus datos personales',ic:'shield',h:`<p>Conforme a la Ley 29733, de Protección de Datos Personales, y su reglamento:</p><ul class="rlist"><li><b>Quién los trata:</b> Hammam Wellness Center, Palmas del Golf II, Mz. F Lt. 24, Víctor Larco Herrera (titular: razón social y RUC por confirmar).</li><li><b>Qué datos:</b> nombre, DNI, celular y correo; tus visitas, servicios y consumos; tus preferencias, si nos las das; y las notas de salud que tú nos indiques para tu masaje.</li><li><b>Para qué:</b> registrar tu ingreso y tu locker, gestionar reservas, pagos y comprobantes, atender reclamos y darte tus puntos. Solo te enviamos promociones si lo aceptas aparte.</li><li><b>Con quién:</b> no vendemos tus datos. Solo los usan los proveedores que nos ayudan a operar (pagos, mensajería, sistema), con la misma reserva.</li><li><b>Tus derechos:</b> puedes pedir acceder a tus datos, corregirlos, borrarlos u oponerte a su uso (derechos ARCO), en recepción o a hammamsaunayspa@gmail.com.</li></ul><p class="xs muted">Texto de ejemplo para la demo: Hammam debe revisar la versión final e inscribir su banco de datos.</p>`},
 ]}
 function consentModal(){const C=U.cons;const T=termsSecciones();const n=T.length;const fin=C.paso>=n;const ver=C.ctx==='ver';const sec=T[Math.min(C.paso,n-1)];const visto=!!C.visto[C.paso];
  const body=fin?`<p>Para ${C.ctx==='staff'?'registrar tu ingreso':'continuar'}, marca las dos primeras casillas. La tercera es opcional.</p><div class="accept"><label class="req"><input type="checkbox" data-in="U.cons.a1" ${C.a1?'checked':''}><span>He leído y acepto las reglas internas, la política de vestimenta y las condiciones del servicio. <small>Obligatorio</small></span></label><label class="req"><input type="checkbox" data-in="U.cons.a2" ${C.a2?'checked':''}><span>Autorizo a Hammam a tratar mis datos personales, incluidas las notas de salud que yo indique, para las finalidades descritas. <small>Obligatorio</small></span></label><label><input type="checkbox" data-in="U.cons.mkt" ${C.mkt?'checked':''}><span>Quiero recibir promociones y novedades por WhatsApp. Puedo retirar este permiso cuando quiera. <small class="muted">Opcional</small></span></label></div>`:sec.h;
@@ -2213,8 +2239,10 @@ const LROL={
 const HOJA_DIA=['diario','bar','masajes','invh','inventario','gastos'];
 const B_PAGO=['EFECTIVO','YAPE','PLIN','QR','TARJETA','CORTESIA','NO CANCELO'];
 const G_MEDIO=['EFECTIVO','YAPE','PLIN','BCP','TRANSFERENCIA','DEUDA'];
+const HOJA_TAB={invh:'TOALLAS'};
 const CARTA_CATS=['PLATOS','ESPECIALES','CÓCTELES','CERVEZAS','SIN ALCOHOL','BEBIDAS'];
 const cartaDe=id=>S.carta.find(p=>p.id===id);
+const prodNom=b=>(b.prod&&cartaDe(b.prod)||{}).nombre||b.txt||'consumo';
 const fDM2=f=>f?f.slice(8,10)+'/'+f.slice(5,7):'';
 const kIn=(key,val,attrs='')=>`<input class="xc" data-cell="${key}" value="${esc(val??'')}" autocomplete="off" ${attrs}>`;
 const kSel=(key,val,opts,label='')=>`<select class="xc" data-cell="${key}" aria-label="${label}"><option value=""></option>${opts.map(o=>{const [v,t]=Array.isArray(o)?o:[o,o];return `<option value="${esc(v)}" ${String(v)===String(val)?'selected':''}>${esc(t)}</option>`}).join('')}${val!==''&&val!=null&&!opts.some(o=>String(Array.isArray(o)?o[0]:o)===String(val))?`<option selected value="${esc(val)}">${esc(val)}</option>`:''}</select>`;
@@ -2230,7 +2258,7 @@ function vPersonal(){if(!U.rol||!LROL[U.rol])return vLoginLibro();const R=LROL[U
  const V={guia:hGuia,diario:hDiario,bar:hBar,masajes:hMasajes,inventario:hInv,invh:hInvH,gastos:hGastos,bd:hBD,reservas:hReservas,gift:hGift,memb:hMemb,resumen:hResumen,ajustes:hAjustes};
  const tot=U.hoja==='diario'?`Total del día ${sol(cuadreDia(U.dd).total)}`:U.hoja==='bar'?`Total del bar ${sol(cuadreBar(U.dd).tot)}`:'';
  return `<div class="libro"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${QUIEN[U.rol]} · ${R.nombre} <button class="lnk" data-a="salir">cambiar</button></div></header>
- <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}">${ic(HOJA_IC[h],'sm')}<span>${HOJAS[h]}</span></button>`).join('')}</nav>
+ <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}" title="${HOJAS[h]}">${ic(HOJA_IC[h],'sm')}<span>${HOJA_TAB[h]||HOJAS[h]}</span></button>`).join('')}</nav>
  <main class="lb-hoja">${V[U.hoja]()}</main></div>${U.drawer?drawer():''}`}
 
 /* ---------- GUÍA RÁPIDA: las hojas explicadas en una pantalla ---------- */
@@ -2281,7 +2309,7 @@ function celdaInvH(tipo,id,k,v){if(tipo==='ih'){const f=U.dd;const m=S.invH.ing[
  const it=S.invH.items.find(x=>x.id===id);if(!it)return;if(k==='base'||k==='min')it[k]=+String(v).replace(/\D/g,'')||0;else if(k==='nombre')it.nombre=String(v).trim().toUpperCase()||it.nombre;else it[k]=v}
 
 /* ---------- DIARIO ---------- */
-const D_COLS=[['INGRESO',72],['SALIDA',80],['NOMBRE',188],['DNI',94],['TELÉFONO',98],['N° BOLETA',96],['CASILLERO',88],['SERVICIO',162],['COMENTARIOS',140],['EXTRA',146],['MÉTODO DE PAGO',148],['S/. TOTAL',78]];
+const D_COLS=[['INGRESO',82],['SALIDA',82],['NOMBRE',188],['DNI',94],['TELÉFONO',98],['N° BOLETA',96],['CASILLERO',88],['SERVICIO',162],['COMENTARIOS',140],['EXTRA',146],['MÉTODO DE PAGO',148],['S/. TOTAL',78]];
 function dFila(r,n,f){const nueva=!r.id;const k=nueva?'new':r.id;const N=U.nf;const v=fld=>nueva?N[fld]:r[fld];
  const cl=!nueva&&r.dni?clienteDni(r.dni):null;const falta=!nueva&&f===HOY&&r.dni&&!(cl&&cl.consent);
  const inp=(fld,val,extra='')=>`<input class="xc" data-cell="${k}|${fld}" value="${esc(val??'')}" autocomplete="off" ${extra}>`;
@@ -2310,13 +2338,13 @@ function hDiario(){const f=U.dd;const rows=[...filasDia(f)].sort((a,b)=>a.ing.lo
  <aside class="lb-side">${bloque('CAJA DEL DÍA',L)}</aside></div><datalist id="dl-com">${xlOpcionesCom(f).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`}
 
 /* ---------- BAR (hoja BAR DIARIO) ---------- */
-const BR_COLS=[['HORA',68],['CASILLERO',150],['NOMBRE',170],['PRODUCTO',200],['CANT.',58],['MÉTODO DE PAGO',146],['TOTAL',78]];
+const BR_COLS=[['HORA',80],['CASILLERO',150],['NOMBRE',170],['PRODUCTO',200],['CANT.',58],['MÉTODO DE PAGO',146],['TOTAL',78]];
 function newNb(){return {hora:'',cas:'',nombre:'',prod:'',cant:1,pago:'EFECTIVO',total:''}}
 function diarioDeCas(f,cas){return cas?filasDia(f).find(r=>r.cas===cas&&!r.sal)||null:null}
 function precioBar(b){const p=cartaDe(b.prod);return p?p.precio*(+b.cant||1):0}
 function recalcBar(b){if(!b.totalManual)b.total=precioBar(b)}
 function syncBar(b){S.diario.forEach(r=>{if(r.cons&&r.cons.some(c=>c.barId===b.id))r.cons=r.cons.filter(c=>c.barId!==b.id)});
- if(!b.anulado&&b.pago==='NO CANCELO'){const r=S.diario.find(x=>x.id===b.diarioId&&!x.anulado)||diarioDeCas(b.fecha,b.cas);if(r){b.diarioId=r.id;(r.cons=r.cons||[]).push({d:`Bar: ${b.prod?cartaDe(b.prod).nombre.toLowerCase():b.txt||'consumo'}${(+b.cant||1)>1?` × ${b.cant}`:''}`,m:b.total,t:'bar',pag:false,barId:b.id})}}}
+ if(!b.anulado&&b.pago==='NO CANCELO'){const r=S.diario.find(x=>x.id===b.diarioId&&!x.anulado)||diarioDeCas(b.fecha,b.cas);if(r){b.diarioId=r.id;(r.cons=r.cons||[]).push({d:`Bar: ${prodNom(b).toLowerCase()}${(+b.cant||1)>1?` × ${b.cant}`:''}`,m:b.total,t:'bar',pag:false,barId:b.id})}}}
 function barSet(b,k,v){
  if(k==='hora'){const h=parseHora(v);if(h===null){toast('Escribe la hora así: 6:15');return}if(h)b.hora=h;return}
  if(k==='cas'){b.cas=String(v).trim().toUpperCase().replace(/\s|-/g,'');const r=diarioDeCas(b.fecha,b.cas);if(r){b.nombre=r.nombre;b.diarioId=r.id;b.autoN=1}else{b.diarioId=null;if(b.autoN){b.nombre='';delete b.autoN}}syncBar(b);return}
@@ -2327,7 +2355,7 @@ function barSet(b,k,v){
  if(k==='total'){const t=String(v).replace(',','.').replace(/[^\d.]/g,'');if(t===''){delete b.totalManual;recalcBar(b)}else{b.total=+t;b.totalManual=1}syncBar(b)}}
 function crearBar(f,N){const b={id:S.seq.barRow=(S.seq.barRow||1)+1,fecha:f,hora:parseHora(N.hora)||(f===HOY?ahora():'18:00'),cas:'',nombre:'',prod:'',cant:1,pago:'EFECTIVO',total:0,por:quien()};S.barRows.push(b);
  ['cas','nombre','prod','cant','pago'].forEach(k=>{const v=N[k];if(v!==''&&v!=null&&String(v)!==String(b[k]))barSet(b,k,v)});if(N.total!==''&&N.total!=null)barSet(b,'total',N.total);else{recalcBar(b);syncBar(b)}
- log(`Bar: ${b.prod?cartaDe(b.prod).nombre.toLowerCase():'venta'}${b.cas?` para el casillero ${b.cas}`:''} (${b.pago.toLowerCase()}).`);return b}
+ log(`Bar: ${prodNom(b).toLowerCase()}${b.cas?` para el casillero ${b.cas}`:''} (${b.pago.toLowerCase()}).`);return b}
 function cuadreBar(f){const R=S.barRows.filter(b=>b.fecha===f&&!b.anulado);const pm={EFECTIVO:0,YAPE:0,PLIN:0,QR:0,TARJETA:0,OTROS:0};let cort=0,pend=0,tot=0;
  R.forEach(b=>{if(b.pago==='CORTESIA'){cort+=b.total;return}if(b.pago==='NO CANCELO'){pend+=b.total;return}pm[b.pago in pm?b.pago:'OTROS']+=b.total;tot+=b.total});
  const G=S.gastos.filter(g=>g.fecha===f&&g.caja==='BAR');const gEf=sum(G.filter(g=>g.medio==='EFECTIVO'),g=>g.total);const C=S.cuadreBar[f]||{};const inicio=C.inicio!==undefined&&C.inicio!==''?+C.inicio:inicioBarAuto(f);
@@ -2353,10 +2381,10 @@ function invDia(f){const res={};S.invItems.forEach(i=>res[i.id]={ini:+(S.inv.bas
  Object.entries(S.inv.ing).forEach(([d,m])=>{if(d<desde||d>f)return;Object.entries(m).forEach(([id,n])=>{if(!res[id])return;if(d<f)res[id].ini+=+n||0;else res[id].ing=+n||0})});
  S.barRows.forEach(b=>{if(b.anulado||b.fecha<desde||b.fecha>f)return;const p=cartaDe(b.prod);if(!p||!p.usa)return;const u=(+b.cant||1);Object.entries(p.usa).forEach(([id,q])=>{if(!res[id])return;if(b.fecha<f)res[id].ini-=q*u;else res[id].sal+=q*u})});
  Object.values(res).forEach(x=>x.fin=x.ini+x.ing-x.sal);return res}
-function hInv(){const f=U.dd;const I=invDia(f);const cols=[['BEBIDAS',220],['INICIO',80],['INGRESO',84],['SALIDA',80],['FINALIZA',86],['MÍNIMO',76]];
+function hInv(){const f=U.dd;const I=invDia(f);const cols=[['BEBIDAS',220],['INICIO',80],['INGRESO',84],['SALIDA',80],['FINALIZA',128],['MÍNIMO',76]];
  if(f<S.inv.desde)return `<p class="lb-help">El inventario empieza el ${fmtFL(S.inv.desde)}.</p>`;
- return `${tabla(cols,S.invItems.map((it,i)=>{const x=I[it.id];const bajo=x.fin<=it.min;return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(it.nombre)}</b></td>${ro(x.ini)}<td class="num">${kIn(`inv:${it.id}|ing`,x.ing||'','inputmode="numeric" placeholder="0"')}</td>${ro(x.sal)}<td class="ro"><b>${x.fin}</b>${bajo?' · comprar':''}</td>${ro(it.min)}</tr>`}).join(''))}
- <p class="lb-help">INICIO es lo que quedó ayer. En INGRESO anota lo que llegó. SALIDA se llena sola con las ventas de la hoja BAR. En rojo, lo que hay que comprar.</p>`}
+ return `${tabla(cols,S.invItems.map((it,i)=>{const x=I[it.id];const bajo=x.fin<=it.min;return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(it.nombre)}</b></td>${ro(x.ini)}<td class="num">${kIn(`inv:${it.id}|ing`,x.ing||'','inputmode="numeric" placeholder="0"')}</td>${ro(x.sal)}<td class="ro"><b>${x.fin}</b>${bajo?' <span class="comprar">comprar</span>':''}</td>${ro(it.min)}</tr>`}).join(''))}
+ <p class="lb-help">INICIO es lo que quedó ayer. En INGRESO anota lo que llegó. SALIDA se llena sola con las ventas de la hoja BAR. Las filas en naranja son lo que hay que comprar.</p>`}
 
 /* ---------- GASTOS ---------- */
 function newNg2(){return {caja:U&&U.rol==='bar'?'BAR':'HAMMAM',cat:U&&U.rol==='bar'?'COMPRAS':'',desc:'',medio:'EFECTIVO',total:''}}
@@ -2384,7 +2412,7 @@ function hBD(){const q=U.bdQ.trim().toLowerCase(),qd=normDni(q);const st=statsCl
 function newNr2(){return {fecha:HOY,hora:'18:00',nombre:'',cel:'',tipo:'circuito',pers:2,pago:'EN EL LOCAL'}}
 const R_EST=[['por llegar','POR LLEGAR'],['llegó','LLEGÓ'],['no asistió','NO VINO'],['cancelada','CANCELADA']];
 function hReservas(){const f=U.rf,man=proximas(2)[1];let L=S.reservas.filter(r=>f==='hoy'?r.fecha===HOY:f==='prox'?r.fecha>=HOY:true);L=[...L].sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));
- const cols=[['FECHA',64],['HORA',76],['NOMBRE',190],['CELULAR',100],['RESERVA',210],['PERS.',54],['MASAJE',76],['TOTAL',72],['PAGO',110],['ESTADO',130]];const N=U.nr2;
+ const cols=[['FECHA',64],['HORA',86],['NOMBRE',190],['CELULAR',100],['RESERVA',210],['PERS.',54],['MASAJE',76],['TOTAL',72],['PAGO',110],['ESTADO',130]];const N=U.nr2;
  const tipos=[['circuito','CIRCUITO'],...S.cfg.paquetes.map(p=>[p.id,p.nombre.toUpperCase()])];
  const body=L.map((r,i)=>`<tr class="${r.estado==='cancelada'||r.estado==='no asistió'?'fuera':''}"><th class="rn">${i+1}</th>${ro(r.fecha===HOY?'HOY':fDM2(r.fecha))}${ro(h12(r.hora))}${ro(`<b>${esc(r.nombre)}</b>${r.nueva?' <span class="xs muted">nueva</span>':''}`)}${ro(esc(r.cel))}${ro(descReserva(r))}${ro(r.adultos+r.ninos)}${ro(r.mhora?h12(r.mhora):'—')}${ro(n2(r.total))}${ro(r.pagado?esc(String(r.pago).toUpperCase()):'EN EL LOCAL')}<td class="${r.estado==='llegó'?'ok':''}">${kSel(`r:${r.codigo}|estado`,r.estado,R_EST,'Estado')}</td></tr>`).join('');
  const nueva=`<tr class="nueva"><th class="rn">${L.length+1}</th><td>${kSel('r:new|fecha',N.fecha,proximas(10).map(x=>[x,x===HOY?'HOY':fDM2(x)]),'Fecha')}</td><td>${kSel('r:new|hora',N.hora,HORAS_ING.map(h=>[h,h12(h)]),'Hora')}</td><td>${kIn('r:new|nombre',N.nombre,'placeholder="Nueva reserva: nombre"')}</td><td>${kIn('r:new|cel',N.cel,'inputmode="numeric" maxlength="9"')}</td><td>${kSel('r:new|tipo',N.tipo,tipos,'Reserva')}</td><td class="num">${kIn('r:new|pers',N.pers,'inputmode="numeric"')}</td><td></td><td></td><td>${kSel('r:new|pago',N.pago,['EN EL LOCAL','YAPE','PLIN','TRANSFERENCIA'],'Pago')}</td><td></td></tr>`;
@@ -2410,7 +2438,7 @@ function hGift(){const cols=[['ITEM',48],['COMPRADOR',170],['MONTO',72],['MODO D
  return `${tabla(cols,fila(null,1)+L.map((g,i)=>fila(g,i+2)).join(''))}<p class="lb-help">Las que se compran en la web aparecen solas con pago «WEB». Si el receptor tiene DNI, al registrar su ingreso con «GIFT CARD» en el DIARIO se marca usada sola. Vencen a los ${S.cfg.giftDias} días.</p>`}
 
 /* ---------- MEMBRESÍAS ---------- */
-function hMemb(){const base=[['DNI',94],['CELULAR',100],['NOMBRE',200],['SUSCRIPCIÓN',86],['PLAN',70],['PRECIO',70],['PAGO',100],['USADOS',66]];const cols=[...base,...rangeN(1,30).map(i=>[String(i),46])];const N=U.nmm;
+function hMemb(){const base=[['DNI',94],['CELULAR',100],['NOMBRE',200],['SUSCRIPCIÓN',104],['PLAN',70],['PRECIO',70],['PAGO',100],['USADOS',66]];const cols=[...base,...rangeN(1,30).map(i=>[String(i),46])];const N=U.nmm;
  const L=[...S.membresias].sort((a,b)=>b.inicio.localeCompare(a.inicio));
  const nueva=`<tr class="nueva"><th class="rn">1</th><td>${kIn('m:new|dni',N.dni,'inputmode="numeric" maxlength="12" placeholder="Nueva: DNI"')}</td><td>${kIn('m:new|cel',N.cel,'inputmode="numeric" maxlength="9"')}</td><td>${kIn('m:new|nombre',N.nombre)}</td>${ro('')}<td>${kSel('m:new|cupos',N.cupos,[30,26,13],'Plan')}</td><td class="num">${kIn('m:new|precio',N.precio,'inputmode="decimal"')}</td><td>${kSel('m:new|pago',N.pago,MEDIOS_CAJA.slice(0,7),'Pago')}</td>${rangeN(0,30).map(()=>'<td></td>').join('')}</tr>`;
  const body=L.map((m,i)=>{const k='m:'+m.id,lleno=m.usos.length>=m.cupos;return `<tr class="${lleno?'fuera':''}"><th class="rn">${i+2}</th>${ro(esc(m.dni)||'—')}<td>${kIn(`${k}|cel`,m.cel,'inputmode="numeric" maxlength="9"')}</td><td>${kIn(`${k}|nombre`,m.nombre)}</td>${ro(fDM2(m.inicio)+'/'+m.inicio.slice(2,4))}<td>${kSel(`${k}|cupos`,m.cupos,[30,26,13],'Plan')}</td><td class="num">${kIn(`${k}|precio`,m.precio||'','inputmode="decimal"')}</td><td>${kSel(`${k}|pago`,m.pago,MEDIOS_CAJA.slice(0,7),'Pago')}</td><td class="ro ${lleno?'pend':'ok'}"><b>${m.usos.length}</b>/${m.cupos}</td>${rangeN(0,29).map(j=>j<m.cupos?`<td class="ro use ${m.usos[j]?'on':''}">${m.usos[j]?fDM2(m.usos[j]):''}</td>`:'<td class="ro off"></td>').join('')}</tr>`}).join('');
@@ -2533,7 +2561,7 @@ function initLibro(){const rnd=rng('libro-'+HOY);const pick=a=>a[Math.floor(rnd(
   P('caldo','CALDO DE LA ABUELA','ESPECIALES',25,'','Solo los martes: caldo de gallina con verduras y papas.'),P('sancocho','SANCOCHO DE LA CASA','ESPECIALES',25,'','Solo los miércoles.'),
   P('tinto','TINTO DE VERANO','CÓCTELES',35),P('mojito','MOJITO','CÓCTELES',35),P('chilcano','CHILCANO','CÓCTELES',35),P('gintonic','GIN TONIC','CÓCTELES',35,'aton'),P('aperol','APEROL SPRITZ','CÓCTELES',35),P('cuba','CUBA LIBRE','CÓCTELES',35),
   P('stella','STELLA','CERVEZAS',14,'stel'),P('corona','CORONA','CERVEZAS',14,'coro'),P('coronaz','CORONA ZERO','CERVEZAS',10,'corz'),P('mocktail','MOCKTAIL','SIN ALCOHOL',20,'mock'),
-  P('asg','AGUA SIN GAS','BEBIDAS',5,'asg'),P('acg','AGUA CON GAS','BEBIDAS',5,'acg'),P('alim','AGUA DE LIMÓN','BEBIDAS',5,'alim'),P('aman','AGUA DE MANZANA','BEBIDAS',5,'aman'),P('aton','AGUA TÓNICA','BEBIDAS',8,'aton'),P('sporade','SPORADE','BEBIDAS',8,'spor'),P('gatorade','GATORADE','BEBIDAS',8,'gato'),P('coca','COCA COLA','BEBIDAS',8,'coca'),P('inca','INCA KOLA','BEBIDAS',8,'inca'),P('jugo','JUGO DE LA CASA','BEBIDAS',10,'','Piña, papaya, naranja, mixto o limonada.'),P('limon','LIMÓN','BEBIDAS',1)];
+  P('asg','AGUA SIN GAS','BEBIDAS',5,'asg'),P('acg','AGUA CON GAS','BEBIDAS',5,'acg'),P('alim','AGUA DE LIMÓN','BEBIDAS',5,'alim'),P('aman','AGUA DE MANZANA','BEBIDAS',5,'aman'),P('aton','AGUA TÓNICA','BEBIDAS',8,'aton'),P('sporade','SPORADE','BEBIDAS',8,'spor'),P('gatorade','GATORADE','BEBIDAS',8,'gato'),P('coca','COCA COLA','BEBIDAS',8,'coca'),P('inca','INCA KOLA','BEBIDAS',8,'inca'),P('jugo','JUGO DE LA CASA','BEBIDAS',10,'','Piña, papaya, naranja, mixto o limonada.'),{...P('limon','LIMÓN','BEBIDAS',1),soloBar:1}];
  S.barRows=[];S.cuadreBar={};S.seq.barRow=1;S.cfg.gcal={id:'',url:'',clave:''};initInvH();
  const desde=addDays(HOY,-15);S.inv={desde,base:{asg:30,acg:18,alim:12,aman:12,aton:20,mock:14,stel:30,coro:24,corz:10,coca:12,inca:20,gato:22,spor:18},ing:{}};
  const peso=[['asg',30],['acg',16],['tinto',9],['sporade',8],['stella',8],['coca',5],['mocktail',4],['chilcano',4],['mojito',3],['corona',3],['inca',3],['gintonic',2],['aperol',2],['cuba',1],['gatorade',2],['coronaz',1],['alim',1]];const tot=sum(peso,x=>x[1]);
@@ -2574,12 +2602,12 @@ function importarBar(hojas,opt={}){const norm=s=>String(s??'').trim().toUpperCas
 
 /* ---------- la carta del bar en la web y pedidos desde el casillero ---------- */
 function cBar(){const B=U.bp;const g0=B.ticket?grupoDe(B.ticket):null;const cta=g0&&!g0.salida?g0:null;if(B.ticket&&!cta)B.ticket=null;const hint=abiertos().find(g=>g.lockers.length);
- return `<div class="pagehead" style="${bgi('bar',1600)}"><div><p class="eyebrow" style="color:#D9E2C4">Hammam Restobar</p><h2>Algo rico después del circuito</h2><p>Pide desde tu celular sin salir de la piscina. Se carga a tu casillero y pagas todo al salir.</p></div></div>
- <div class="split wide mt"><div class="card pad-lg">${CARTA_CATS.map(ct=>{const L=S.carta.filter(p=>p.cat===ct);return L.length?`<div class="menu-cat"><h4 style="margin-top:0">${titulo(ct)}</h4>${L.map(p=>`<div class="menu-item"><div><b>${titulo(p.nombre)}</b>${p.desc?`<small class="menu-desc">${esc(p.desc)}</small>`:''}</div><div class="row"><span class="nowrap">${sol(p.precio)}</span>${cta?ctr('bpq',B.cart[p.id]||0,p.id+'|',0,9):''}</div></div>`).join('')}</div>`:''}).join('')}<p class="xs muted">No se venden bebidas alcohólicas a menores de 18 años.</p></div>
+ return `<div class="pagehead" style="${bgi('bar',1600)}"><div><p class="eyebrow" style="color:#D9E2C4">Hammam Restobar</p><h2>Algo rico después del circuito</h2><p>Pide desde tu celular sin salir de la piscina. Se carga a tu locker y pagas todo al salir.</p></div></div>
+ <div class="split wide mt"><div class="card pad-lg">${CARTA_CATS.map(ct=>{const L=S.carta.filter(p=>p.cat===ct&&!p.soloBar&&p.precio>0);return L.length?`<div class="menu-cat"><h4 style="margin-top:0">${titulo(ct)}</h4>${L.map(p=>`<div class="menu-item"><div><b class="menu-nom">${esc(p.nombre)}</b>${p.desc?`<small class="menu-desc">${esc(p.desc)}</small>`:''}</div><div class="row"><span class="nowrap">${sol(p.precio)}</span>${cta?ctr('bpq',B.cart[p.id]||0,p.id+'|',0,9):''}</div></div>`).join('')}</div>`:''}).join('')}<p class="xs muted">No se venden bebidas alcohólicas a menores de 18 años.</p></div>
  <aside class="card sticky">${cta?bpCart(cta):bpLogin(hint)}</aside></div>`}
 function bpCart(c){const B=U.bp;const lines=Object.entries(B.cart).filter(([k,q])=>q>0);const tot=sum(lines,([k,q])=>cartaDe(k).precio*q);
  const items=c.rows.flatMap(r=>[{d:`${SERV_CORTO[r.serv]||r.serv} · ${titulo(r.nombre).split(' ')[0]}`,m:r.total,pag:r.pagado},...(r.cons||[]).map(x=>({d:x.d,m:x.m,pag:x.pag}))]);
- return `<div class="detail-h"><div><h3 class="m0">Hola, ${esc(titulo(c.titular.nombre).split(' ')[0])}</h3><p class="small muted m0">Casillero ${c.lockers.join(', ')}</p></div><button class="btn xs ghost" data-a="bpSalir">Salir</button></div>
+ return `<div class="detail-h"><div><h3 class="m0">Hola, ${esc(titulo(c.titular.nombre).split(' ')[0])}</h3><p class="small muted m0">Locker ${c.lockers.join(', ')}</p></div><button class="btn xs ghost" data-a="bpSalir">Salir</button></div>
  ${lines.length?`<div class="items">${lines.map(([k,q])=>`<div><span>${titulo(cartaDe(k).nombre)} × ${q}</span><span>${sol(cartaDe(k).precio*q)}</span></div>`).join('')}</div><div class="totline"><span>Total del pedido</span><b>${sol(tot)}</b></div><button class="btn block mt" data-a="bpEnviar">Enviar pedido al bar</button>`:'<p class="muted small mt">Usa los botones + de la carta para armar tu pedido.</p>'}
  <h4>Tu cuenta hasta ahora</h4><div class="items">${items.map(i=>`<div class="${i.pag?'paid':''}"><span>${esc(i.d)}</span><span>${sol(i.m)}</span></div>`).join('')}</div><div class="totline"><span>Por pagar al salir</span><b>${sol(pendienteG(c))}</b></div>`}
 
