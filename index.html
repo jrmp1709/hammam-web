@@ -985,7 +985,7 @@ h4{font-family:'Montserrat',sans-serif}
 .lb-logo{background:#33402D;-webkit-mask:var(--logoh) left center/contain no-repeat;mask:var(--logoh) left center/contain no-repeat}
 /* ===== revisión 22/10 ===== */
 /* portada en celular: que se vea el muro de luces */
-@media (max-width:700px){.hero-lux{background-image:var(--hm)!important;background-position:center top}}
+
 /* barra de aviso más corta en celular */
 @media (max-width:560px){
  .demobar{font-size:11.5px;gap:4px 10px;padding:6px 10px}
@@ -1060,6 +1060,16 @@ h4{font-family:'Montserrat',sans-serif}
 @media (max-width:700px){.ped-it{grid-template-columns:1fr}}
 .lb-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#D9480F;color:#fff;font:700 11.5px 'Jost',sans-serif;margin-left:2px}
 .libro .xl tr.pedido td{background:#FFF8E1!important}
+
+/* ===== portada: carrusel de fotos ===== */
+.hero-lux{background:#141a10}
+.hero-slides{position:absolute;inset:0;z-index:-2;overflow:hidden}
+.hs{position:absolute;inset:0;background:var(--img) center/cover no-repeat;opacity:0;animation:hsFade 30s linear infinite;animation-delay:var(--d);will-change:opacity,transform}
+.hs:first-child{opacity:1}
+@keyframes hsFade{0%{opacity:0;transform:scale(1.07)}5%{opacity:1}20%{opacity:1}26%{opacity:0;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+@media (max-width:700px){.hs{background-image:var(--imgm)}}
+@media (prefers-reduced-motion:reduce){.hs{animation:none;transform:none}.hs:not(:first-child){display:none}}
+.pp-sub{display:block;font-size:11px;color:var(--muted);line-height:1.15;margin-top:1px}
 </style>
 </head>
 <body>
@@ -1514,8 +1524,9 @@ const XP=()=>{const c=S.cfg;return [
  ['masaje','Solo masaje','aceite','Relajante, descontracturante o exfoliante, de 30, 45 o 60 minutos.',c.masajes.relajante[30],'desde']]};
 
 /* ---------- inicio ---------- */
+const HERO=['portada-piscina','portada-masaje','portada-bar','portada-vapor','portada-fachada'];
 function cHero(){const c=S.cfg,e=estadoAforo(),B=U.bk;const libres=sum(CABINAS,cb=>HORAS_MAS.filter(h=>!S.agenda[sk(HOY,cb,h)]&&!pasada(HOY,h)).length);const fechas=proximas(8);
- return `<section class="hero-lux" style="${bgi('hero',1900)};--hm:url('${fotoUrl('heroMovil',1800)}')"><div class="in">
+ return `<section class="hero-lux"><div class="hero-slides" aria-hidden="true">${HERO.map((k,i)=>`<div class="hs" style="--d:${i*6-1.5}s;--img:url('${FOTO}${k}.jpg');--imgm:url('${FOTO}${k}-movil.jpg')"></div>`).join('')}</div><div class="in">
   <p class="eyebrow">Wellness center · Palmas del Golf, Trujillo</p>
   <h1>El momento de relajo que necesitas</h1>
   <p class="lead">Sauna seco, cámara de vapor, piscina térmica con hidromasaje y masajes. Reserva en un minuto y paga con Yape.</p>
@@ -1523,7 +1534,7 @@ function cHero(){const c=S.cfg,e=estadoAforo(),B=U.bk;const libres=sum(CABINAS,c
   <div class="booker" role="search" aria-label="Reserva rápida">
    <div class="bk"><label>¿Qué te provoca?</label><div class="seg2">${[['circuito','Circuito'],['paquete','Circuito + masaje'],['masaje','Solo masaje']].map(([k,t])=>`<button class="${B.tipo===k?'on':''}" data-a="bkTipo" data-v="${k}">${t}</button>`).join('')}</div></div>
    <div class="bk"><label>¿Cuándo?</label><select class="inp" data-in="U.bk.fecha" data-live>${fechas.map((f,i)=>`<option value="${f}" ${B.fecha===f?'selected':''}>${i===0&&f===HOY?'Hoy':i<=1&&f===addDays(HOY,1)?'Mañana':''} ${fmtF(f)}</option>`).join('')}</select></div>
-   <div class="bk"><label>¿Cuántos?</label><div class="pplpick"><div class="pp"><span class="small">Adultos</span>${ctr('bkAd',B.adultos,'',1,B.tipo==='circuito'?10:2)}</div>${B.tipo==='circuito'?`<div class="pp"><span class="small">Niños <span class="xs muted">(menores de 12)</span></span>${ctr('bkNi',B.ninos,'',0,6)}</div>`:''}</div></div>
+   <div class="bk"><label>¿Cuántos?</label><div class="pplpick"><div class="pp"><span class="small">Adultos</span>${ctr('bkAd',B.adultos,'',1,B.tipo==='circuito'?10:2)}</div>${B.tipo==='circuito'?`<div class="pp"><span class="small">Niños<span class="pp-sub">menores de 12</span></span>${ctr('bkNi',B.ninos,'',0,6)}</div>`:''}</div></div>
    <button class="btn lg go" data-a="bkIr">Ver horarios ${ic('arrow')}</button>
   </div></div></section>`}
 function cInicio(){const c=S.cfg;
