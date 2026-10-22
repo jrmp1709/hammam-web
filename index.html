@@ -1009,6 +1009,40 @@ h4{font-family:'Montserrat',sans-serif}
 /* nombres en mayúscula como en el Excel */
 .libro input[data-cell^="c:"][data-cell$="|nombre"],.libro input[data-cell^="m:"][data-cell$="|nombre"]{text-transform:uppercase}
 @media (max-width:1320px){.demobar .dm-x{display:none}}
+
+/* ===== colores del sistema (AJUSTES → Colores del sistema) ===== */
+.libro{--t-bg:#F4F3EE;--t-top:#A8B389;--t-top-ink:#1F2A17;--t-head:#4B5D43;--t-head-ink:#fff;--t-acc:#7F926A;--t-soft:#EEF2E4;--t-sel:#E8EFDD;--t-hover:#F3F6EC;--t-logo:#33402D;--t-chip:#A8B389;--t-chip-ink:#1f2a17}
+.libro[data-tema="dorado"]{--t-bg:#F7F4EC;--t-top:#E8D9A8;--t-top-ink:#3B2412;--t-head:#4A2C17;--t-head-ink:#FFF8E6;--t-acc:#C3A446;--t-soft:#F6EED6;--t-sel:#F3E6C0;--t-hover:#FBF6E8;--t-logo:#4A2C17;--t-chip:#E3C873;--t-chip-ink:#3B2412}
+.libro[data-tema="arena"]{--t-bg:#F7F5F2;--t-top:#E9E4DC;--t-top-ink:#2B2B2B;--t-head:#3A3A3A;--t-head-ink:#fff;--t-acc:#A0644F;--t-soft:#F3E9E3;--t-sel:#F1DED5;--t-hover:#F8F2EE;--t-logo:#2E2E2E;--t-chip:#C98E77;--t-chip-ink:#2B2B2B}
+.libro[data-tema="excel"]{--t-bg:#F3F3F3;--t-top:#FFFFFF;--t-top-ink:#1F1F1F;--t-head:#217346;--t-head-ink:#fff;--t-acc:#217346;--t-soft:#E2EFDA;--t-sel:#E2EFDA;--t-hover:#F3F8EE;--t-logo:#217346;--t-chip:#A9D08E;--t-chip-ink:#1F1F1F}
+.libro{background:var(--t-bg)}
+.lb-top{background:var(--t-top);color:var(--t-top-ink)}
+.libro[data-tema="excel"] .lb-top{border-bottom:1px solid #D9D9D9}
+.lb-who .lnk{color:var(--t-top-ink)}
+.lb-logo{background:var(--t-logo)}
+.lb-tabs button:hover{background:var(--t-hover)}
+.lb-tabs button.on{background:var(--t-head);border-color:var(--t-head);color:var(--t-head-ink)}
+.libro .xl .hdr th,.libro .xl thead th.rn,.libro .lb-blk .hdr th{background:var(--t-head);color:var(--t-head-ink)}
+.libro .xl tbody tr:hover td{background:var(--t-hover)}
+.libro .xl td:focus-within{box-shadow:inset 0 0 0 2px var(--t-acc)}
+.libro .xl td.cas-on{background:var(--t-sel)!important}
+.libro .xl td.cas-on .xc{color:var(--t-head)}
+.libro .lb-blk tr.tot td{background:var(--t-soft)}
+.libro .lb-letras button.on{background:var(--t-head);border-color:var(--t-head);color:var(--t-head-ink)}
+.libro .xnow{color:var(--t-head)}
+.libro .lg-pasos div{background:var(--t-head);color:var(--t-head-ink)}
+.libro .lg-pasos span{background:var(--t-chip);color:var(--t-chip-ink)}
+.libro .lg-ic{background:var(--t-soft);color:var(--t-head)}
+.libro .lg-card:hover{border-color:var(--t-chip)}
+.libro .lb-cols h4,.libro .lb-h4{color:var(--t-head)}
+/* selector de colores */
+.temas{display:flex;flex-wrap:wrap;gap:8px}
+.tema{display:inline-flex;align-items:center;gap:9px;border:1px solid #E2E1D8;background:#fff;border-radius:999px;padding:6px 14px 6px 6px;font:500 13.5px 'Jost',system-ui,sans-serif;color:#2b2f27;cursor:pointer}
+.tema:hover{border-color:var(--t-acc)}
+.tema.on{border-color:var(--t-head);box-shadow:0 0 0 2px var(--t-head) inset}
+.tema .sw{display:inline-flex;border-radius:999px;overflow:hidden;border:1px solid rgba(0,0,0,.08)}
+.tema .sw i{display:block;width:16px;height:22px}
+.libro[data-tema="excel"] .lb-dia .datenav .btn,.libro[data-tema="excel"] .lb-dia .datenav .inp,.libro[data-tema="excel"] .lb-tot{background:#F3F3F3;border:1px solid #D9D9D9}
 </style>
 </head>
 <body>
@@ -1121,7 +1155,7 @@ const bgi=(k,w=900)=>`background-image:url('${fotoUrl(k,w)}')`;
 const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]||''}"/></svg>`;
 
 /* =================== catálogo fijo =================== */
-const VERSION=8;
+const VERSION=9;
 const CABINAS=['Cabina 1','Cabina 2','Cabina 3'];
 const HORAS_ING=['15:00','16:00','17:00','18:00','19:00','20:00'];
 const HORAS_MAS=['15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
@@ -2240,6 +2274,7 @@ const HOJA_DIA=['diario','bar','masajes','invh','inventario','gastos'];
 const B_PAGO=['EFECTIVO','YAPE','PLIN','QR','TARJETA','CORTESIA','NO CANCELO'];
 const G_MEDIO=['EFECTIVO','YAPE','PLIN','BCP','TRANSFERENCIA','DEUDA'];
 const HOJA_TAB={invh:'TOALLAS'};
+const TEMAS={verde:['Verde Hammam','#4B5D43','#A8B389'],dorado:['Dorado','#4A2C17','#E3C873'],arena:['Arena y terracota','#3A3A3A','#C98E77'],excel:['Excel clásico','#217346','#E2EFDA']};
 const CARTA_CATS=['PLATOS','ESPECIALES','CÓCTELES','CERVEZAS','SIN ALCOHOL','BEBIDAS'];
 const cartaDe=id=>S.carta.find(p=>p.id===id);
 const prodNom=b=>(b.prod&&cartaDe(b.prod)||{}).nombre||b.txt||'consumo';
@@ -2257,7 +2292,7 @@ const HOJA_IC={guia:'book',diario:'sheet',bar:'glass',masajes:'leaf',reservas:'c
 function vPersonal(){if(!U.rol||!LROL[U.rol])return vLoginLibro();const R=LROL[U.rol];if(!R.hojas.includes(U.hoja))U.hoja=R.hojas[0];
  const V={guia:hGuia,diario:hDiario,bar:hBar,masajes:hMasajes,inventario:hInv,invh:hInvH,gastos:hGastos,bd:hBD,reservas:hReservas,gift:hGift,memb:hMemb,resumen:hResumen,ajustes:hAjustes};
  const tot=U.hoja==='diario'?`Total del día ${sol(cuadreDia(U.dd).total)}`:U.hoja==='bar'?`Total del bar ${sol(cuadreBar(U.dd).tot)}`:'';
- return `<div class="libro"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${QUIEN[U.rol]} · ${R.nombre} <button class="lnk" data-a="salir">cambiar</button></div></header>
+ return `<div class="libro" data-tema="${TEMAS[S.cfg.tema]?S.cfg.tema:'verde'}"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${QUIEN[U.rol]} · ${R.nombre} <button class="lnk" data-a="salir">cambiar</button></div></header>
  <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}" title="${HOJAS[h]}">${ic(HOJA_IC[h],'sm')}<span>${HOJA_TAB[h]||HOJAS[h]}</span></button>`).join('')}</nav>
  <main class="lb-hoja">${V[U.hoja]()}</main></div>${U.drawer?drawer():''}`}
 
@@ -2292,10 +2327,10 @@ function hInvH(){const f=U.dd;const I=invHDia(f);if(!I)return `<p class="lb-help
  const cols=[['ARTÍCULO',250],['INICIO',80],['VOLVIÓ O INGRESÓ',140],['SALIDA',80],['QUEDA',86],['MÍNIMO',76]];const man=S.invH.ing[f]||{};
  const body=S.invH.items.map((it,i)=>{const x=I[it.id];const bajo=x.fin<=it.min;return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(it.nombre)}</b><small class="ih-tipo">${it.tipo==='vuelve'?'se lava y vuelve':'se gasta'}</small></td>${ro(x.ini)}<td class="num">${kIn(`ih:${it.id}|ing`,man[it.id]??'',`inputmode="numeric" placeholder="${x.ing}"`)}</td>${ro(x.sal)}<td class="ro"><b>${x.fin}</b>${bajo?' · reponer':''}</td>${ro(it.min)}</tr>`}).join('');
  const t=I.toalla;const L=t?[['TOALLAS AL EMPEZAR',t.ini+t.ing],['USADAS HOY',t.sal],['DISPONIBLES AHORA',t.fin,'tot'],['VUELVEN MAÑANA',t.sal]]:[];
- return `<div class="lb-grid"><div>${tabla(cols,body)}<p class="lb-help">SALIDA se llena sola con el DIARIO: una toalla y un par de sandalias por cada adulto con casillero, más los extras vendidos (short, shampoo, bikini…). Las toallas y las batas vuelven solas al día siguiente; si volvieron menos, escribe el número real en VOLVIÓ O INGRESÓ. También ahí se anota lo que llega nuevo.</p></div>${L.length?`<aside class="lb-side">${bloque('TOALLAS HOY',L)}</aside>`:''}</div>`}
+ return `<div class="lb-grid"><div>${tabla(cols,body)}<p class="lb-help">SALIDA se llena sola con el DIARIO: una toalla y un par de sandalias por cada adulto con casillero, más los extras vendidos (short, shampoo, bikini…). Las toallas, las sandalias y las batas vuelven solas al día siguiente; si volvieron menos, escribe el número real en VOLVIÓ O INGRESÓ. También ahí se anota lo que llega nuevo.</p></div>${L.length?`<aside class="lb-side">${bloque('TOALLAS HOY',L)}</aside>`:''}</div>`}
 function initInvH(){S.invH={desde:addDays(HOY,-15),ing:{},items:[
  {id:'toalla',nombre:'TOALLAS',tipo:'vuelve',base:120,min:25,sale:['adulto','TOALLA']},
- {id:'sandalia',nombre:'SANDALIAS',tipo:'gasta',base:450,min:40,sale:['adulto','SANDALIAS']},
+ {id:'sandalia',nombre:'SANDALIAS',tipo:'vuelve',base:150,min:40,sale:['adulto','SANDALIAS']},
  {id:'bata',nombre:'BATAS',tipo:'vuelve',base:12,min:3,sale:['ALQUILER DE BATA']},
  {id:'short',nombre:'SHORTS (VENTA)',tipo:'gasta',base:24,min:8,sale:['SHORT']},
  {id:'bikini',nombre:'BIKINIS (VENTA)',tipo:'gasta',base:8,min:3,sale:['BIKINI COMPRA']},
@@ -2303,7 +2338,7 @@ function initInvH(){S.invH={desde:addDays(HOY,-15),ing:{},items:[
  {id:'shampoo',nombre:'SHAMPOO',tipo:'gasta',base:30,min:10,sale:['SHAMPOO']},
  {id:'maquina',nombre:'MÁQUINAS DE AFEITAR',tipo:'gasta',base:20,min:5,sale:['MAQUINA DE AFEITAR']},
  {id:'panal',nombre:'PAÑALES',tipo:'gasta',base:12,min:4,sale:['PAÑAL']}]};
- (S.invH.ing[addDays(HOY,-6)]={}).short=12;(S.invH.ing[addDays(HOY,-4)]={}).sandalia=100}
+ (S.invH.ing[addDays(HOY,-6)]={}).short=12;(S.invH.ing[addDays(HOY,-4)]={}).shampoo=12}
 function hAjInvH(){return `<h4>Inventario de toallas e insumos</h4>${tabla([['ARTÍCULO',200],['TIPO',150],['STOCK INICIAL',100],['MÍNIMO',80],['SALE CON',190]],S.invH.items.map((it,i)=>`<tr><th class="rn">${i+1}</th><td>${kIn(`ihc:${it.id}|nombre`,it.nombre)}</td><td>${kSel(`ihc:${it.id}|tipo`,it.tipo,[['vuelve','Se lava y vuelve'],['gasta','Se gasta']],'Tipo')}</td><td class="num">${kIn(`ihc:${it.id}|base`,it.base,'inputmode="numeric"')}</td><td class="num">${kIn(`ihc:${it.id}|min`,it.min,'inputmode="numeric"')}</td>${ro((it.sale||[]).map(s=>s==='adulto'?'cada adulto con casillero':exn(s).toLowerCase()).join(' y '))}</tr>`).join(''))}<p class="lb-help">El stock inicial es lo que había el ${fmtFL(S.invH.desde)}.</p>`}
 function celdaInvH(tipo,id,k,v){if(tipo==='ih'){const f=U.dd;const m=S.invH.ing[f]=S.invH.ing[f]||{};if(String(v).trim()==='')delete m[id];else m[id]=+String(v).replace(/\D/g,'')||0;return}
  const it=S.invH.items.find(x=>x.id===id);if(!it)return;if(k==='base'||k==='min')it[k]=+String(v).replace(/\D/g,'')||0;else if(k==='nombre')it.nombre=String(v).trim().toUpperCase()||it.nombre;else it[k]=v}
@@ -2458,7 +2493,9 @@ function hResumen(){const fechas=[...new Set([...S.diario.map(r=>r.fecha),...S.b
 function hAjustes(){const c=S.cfg;const num=(path,val)=>`<input class="xc num" type="number" step="0.5" data-in="${path}" data-num data-live value="${val}">`;const I=U.imp;
  const precios=[['SAUNA (circuito)','S.cfg.precios.circuito',c.precios.circuito],['PISCINA (niño)','S.cfg.precios.nino',c.precios.nino],['ACOMPAÑANTE','S.cfg.precios.acomp',c.precios.acomp],...c.paquetes.flatMap((p,i)=>[[`${p.nombre.toUpperCase()} individual`,`S.cfg.paquetes.${i}.ind`,p.ind],[`${p.nombre.toUpperCase()} dúo (total)`,`S.cfg.paquetes.${i}.dos`,p.dos]]),...Object.keys(MTIPOS).flatMap(t=>DURS.map(d=>[`MASAJE ${MTIPOS[t].toUpperCase()} ${d} MIN`,`S.cfg.masajes.${t}.${d}`,c.masajes[t][d]]))];
  const NC=U.ncb;
- return `<div class="lb-cols">
+ const tema=TEMAS[S.cfg.tema]?S.cfg.tema:'verde';
+ return `<h4 class="lb-h4">Colores del sistema</h4><div class="temas mb">${Object.entries(TEMAS).map(([k,[n,a,b]])=>`<button class="tema ${tema===k?'on':''}" data-a="tema" data-v="${k}" aria-pressed="${tema===k}"><span class="sw"><i style="background:${a}"></i><i style="background:${b}"></i></span>${n}</button>`).join('')}</div>
+ <div class="lb-cols">
  <section><h4>Precios del Hammam</h4>${tabla([['CONCEPTO',260],['PRECIO S/',96]],precios.map(([t,p,v],i)=>`<tr><th class="rn">${i+1}</th>${ro(t)}<td class="num">${num(p,v)}</td></tr>`).join(''))}
  <h4>Extras</h4>${tabla([['EXTRA',220],['PRECIO S/',96]],c.extras.map((e,i)=>`<tr><th class="rn">${i+1}</th>${ro(exn(e.n))}<td class="num">${num(`S.cfg.extras.${i}.p`,e.p)}</td></tr>`).join(''))}</section>
  <section><h4>Carta del bar</h4>${tabla([['PRODUCTO',200],['TIPO',130],['PRECIO S/',86],['DESCUENTA DEL INVENTARIO',190]],S.carta.map((p,i)=>`<tr><th class="rn" data-a="filaBorrar" data-v="cb:${p.id}" title="Quitar de la carta">${i+1}</th><td>${kIn(`cb:${p.id}|nombre`,p.nombre)}</td><td>${kSel(`cb:${p.id}|cat`,p.cat,CARTA_CATS,'Tipo')}</td><td class="num">${kIn(`cb:${p.id}|precio`,p.precio,'inputmode="decimal"')}</td><td>${kSel(`cb:${p.id}|usa`,Object.keys(p.usa||{})[0]||'',S.invItems.map(it=>[it.id,it.nombre]),'Inventario')}</td></tr>`).join('')+`<tr class="nueva"><th class="rn">${S.carta.length+1}</th><td>${kIn('cb:new|nombre',NC.nombre,'placeholder="Producto nuevo"')}</td><td>${kSel('cb:new|cat',NC.cat,CARTA_CATS,'Tipo')}</td><td class="num">${kIn('cb:new|precio',NC.precio,'inputmode="decimal"')}</td><td></td></tr>`)}
@@ -2561,7 +2598,7 @@ function initLibro(){const rnd=rng('libro-'+HOY);const pick=a=>a[Math.floor(rnd(
   P('caldo','CALDO DE LA ABUELA','ESPECIALES',25,'','Solo los martes: caldo de gallina con verduras y papas.'),P('sancocho','SANCOCHO DE LA CASA','ESPECIALES',25,'','Solo los miércoles.'),
   P('tinto','TINTO DE VERANO','CÓCTELES',35),P('mojito','MOJITO','CÓCTELES',35),P('chilcano','CHILCANO','CÓCTELES',35),P('gintonic','GIN TONIC','CÓCTELES',35,'aton'),P('aperol','APEROL SPRITZ','CÓCTELES',35),P('cuba','CUBA LIBRE','CÓCTELES',35),
   P('stella','STELLA','CERVEZAS',14,'stel'),P('corona','CORONA','CERVEZAS',14,'coro'),P('coronaz','CORONA ZERO','CERVEZAS',10,'corz'),P('mocktail','MOCKTAIL','SIN ALCOHOL',20,'mock'),
-  P('asg','AGUA SIN GAS','BEBIDAS',5,'asg'),P('acg','AGUA CON GAS','BEBIDAS',5,'acg'),P('alim','AGUA DE LIMÓN','BEBIDAS',5,'alim'),P('aman','AGUA DE MANZANA','BEBIDAS',5,'aman'),P('aton','AGUA TÓNICA','BEBIDAS',8,'aton'),P('sporade','SPORADE','BEBIDAS',8,'spor'),P('gatorade','GATORADE','BEBIDAS',8,'gato'),P('coca','COCA COLA','BEBIDAS',8,'coca'),P('inca','INCA KOLA','BEBIDAS',8,'inca'),P('jugo','JUGO DE LA CASA','BEBIDAS',10,'','Piña, papaya, naranja, mixto o limonada.'),{...P('limon','LIMÓN','BEBIDAS',1),soloBar:1}];
+  P('asg','AGUA SIN GAS','BEBIDAS',5,'asg'),P('acg','AGUA CON GAS','BEBIDAS',5,'acg'),P('alim','AGUA DE LIMÓN','BEBIDAS',5,'alim'),P('aman','AGUA DE MANZANA','BEBIDAS',5,'aman'),P('aton','AGUA TÓNICA','BEBIDAS',8,'aton'),P('sporade','SPORADE','BEBIDAS',8,'spor'),P('gatorade','GATORADE','BEBIDAS',8,'gato'),P('coca','COCA COLA','BEBIDAS',5,'coca'),P('inca','INCA KOLA','BEBIDAS',5,'inca'),P('jugo','JUGO DE LA CASA','BEBIDAS',10,'','Piña, papaya, naranja, mixto o limonada.'),{...P('limon','LIMÓN','BEBIDAS',1),soloBar:1}];
  S.barRows=[];S.cuadreBar={};S.seq.barRow=1;S.cfg.gcal={id:'',url:'',clave:''};initInvH();
  const desde=addDays(HOY,-15);S.inv={desde,base:{asg:30,acg:18,alim:12,aman:12,aton:20,mock:14,stel:30,coro:24,corz:10,coca:12,inca:20,gato:22,spor:18},ing:{}};
  const peso=[['asg',30],['acg',16],['tinto',9],['sporade',8],['stella',8],['coca',5],['mocktail',4],['chilcano',4],['mojito',3],['corona',3],['inca',3],['gintonic',2],['aperol',2],['cuba',1],['gatorade',2],['coronaz',1],['alim',1]];const tot=sum(peso,x=>x[1]);
@@ -2875,6 +2912,7 @@ const A={
  giftUsar:v=>{const g=S.gifts.find(x=>x.codigo===v);if(!g)return;g.estado='USADO';g.uso=HOY;g.saldo=0;log(`Marcó como usada la gift card ${g.codigo}.`)},
  rmSet:v=>{U.rm=v},
  /* configuración: opciones de las casillas */
+ tema:v=>{if(TEMAS[v]){S.cfg.tema=v;log(`Cambió los colores del sistema a «${TEMAS[v][0]}».`)}},
  opcDel:v=>{const [k,i]=v.split('|');const L=S.cfg.opciones[k];const o=L[+i];L.splice(+i,1);log(`Quitó la opción «${o}» de ${OPC_T[k].toLowerCase()}.`)},
  opcAdd:v=>{const t=String(U.opcNew[v]||'').trim();if(!t)return;const L=S.cfg.opciones[v];const val=v==='comentarios'?t.toUpperCase():t.charAt(0).toUpperCase()+t.slice(1);if(L.some(x=>x.toLowerCase()===val.toLowerCase())){toast('Esa opción ya existe.');return}L.push(val);U.opcNew[v]='';log(`Agregó la opción «${val}» a ${OPC_T[v].toLowerCase()}.`);toast('Opción agregada. Ya aparece para todo el personal.')},
  /* aforo y casilleros */
