@@ -1632,7 +1632,7 @@ function cInfo(){const T=[['reglas','Reglas internas'],['faq','Preguntas frecuen
 function iReglas(){const T=termsSecciones();return `<div class="card pad-lg" style="max-width:860px"><div class="row between"><h3 class="m0">Reglas internas y vestimenta</h3><button class="btn sm ghost" data-a="consAbrir" data-v="ver">${ic('book','sm')} Ver como pantalla de aceptación</button></div>${T.slice(0,5).map(x=>`<h4>${x.t}</h4>${x.h}`).join('')}</div>`}
 function iFaq(){const c=S.cfg;const F=[
  ['¿Qué debo llevar?','Ropa de baño, que es obligatoria para el sauna. La toalla y las sandalias van incluidas en el circuito. Para los niños, trae toalla y sandalias.'],
- ['¿Pueden ir niños?',`Sí, hasta los 14 años y siempre con un adulto. Solo usan la piscina, de ${h12(c.horario.abre)} a ${h12(c.horario.ninosHasta)}, por ${sol(c.precios.nino)}. No incluye locker.`],
+ ['¿Pueden ir niños?',`Sí, los menores de 12 años, siempre con un adulto. Solo usan la piscina, de ${h12(c.horario.abre)} a ${h12(c.horario.ninosHasta)}, por ${sol(c.precios.nino)}. No incluye locker. Desde los 12 años pagan la tarifa de adulto.`],
  ['¿Cuánto dura el circuito?',`${c.horario.horas} horas desde tu ingreso. Si llegas tarde, termina a la hora de cierre (${h12(c.horario.cierra)}).`],
  ['¿Qué es el check-in exprés?','Después de reservar nos dices desde tu celular cuántas damas, varones y niños vienen. Así recepción tiene tus lockers listos y solo muestras tu código QR.'],
  ['¿Tengo que reservar?','No es obligatorio para el circuito, pero sí recomendable los fines de semana. Para masajes conviene reservar, porque las cabinas son pocas.'],
@@ -1671,7 +1671,7 @@ function validR(){const R=U.R,need=personasMasaje(R);switch(R.paso){
  case 2:return !!(R.fecha&&(R.tipo==='masaje'?R.mhora:R.hora)&&(need===0||(R.mhora&&libresEn(R.fecha,R.mhora).length>=need)));
  case 3:return R.nombre.trim().length>=3&&/^9\d{8}$/.test(R.cel)&&(R.comp!=='factura'||/^\d{11}$/.test(R.ruc))&&(!!R.pago||cotizar(R).total===0);}return true}
 const ctrRow=(t,s,a,v,min,max)=>`<div class="ctr-row"><span>${t}<small>${s}</small></span>${ctr(a,v,'',min,max)}</div>`;
-const ninosRow=R=>ctrRow('Niños (hasta 14 años)',`${sol(S.cfg.precios.nino)} c/u · solo piscina, hasta las ${h12(S.cfg.horario.ninosHasta)}`,'rninos',R.ninos,0,6);
+const ninosRow=R=>ctrRow('Niños (menores de 12)',`${sol(S.cfg.precios.nino)} c/u · solo piscina, hasta las ${h12(S.cfg.horario.ninosHasta)}`,'rninos',R.ninos,0,6);
 function nextLabel(R){if(R.paso===1)return 'Elegir día y hora';if(R.paso===2)return 'Continuar';if(!R.acepto)return 'Aceptar reglas y continuar';const t=cotizar(R).total;return t===0||R.pago==='local'?'Confirmar reserva':R.pago==='yape'?`Pagar ${sol(t)} con Yape`:`Pagar ${sol(t)}`}
 function mbarReserva(){const R=U.R;if(R.paso===4||!R.tipo)return '';const t=cotizar(R).total;return `<div class="mbar"><div class="mtot"><small>Total</small><b>${sol(t)}</b></div><button class="btn" data-a="rnext" data-valid="R" ${validR()?'':'disabled'}>${nextLabel(R)}</button></div>`}
 function cReservar(){const R=U.R;if(R.paso===4)return resListo();const c=S.cfg;let b='';
