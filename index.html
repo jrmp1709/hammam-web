@@ -1481,7 +1481,7 @@ const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">
 const VERSION=9;
 const CABINAS=['Cabina 1','Cabina 2','Cabina 3'];
 const HORAS_ING=['15:00','16:00','17:00','18:00','19:00','20:00'];
-const HORAS_MAS=['15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
+const HORAS_MAS=['15:10','16:10','17:10','18:10','19:10','20:10','21:10'];
 const MTIPOS={relajante:'Relajante',descontracturante:'Descontracturante',exfoliante:'Exfoliante'};
 const MDESC={relajante:'Movimientos lentos y envolventes para soltar el estrés y descansar de verdad.',descontracturante:'Presión firme sobre espalda, cuello y hombros para aliviar cargas musculares.',exfoliante:'Retira células muertas y deja la piel suave e hidratada.'};
 const DURS=[30,45,60];
@@ -1608,22 +1608,22 @@ function initState(){
  dias.forEach(f=>{const q=cuadreDia(f);S.cuadre[f].deposito=Math.max(0,Math.floor((q.inicio+q.porMedio.EFECTIVO-q.gastoEfectivo-200)/50)*50);S.cuadre[f].contado=cuadreDia(f).cierre});
  /* reservas (web y WhatsApp) */
  const RES=[
-  {h:'15:00',n:'Ana Morales',tipo:'paquete',paq:'salam',modal:'ind',mh:'16:00',cab:['Cabina 1'],pago:'Yape',pag:true,est:'llegó',o:'Web'},
+  {h:'15:00',n:'Ana Morales',tipo:'paquete',paq:'salam',modal:'ind',mh:'16:10',cab:['Cabina 1'],pago:'Yape',pag:true,est:'llegó',o:'Web'},
   {h:'15:00',n:'Familia Rojas',tipo:'circuito',ad:2,ni:2,pago:'Tarjeta',pag:true,est:'llegó',o:'Web'},
   {h:'15:00',n:'Raúl Torres',tipo:'circuito',ad:1,ni:0,pago:'En el local',pag:false,est:'no asistió',o:'WhatsApp'},
-  {h:'16:00',n:'Carla Vega',tipo:'paquete',paq:'falak',modal:'dos',mh:'17:00',cab:['Cabina 1','Cabina 2'],pago:'Plin',pag:true,est:'llegó',o:'Web'},
+  {h:'16:00',n:'Carla Vega',tipo:'paquete',paq:'falak',modal:'dos',mh:'17:10',cab:['Cabina 1','Cabina 2'],pago:'Plin',pag:true,est:'llegó',o:'Web'},
   {h:'17:00',n:'Familia Vera',tipo:'circuito',ad:2,ni:1,pago:'En el local',pag:false,est:'por llegar',o:'Web'},
-  {h:'18:00',n:'Paula León',tipo:'paquete',paq:'najah',modal:'ind',mh:'19:00',cab:['Cabina 2'],pago:'Tarjeta',pag:true,est:'por llegar',o:'Web'},
+  {h:'18:00',n:'Paula León',tipo:'paquete',paq:'najah',modal:'ind',mh:'19:10',cab:['Cabina 2'],pago:'Tarjeta',pag:true,est:'por llegar',o:'Web'},
   {h:'18:00',n:'Martín Quiroz',tipo:'circuito',ad:2,ni:0,pago:'En el local',pag:false,est:'por llegar',o:'WhatsApp'},
-  {h:'19:00',n:'Elena Benites',tipo:'paquete',paq:'salam',modal:'dos',mh:'20:00',cab:['Cabina 1','Cabina 3'],pago:'Yape',pag:true,est:'por llegar',o:'Web'},
-  {h:'20:00',n:'Andrea Ruiz',tipo:'masaje',mtipo:'relajante',mdur:60,mpers:1,mh:'20:00',cab:['Cabina 2'],pago:'Yape',pag:true,est:'por llegar',o:'Web'},
+  {h:'19:00',n:'Elena Benites',tipo:'paquete',paq:'salam',modal:'dos',mh:'20:10',cab:['Cabina 1','Cabina 3'],pago:'Yape',pag:true,est:'por llegar',o:'Web'},
+  {h:'20:00',n:'Andrea Ruiz',tipo:'masaje',mtipo:'relajante',mdur:60,mpers:1,mh:'20:10',cab:['Cabina 2'],pago:'Yape',pag:true,est:'por llegar',o:'Web'},
  ];
  const fut=proximas(5).slice(1);
- RES.push({f:fut[0],h:'17:00',n:'Sofía Gamarra',tipo:'paquete',paq:'salam',modal:'ind',mh:'18:00',cab:['Cabina 3'],pago:'Tarjeta',pag:true,est:'por llegar',o:'Web'},
+ RES.push({f:fut[0],h:'17:00',n:'Sofía Gamarra',tipo:'paquete',paq:'salam',modal:'ind',mh:'18:10',cab:['Cabina 3'],pago:'Tarjeta',pag:true,est:'por llegar',o:'Web'},
   {f:fut[0],h:'16:00',n:'Pierina Castro',tipo:'circuito',ad:2,ni:2,pago:'Yape',pag:true,est:'por llegar',o:'Web'},
-  {f:fut[1],h:'18:00',n:'Gabriela Núñez',tipo:'paquete',paq:'falak',modal:'dos',mh:'19:00',cab:['Cabina 1','Cabina 2'],pago:'Yape',pag:true,est:'por llegar',o:'Web'},
+  {f:fut[1],h:'18:00',n:'Gabriela Núñez',tipo:'paquete',paq:'falak',modal:'dos',mh:'19:10',cab:['Cabina 1','Cabina 2'],pago:'Yape',pag:true,est:'por llegar',o:'Web'},
   {f:fut[2],h:'16:00',n:'Hugo Mendoza',tipo:'circuito',ad:3,ni:0,pago:'En el local',pag:false,est:'por llegar',o:'Teléfono'},
-  {f:fut[2],h:'19:00',n:'Andrea Ruiz',tipo:'paquete',paq:'najah',modal:'ind',mh:'20:00',cab:['Cabina 3'],pago:'Yape',pag:true,est:'por llegar',o:'Web'});
+  {f:fut[2],h:'19:00',n:'Andrea Ruiz',tipo:'paquete',paq:'najah',modal:'ind',mh:'20:10',cab:['Cabina 3'],pago:'Yape',pag:true,est:'por llegar',o:'Web'});
  /* agenda de masajes: 12 días */
  const NOM=S.clientes.slice(0,18).map(c=>c.nombre.replace(/^Familia /,''));
  proximas(12).forEach(f=>{CABINAS.forEach(c=>HORAS_MAS.forEach(h=>{const r=rnd();if(r<(f===HOY?0.16:0.33)){const t=pick(Object.keys(MTIPOS)),d=pick(DURS);S.agenda[sk(f,c,h)]={cliente:pick(NOM),mtipo:t,dur:d,estado:f===HOY&&toMin(h)+60<=BASE?'atendido':'reservado',origen:pick(['Web','Web','WhatsApp','Teléfono'])}}}))});
@@ -1679,7 +1679,7 @@ function initState(){
   {n:'Jorge Paredes',p:['V','V'],h:'15:41',serv:'SAUNA',pago:'EFECTIVO',cons:[['sour',2]]},
   {n:'Carla Vega',p:['D','D'],h:'16:04',res:'Carla Vega',serv:'PAQUETE DUO',paq:'falak',pago:'RESERVA',cons:[['espumante',2]]},
   {n:'Familia Salas',p:['D','V','N','N','N'],h:'16:22',serv:'SAUNA',pago:'TARJETA CREDITO',cons:[['gaseosa',3]]},
-  {n:'Diego Soto',p:['D','V'],h:'16:47',serv:'SAUNA',pago:'POR CANCELAR',masaje:['relajante',30,'18:00','Cabina 3']},
+  {n:'Diego Soto',p:['D','V'],h:'16:47',serv:'SAUNA',pago:'POR CANCELAR',masaje:['relajante',30,'18:10','Cabina 3']},
   {n:'Rosa Cárdenas',p:['D','D','D'],h:'17:02',serv:'SAUNA',pago:'YAPE',ext:{1:['BIKINI ALQUILER']},cons:[['chilcano',3]]},
   {n:'Kevin Alva',p:['V','V','V','N'],h:'17:18',serv:'SAUNA',pago:'EFECTIVO',ext:{0:['SHORT']},cons:[['cerveza',3]]},
  ];
@@ -2181,12 +2181,13 @@ const paqDeCom=c=>/FALAK/i.test(c)?'falak':/NAJAH/i.test(c)?'najah':'salam';
 function recalc(r){if(r.totalManual)return;r.valor=precioServicio(r);r.total=PREPAGO.includes(r.pago)?0:r.valor}
 function agendaDeCom(r){const m=r.com.match(/(SALAM|FALAK|NAJAH|MASAJE)\s*-\s*(\d{1,2})(?::(\d{2}))?\s*([AP])\.?\s*M/i);let h=null;if(m){let hh=+m[2];const mm=+(m[3]||0);if(/p/i.test(m[4])&&hh<12)hh+=12;h=toHM(hh*60+mm)}
  if(r.mslot&&(!h||!r.mslot.endsWith('|'+h))){const s=S.agenda[r.mslot];if(s&&s.ticket===r.grp)delete S.agenda[r.mslot];delete r.mslot}
+ if(h&&!HORAS_MAS.includes(h)){const c=HORAS_MAS.find(x=>Math.abs(toMin(x)-toMin(h))<=20);if(c)h=c}
  if(h&&!r.mslot&&HORAS_MAS.includes(h)){const cb=libresEn(r.fecha,h)[0];if(!cb){toast(`No hay cabinas libres a las ${h12(h)}.`);return}const solo=/MASAJE/i.test(m[1]);S.agenda[sk(r.fecha,cb,h)]={cliente:titulo(r.nombre),mtipo:solo?(r.mt||'relajante'):paqueteDe(r.paq||paqDeCom(r.com)).masaje,dur:solo?(r.md||45):45,estado:'reservado',origen:'Local',ticket:r.grp,notas:(clienteDni(r.dni)||{}).notas||''};r.mslot=sk(r.fecha,cb,h);toast(`Masaje agendado a las ${h12(h)} en ${cb}.`)}}
 function setCampo(r,k,v){const f=r.fecha,hoy=f===HOY;
  if(k==='ing'||k==='sal'){const h=parseHora(v);if(h===null){toast('Escribe la hora así: 3:10 o 15:10.');return}
   if(k==='sal'){r.sal=h||null;return}
   if(!h)return;r.ing=h;const o=filasDia(f).find(x=>x!==r&&x.ing===h);if(o)r.grp=o.grp;else if(filasDia(f).some(x=>x!==r&&x.grp===r.grp))r.grp=++S.seq.grp;return}
- if(k==='dni'){const d=normDni(v);r.dni=d;const c=d?clienteDni(d):null;if(c){if(!r.nombre||r.nombre==='SIN NOMBRE'||r.auto){r.nombre=c.nombre;r.auto=1}if(!r.cel&&c.cel)r.cel=c.cel}else if(d.length>=6&&r.nombre&&r.nombre!=='SIN NOMBRE')nuevoCliente(d,r.nombre,r.cel,{alta:f});return}
+ if(k==='dni'){const d=normDni(v);r.dni=d;const c=d?clienteDni(d):null;if(c){if(!r.nombre||r.nombre==='SIN NOMBRE'||r.auto){r.nombre=String(c.nombre||'').toUpperCase();r.auto=1}if(!r.cel&&c.cel)r.cel=c.cel}else if(d.length>=6&&r.nombre&&r.nombre!=='SIN NOMBRE')nuevoCliente(d,r.nombre,r.cel,{alta:f});return}
  if(k==='nombre'){r.nombre=String(v).trim().toUpperCase();delete r.auto;if(r.dni&&r.dni.length>=6&&!clienteDni(r.dni)&&r.nombre)nuevoCliente(r.dni,r.nombre,r.cel,{alta:f});return}
  if(k==='cel'){const c9=String(v).replace(/\D/g,'').slice(0,9);r.cel=c9;const c=r.dni?clienteDni(r.dni):null;if(c&&!c.cel&&/^9\d{8}$/.test(c9))c.cel=c9;return}
  if(k==='bol'){r.bol=String(v).trim();return}
@@ -3268,7 +3269,7 @@ const A={
  qAcomp:()=>{const L=U.lastQ;if(!L)return;U.q={...newQ(),tipo:L.tipo,paq:L.paq,pareja:L.pareja,md:L.md,pago:L.pago,grp:L.grp,de:L.nombre};U.lastQ=null;U.focus='[data-in="U.q.dni"]'},
  qDeshacer:()=>{const L=U.lastQ;if(!L)return;const r=S.diario.find(x=>x.id===L.id);if(r){revertirFila(r);r.anulado={por:quien(),hora:ahora()};log(`Deshizo el registro de ${titulo(r.nombre)}.`)}U.lastQ=null;toast('Listo: se deshizo el registro.')},
  xlNueva:()=>{U.focus='[data-cell="new|dni"]'},
- celda:(id,k,v)=>{const ix=String(id).indexOf(':');if(ix>0){celdaLibro(String(id).slice(0,ix),String(id).slice(ix+1),k,v);return}if(id==='new'){const N=U.nf;N[k]=v;if((k==='dni'&&normDni(v).length>=6)||(k==='nombre'&&String(v).trim().length>=2)){const r=crearFila(U.dd,N);U.nf=newNf();U.focus=`[data-cell="${r.id}|${k==='dni'?(r.nombre!=='SIN NOMBRE'?'cas':'nombre'):'dni'}"]`;toast(`Fila ${titulo(r.nombre)} agregada.${r.dni&&!(clienteDni(r.dni)||{}).consent&&r.fecha===HOY?' Falta que acepte los términos (toca el número de la fila).':''}`)}return}
+ celda:(id,k,v)=>{const ix=String(id).indexOf(':');if(ix>0){celdaLibro(String(id).slice(0,ix),String(id).slice(ix+1),k,v);return}if(id==='new'){const N=U.nf;N[k]=v;if((k==='dni'&&normDni(v).length>=6)||(k==='nombre'&&String(v).trim().length>=2)){const r=crearFila(U.dd,N);U.nf=newNf();if(r.nombre)r.nombre=String(r.nombre).toUpperCase();const ya=r.dni&&r.fecha===HOY?filasDia(HOY).find(x=>x!==r&&x.dni===r.dni&&!x.sal):null;if(ya){toast(`${titulo(ya.nombre)} ya está dentro desde las ${h12(ya.ing)}${ya.cas?` (casillero ${ya.cas})`:''}. Se agregó otra fila: si fue un error, bórrala tocando su número.`);U.focus=`[data-cell="${r.id}|cas"]`;return}U.focus=`[data-cell="${r.id}|${k==='dni'?(r.nombre!=='SIN NOMBRE'?'cas':'nombre'):'dni'}"]`;toast(`Fila ${titulo(r.nombre)} agregada.${r.dni&&!(clienteDni(r.dni)||{}).consent&&r.fecha===HOY?' Falta que acepte los términos (toca el número de la fila).':''}`)}return}
   const r=S.diario.find(x=>x.id===+id);if(r)setCampo(r,k,v)},
  filaAbrir:v=>{const r=S.diario.find(x=>x.id===+v);if(!r)return;U.fe={id:r.id,dni:r.dni,nombre:r.nombre,cel:r.cel,bol:r.bol,ing:r.ing,sal:r.sal||'',cas:r.cas,serv:r.serv,pago:r.pago,total:r.total,com:r.com,ext:[...(r.ext||[])]};U.drawer={t:'fila',ref:r.id}},
  feExt:v=>{const L=U.fe.ext;const i=L.indexOf(v);if(i>=0)L.splice(i,1);else L.push(v)},
@@ -3447,10 +3448,12 @@ function morph(a,b){
  for(const at of [...b.attributes])if(a.getAttribute(at.name)!==at.value)a.setAttribute(at.name,at.value);
  if(abierto)a.open=true;
  if(a.nodeName==='IFRAME')return;
+ /* el valor elegido se toma ANTES de mover nodos: morphHijos puede pasar opciones de b a a y correr las posiciones */
+ const selV=a.nodeName==='SELECT'?(()=>{const o=[...b.options].find(o=>o.hasAttribute('selected'));return o?o.value:''})():null;
  morphHijos(a,b);
  if(a.nodeName==='INPUT'){if(a.type==='checkbox'||a.type==='radio')a.checked=b.hasAttribute('checked');else if(!act){const v=b.getAttribute('value')??'';if(a.value!==v)a.value=v}}
  else if(a.nodeName==='TEXTAREA'){if(!act&&a.value!==b.value)a.value=b.value}
- else if(a.nodeName==='SELECT'&&!act){const i=[...b.options].findIndex(o=>o.hasAttribute('selected'));const j=i<0?0:i;if(a.selectedIndex!==j)a.selectedIndex=j}}
+ else if(a.nodeName==='SELECT'&&!act){const i=[...a.options].findIndex(o=>o.value===selV);const j=i<0?0:i;if(a.selectedIndex!==j)a.selectedIndex=j}}
 function morphHijos(a,b){const ac=[...a.childNodes],bc=[...b.childNodes];for(let i=0;i<bc.length;i++){if(i<ac.length)morph(ac[i],bc[i]);else a.appendChild(bc[i])}for(let i=bc.length;i<ac.length;i++)ac[i].remove()}
 function render(){const ae=document.activeElement;const key=ae&&ae.dataset?(ae.dataset.in||ae.dataset.merma||ae.dataset.cell):null;
  document.querySelectorAll('.demobar [data-a="view"]').forEach(b=>b.classList.toggle('on',b.dataset.v===U.view));
