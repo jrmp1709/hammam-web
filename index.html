@@ -1366,6 +1366,28 @@ h4{font-family:'Montserrat',sans-serif}
 .izi-msg:empty{display:none}
 .izi-pie{font-size:11.5px;color:#5A544C;margin:14px 0 0;text-align:center}
 #izi-form{display:flex;justify-content:center}
+
+/* ===== auditoría ===== */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.menu-item .agotado{font-size:11.5px;font-style:italic;color:var(--muted);white-space:nowrap}
+.web .carta-resto .agotado{color:rgba(241,230,204,.55)}
+/* superficies táctiles más grandes */
+.web .ctr button{position:relative}
+.web .ctr button::after{content:'';position:absolute;inset:-8px}
+.web .booker .ctr button{width:34px;height:34px}
+.web .menu-btn{padding:14px 0 14px 8px}
+.web .mbar .btn{min-height:46px}
+/* carrusel con pausa */
+.web .hero-lux.pausa .hs,.web .hero-lux.pausa .hs-caps span{animation-play-state:paused}
+.web .hs-pausa{order:3;background:none;border:1px solid rgba(255,255,255,.4);color:rgba(255,255,255,.85);font:500 10px 'Montserrat',sans-serif;letter-spacing:.2em;text-transform:uppercase;padding:9px 12px;cursor:pointer;min-height:36px}
+.web .hs-pausa:hover{border-color:#fff;color:#fff}
+@media (max-width:700px){.web .hs-pausa{display:none}}
+.web .w-cuerpo{display:contents}
+/* reclamaciones */
+.recl-hoja{background:#fff;border:1px solid #E2E1D8;border-radius:12px;padding:14px 16px;margin-top:12px;max-width:900px}
+.recl-hoja .kv{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:13.5px;margin:10px 0}
+.recl-hoja .kv dt{color:#6b7262}
+.recl-hoja textarea{width:100%}
 </style>
 </head>
 <body>
@@ -1405,8 +1427,11 @@ const ahoraMin=()=>BASE+Math.floor((Date.now()-T0)/60000);
 const ahora=()=>toHM(ahoraMin());
 function proximas(n,desde=HOY){const out=[],d=fromK(desde);while(out.length<n){if(d.getDay()!==1)out.push(fk(d));d.setDate(d.getDate()+1)}return out}
 const pasada=(f,h)=>f<HOY||(f===HOY&&toMin(h)<=ahoraMin());
-function diasHabiles(desde,n){const d=fromK(desde);let c=0;while(c<n){d.setDate(d.getDate()+1);const w=d.getDay();if(w!==0&&w!==6)c++}return fk(d)}
-function habilesEntre(a,b){let c=0;const d=fromK(a);const e=fromK(b);while(d<e){d.setDate(d.getDate()+1);const w=d.getDay();if(w!==0&&w!==6)c++}return c}
+function diasHabiles(desde,n){const d=fromK(desde);let c=0;while(c<n){d.setDate(d.getDate()+1);const w=d.getDay();if(w!==0&&w!==6&&!FERIADOS.includes(fk(d)))c++}return fk(d)}
+function habilesEntre(a,b){let c=0;const d=fromK(a);const e=fromK(b);while(d<e){d.setDate(d.getDate()+1);const w=d.getDay();if(w!==0&&w!==6&&!FERIADOS.includes(fk(d)))c++}return c}
+/* feriados nacionales del Perú (revisar cada año) */
+const FERIADOS=['2026-01-01','2026-04-02','2026-04-03','2026-05-01','2026-06-07','2026-06-29','2026-07-23','2026-07-28','2026-07-29','2026-08-06','2026-08-30','2026-10-08','2026-11-01','2026-12-08','2026-12-09','2026-12-25',
+ '2027-01-01','2027-03-25','2027-03-26','2027-05-01','2027-06-07','2027-06-29','2027-07-23','2027-07-28','2027-07-29','2027-08-06','2027-08-30','2027-10-08','2027-11-01','2027-12-08','2027-12-09','2027-12-25'];
 
 /* =================== íconos =================== */
 const IC={
@@ -1472,6 +1497,7 @@ const IC={
 };
 /* fotos reales de Hammam (carpeta img/ junto a la página) */
 const FOTO='img/';
+const FOTO_W={"bar": 1800, "bar2": 1800, "descanso": 1600, "familia": 922, "hero-movil": 900, "lockers": 1350, "lounge": 1800, "lounge2": 1800, "masaje-manos": 1800, "masaje-piedras": 1800, "masaje-pistola": 1800, "piscina-bar": 1800, "piscina": 1800, "portada-bar-movil": 760, "portada-bar": 1920, "portada-fachada-movil": 760, "portada-fachada": 1920, "portada-masaje-movil": 760, "portada-masaje": 1920, "portada-piscina-movil": 760, "portada-piscina": 1920, "portada-vapor-movil": 760, "portada-vapor": 1920, "recepcion": 1800, "sauna-relax": 1800, "sauna": 1800, "sauna2": 1350, "vapor": 1800, "vapor2": 1800};
 const IMG={hero:'piscina-bar',heroMovil:'hero-movil',pool:'descanso',vapor:'vapor',marmol:'vapor2',seco:'sauna',vaporPiedras:'sauna2',cupula:'lounge2',piedras:'masaje-piedras',piedras2:'masaje-pistola',aceite:'masaje-manos',bar:'bar',bar2:'bar2',lounge:'lounge',lockers:'lockers',recepcion:'recepcion',relax:'sauna-relax'};
 const fotoUrl=(k,w=900)=>`${FOTO}${w>900?'':'sm/'}${IMG[k]||k}.jpg`;
 const bgi=(k,w=900)=>`background-image:url('${fotoUrl(k,w)}')`;
@@ -1757,20 +1783,20 @@ function cuadreDia(f){const porMedio={};MEDIOS_CAJA.forEach(m=>porMedio[m]=0);co
  filas.forEach(r=>{cont[r.serv]=(cont[r.serv]||0)+1;if(PREPAGO.includes(r.pago))pre[r.pago]++;else if(r.pagado)add(r.pago,r.total);else porCobrar+=r.total;(r.cons||[]).forEach(c=>{if(c.barId)return;if(c.pag&&c.medio)add(c.medio,c.m);else if(!c.pag)porCobrar+=c.m})});
  const giftV=S.gifts.filter(g=>g.fecha===f&&MEDIOS_CAJA.includes(g.pago));giftV.forEach(g=>add(g.pago,g.monto));
  const membV=S.membresias.filter(m=>m.inicio===f&&MEDIOS_CAJA.includes(m.pago));membV.forEach(m=>add(m.pago,m.precio||0));
- const webRes=sum(S.reservas.filter(r=>r.web&&r.pagadoEl===f&&r.estado!=='cancelada'),r=>r.total);
- const giftWeb=sum(S.gifts.filter(g=>g.fecha===f&&g.pago==='WEB'),g=>g.monto);
+ const webRes=sum(S.reservas.filter(r=>r.web&&r.pagado&&r.pagadoEl===f),r=>r.total);
+ const giftWeb=sum(S.gifts.filter(g=>g.web?g.pagadoEl===f&&g.estado!=='POR CONFIRMAR':(g.fecha===f&&g.pago==='WEB')),g=>g.monto);
  const G=S.gastos.filter(g=>g.fecha===f&&g.caja!=='BAR');const gastoEfectivo=sum(G.filter(g=>g.medio==='EFECTIVO'),g=>g.total);const gastoOper=sum(G.filter(g=>!S.cfg.noOper.includes(g.cat)),g=>g.total);const retiros=sum(G.filter(g=>S.cfg.noOper.includes(g.cat)),g=>g.total);
  const q=S.cuadre[f]||{inicio:0,deposito:0};const total=sum(Object.values(porMedio));
- return {f,porMedio,total,cont,pre,porCobrar,webRes,giftWeb,gifts:giftV.length,membs:membV.length,gastoEfectivo,gastoOper,retiros,gastoTotal:gastoOper+retiros,inicio:+q.inicio||0,deposito:+q.deposito||0,contado:q.contado,cerrado:!!q.cerrado,
+ return {f,porMedio,total,enLinea:webRes+giftWeb,totalDia:total+webRes+giftWeb,cont,pre,porCobrar,webRes,giftWeb,gifts:giftV.length,membs:membV.length,gastoEfectivo,gastoOper,retiros,gastoTotal:gastoOper+retiros,inicio:+q.inicio||0,deposito:+q.deposito||0,contado:q.contado,cerrado:!!q.cerrado,
   cierre:(+q.inicio||0)+porMedio.EFECTIVO-gastoEfectivo-(+q.deposito||0),personas:filas.filter(r=>r.serv!=='EXTRA').length,ninos:cont.PISCINA,membresias:pre.MEMBRESIA,ganancia:total+webRes+giftWeb-gastoOper}}
 const pendiente=pendienteG,consumo=consumoG;
 function statsClientes(){const m={};S.diario.forEach(r=>{if(!r.dni||r.anulado)return;const s=m[r.dni]||(m[r.dni]={visitas:0,ultima:'',gasto:0,dias:new Set()});if(!s.dias.has(r.fecha)){s.dias.add(r.fecha);s.visitas++}s.gasto+=(r.total||(r.pago==='RESERVA'?r.valor||0:0))+sum(r.cons||[],c=>c.m);if(r.fecha>s.ultima)s.ultima=r.fecha});return m}
 const QUIEN={admin:'Carmen',recepcion:'Luis',bar:'Iván',masajes:'Rosa',mant:'Pedro'};
-function log(que,quien){S.log.unshift({hora:ahora(),quien:quien||QUIEN[U.rol]||'Web',que});S.log=S.log.slice(0,80)}
+function log(que,quien){S.log.unshift({fecha:HOY,hora:ahora(),quien:quien||QUIEN[U.rol]||'Web',que});S.log=S.log.slice(0,1000)}
 function estadoAforo(){const d=dentro(),tot=d.a+d.n,p=tot/S.cfg.cap.total;return {tot,p,label:p<.4?'Tranquilo':p<.7?'Moderado':'Muy concurrido',cls:p<.4?'ok':p<.7?'warn':'bad'}}
 const minsNinos=()=>toMin(S.cfg.horario.ninosHasta)-ahoraMin();
 function venderInsumos(rec,q){for(const [k,cant] of Object.entries(rec)){if(insumo(k).stock<cant*q)return insumo(k)}for(const [k,cant] of Object.entries(rec)){const i=insumo(k);i.stock=r1(i.stock-cant*q)}return null}
-function estadoGift(g){if(g.estado==='USADO'||g.estado==='ANULADO'||g.estado==='POR CONFIRMAR')return g.estado;return g.vence<HOY?'VENCIDO':'VIGENTE'}
+function estadoGift(g){if(g.estado==='POR CONFIRMAR')return g.estado;if(g.estado==='USADO'||g.estado==='ANULADO'||g.estado==='POR CONFIRMAR')return g.estado;return g.vence<HOY?'VENCIDO':'VIGENTE'}
 const membActiva=dni=>S.membresias.filter(m=>m.dni===normDni(dni)&&m.usos.length<m.cupos).sort((a,b)=>b.inicio.localeCompare(a.inicio))[0]||null;
 const giftDe=dni=>S.gifts.find(g=>g.dni&&g.dni===normDni(dni)&&estadoGift(g)==='VIGENTE')||null;
 
@@ -1797,7 +1823,11 @@ function gridMasajes(f,modo,opts={}){const cabs=opts.cabinas||CABINAS;
   if(s||pasada(f,h))return `<td><span class="slot off">${s?'Ocupado':'—'}</span></td>`;
   return `<td><button class="slot free" data-a="vslot" data-v="${k}">Libre</button></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`}
 
+/* con niños, el ingreso debe dejarles al menos hora y media de piscina antes de su horario límite */
+const horaNinosOk=(h,ninos)=>!ninos||toMin(h)<=toMin(S.cfg.horario.ninosHasta)-90;
+
 /* =================== WEB DE CLIENTES =================== */
+const TIT_PAG={inicio:'Inicio',experiencias:'Experiencias y precios',masajes:'Masajes',bar:'Carta del bar',regalos:'Gift cards',cuenta:'Mi reserva',info:'Información',reservar:'Reservar'};
 const CNAV=[['inicio','Inicio'],['experiencias','Experiencias'],['masajes','Masajes'],['bar','Bar'],['regalos','Regalos'],['cuenta','Mi reserva'],['info','Información']];
 const LOGO=sub=>`<span class="logo-h" role="img" aria-label="Hammam Wellness Center"></span>${sub?`<small class="logo-sub">${sub}</small>`:''}`;
 const WA='https://wa.me/51984587616?text='+encodeURIComponent('Hola, quisiera información sobre Hammam.');
@@ -1805,12 +1835,13 @@ function vCliente(){
  const P={inicio:cInicio,experiencias:cExperiencias,masajes:cMasajes,bar:cBar,reservar:cReservar,regalos:cRegalos,cuenta:cCuenta,info:cInfo};
  const res=U.ctab==='reservar',home=U.ctab==='inicio';const sc=home&&typeof scrollY!=='undefined'&&scrollY>80;
  const nb=([k,t])=>`<button class="${U.ctab===k?'on':''}" data-a="ctab" data-v="${k}">${t}</button>`;
- return `<div class="web ${home?'home':''}"><header class="site-head ${home?'over':''} ${sc?'scrolled':''}"><div class="in">
+ const bloq=U.pg||U.mmenu?'inert':'';
+ return `<div class="web ${home?'home':''}"><header ${bloq} class="site-head ${home?'over':''} ${sc?'scrolled':''}"><div class="in">
   <nav class="site-nav izq" aria-label="Secciones">${CNAV.slice(1,4).map(nb).join('')}</nav>
   <button class="logo" data-a="ctab" data-v="inicio" aria-label="Hammam, ir al inicio">${LOGO()}</button>
   <div class="site-nav der">${CNAV.slice(4).map(nb).join('')}<button class="btn" data-a="reservar">Reservar</button><button class="menu-btn" data-a="mmenu" aria-expanded="${!!U.mmenu}" aria-controls="mmenu">Menú<span aria-hidden="true"></span></button></div></div>
   <nav class="mnav" aria-label="Secciones">${CNAV.map(nb).join('')}</nav></header>
- ${home?cHero():''}<main class="${home?'w-main':'wrap'}">${P[U.ctab]()}</main>${cFooter()}
+ <div ${bloq} class="w-cuerpo">${home?cHero():''}<main class="${home?'w-main':'wrap'}">${home?'':`<h1 class="sr-only">${esc(TIT_PAG[U.ctab]||'Hammam')} · Hammam Wellness Center</h1>`}${P[U.ctab]()}</main>${cFooter()}</div>
  <a class="wa" href="${WA}" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">${ic('wa','lg')}</a>
  ${res?mbarReserva():mbarPedido()||`<div class="mbar"><a class="btn ghost" href="${WA}" target="_blank" rel="noopener">${ic('wa')} WhatsApp</a><button class="btn" data-a="reservar">Reservar</button></div>`}
  ${U.R.dlg&&U.ctab==='reservar'?modalPago():''}${modalCobro()}${U.mmenu?mMenu():''}</div>`}
@@ -1832,12 +1863,12 @@ const HERO=[['portada-piscina','Piscina térmica'],['portada-masaje','Masajes'],
 const dosd=i=>String(i).padStart(2,'0');
 let HERO_OK=0;
 /* foto que se carga recién cuando aparece en pantalla (900 o 1800 px según el ancho) */
-const fimg=(k,alt,sizes,cls='w-img')=>`<img class="${cls}" src="${fotoUrl(k,900)}" srcset="${fotoUrl(k,900)} 900w, ${fotoUrl(k,1800)} 1800w" sizes="${sizes}" alt="${esc(alt)}" loading="lazy" decoding="async">`;
+const fimg=(k,alt,sizes,cls='w-img')=>`<img class="${cls}" src="${fotoUrl(k,900)}" srcset="${fotoUrl(k,900)} ${Math.min(900,FOTO_W[IMG[k]||k]||900)}w, ${fotoUrl(k,1800)} ${FOTO_W[IMG[k]||k]||1800}w" sizes="${sizes}" alt="${esc(alt)}" loading="lazy" decoding="async">`;
 function cHero(){const c=S.cfg,e=estadoAforo(),B=U.bk;const libres=sum(CABINAS,cb=>HORAS_MAS.filter(h=>!S.agenda[sk(HOY,cb,h)]&&!pasada(HOY,h)).length);const fechas=proximas(8);
- return `<section class="hero-lux"><div class="hero-slides" aria-hidden="true">${HERO.map(([k],i)=>`<div class="hs" style="--d:${i*6-1.5}s${i===0||HERO_OK?`;--img:url('${FOTO}${k}.jpg');--imgm:url('${FOTO}${k}-movil.jpg')`:''}"></div>`).join('')}</div><div class="in">
+ return `<section class="hero-lux ${U.heroPausa?'pausa':''}"><div class="hero-slides" aria-hidden="true">${HERO.map(([k],i)=>`<div class="hs" style="--d:${i*6-1.5}s${i===0||HERO_OK?`;--img:url('${FOTO}${k}.jpg');--imgm:url('${FOTO}${k}-movil.jpg')`:''}"></div>`).join('')}</div><div class="in">
   <p class="eyebrow">Wellness center · Trujillo</p>
   <h1>El momento de <em>relajo</em> que necesitas</h1>
-  <div class="hero-pie"><p class="lead">Sauna seco, cámara de vapor, piscina térmica y masajes en Palmas del Golf.</p><div class="hs-caps" aria-hidden="true">${HERO.map(([k,tt],i)=>`<span style="--d:${i*6-1.5}s"><b>${dosd(i+1)}</b> / ${dosd(HERO.length)} · ${tt}</span>`).join('')}</div></div></div></section>
+  <div class="hero-pie"><button class="hs-pausa" data-a="heroPausa" aria-pressed="${!!U.heroPausa}">${U.heroPausa?'Reanudar fotos':'Pausar fotos'}</button><p class="lead">Sauna seco, cámara de vapor, piscina térmica y masajes en Palmas del Golf.</p><div class="hs-caps" aria-hidden="true">${HERO.map(([k,tt],i)=>`<span style="--d:${i*6-1.5}s"><b>${dosd(i+1)}</b> / ${dosd(HERO.length)} · ${tt}</span>`).join('')}</div></div></div></section>
  <section class="reserva-bar" aria-label="Reserva rápida"><div class="in"><p class="hoy"><i></i>Hoy abierto hasta las ${h12(c.horario.cierra)} · Piscina ${e.label.toLowerCase()} · ${libres} turnos de masaje libres</p>
   <div class="booker" role="search" aria-label="Reserva rápida">
    <div class="bk"><label>Experiencia</label><div class="seg2">${[['circuito','Circuito'],['paquete','Circuito + masaje'],['masaje','Solo masaje']].map(([k,tt])=>`<button class="${B.tipo===k?'on':''}" data-a="bkTipo" data-v="${k}">${tt}</button>`).join('')}</div></div>
@@ -1895,18 +1926,8 @@ function cMasajes(){const c=S.cfg,fechas=proximas(8);if(!fechas.includes(U.cmf))
 function dateStrip(fechas,sel,act){return `<div class="dates">${fechas.map(f=>{const d=fromK(f);return `<button class="${sel===f?'on':''}" data-a="${act}" data-v="${f}"><small>${f===HOY?'Hoy':d.toLocaleDateString('es-PE',{weekday:'short'})}</small><b>${d.getDate()}</b><small>${d.toLocaleDateString('es-PE',{month:'short'})}</small></button>`}).join('')}</div>`}
 
 /* ---------- bar ---------- */
-function cBar(){const cats=[...new Set(S.bar.productos.map(p=>p.cat))];const B=U.bp;const g0=B.ticket?grupoDe(B.ticket):null;const cta=g0&&!g0.salida?g0:null;if(B.ticket&&!cta)B.ticket=null;const hint=abiertos().find(g=>g.lockers.length);
- return `<div class="pagehead" style="${bgi('bar',1600)}"><div><p class="eyebrow" style="color:#D9E2C4">Bar y lounge</p><h2>Algo rico después del circuito</h2><p>Pide desde tu celular sin salir de la piscina. Se carga a tu locker y pagas todo al salir.</p></div></div>
- <div class="split wide mt"><div class="card pad-lg">${cats.map(ct=>`<div class="menu-cat"><h4 style="margin-top:0">${ct}</h4>${S.bar.productos.filter(p=>p.cat===ct).map(p=>`<div class="menu-item"><div><b>${p.nombre}</b><div class="xs muted">${p.desc}</div></div><div class="row"><span class="nowrap">${sol(p.precio)}</span>${cta?ctr('bpq',B.cart[p.id]||0,p.id+'|',0,9):''}</div></div>`).join('')}</div>`).join('')}<p class="xs muted">Carta de ejemplo. No se venden bebidas alcohólicas a menores de 18 años.</p></div>
- <aside class="card sticky">${cta?bpCart(cta):bpLogin(hint)}</aside></div>`}
+/* (la carta y el pedido desde el locker están en libro.js) */
 function bpLogin(hint){const B=U.bp;return `<h3>${ic('qr')} Pide desde tu locker</h3><p class="small muted">En la versión real escaneas el QR de tu pulsera y entras directo. Aquí escribe tu locker (por ejemplo, D3 o V12) y el PIN de tu ticket.</p><div class="form"><label class="fld">Locker<input class="bigin" data-in="U.bp.locker" maxlength="3" value="${esc(B.locker)}" style="text-transform:uppercase" autocomplete="off"></label><label class="fld">PIN de 4 dígitos<input class="bigin" data-in="U.bp.pin" inputmode="numeric" maxlength="4" value="${esc(B.pin)}"></label><button class="btn" data-a="bpEntrar">Entrar</button></div>${hint?`<p class="xs muted mt">Para probar: locker ${hint.lockers[0]} y PIN ${hint.pin}.</p>`:''}`}
-function bpCart(c){const B=U.bp;const lines=Object.entries(B.cart).filter(([k,q])=>q>0);const tot=sum(lines,([k,q])=>prod(k).precio*q);const peds=S.bar.pedidos.filter(p=>p.ticket===c.ticket&&p.estado!=='entregado');
- const items=c.rows.flatMap(r=>[{d:`${SERV_CORTO[r.serv]||r.serv} · ${titulo(r.nombre).split(' ')[0]}`,m:r.total,pag:r.pagado},...(r.cons||[]).map(x=>({d:x.d,m:x.m,pag:x.pag}))]);
- return `<div class="detail-h"><div><h3 class="m0">Hola, ${esc(titulo(c.titular.nombre).split(' ')[0])}</h3><p class="small muted m0">Locker ${c.lockers.join(', ')} · ticket #${c.ticket}</p></div><button class="btn xs ghost" data-a="bpSalir">Salir</button></div>
- ${lines.length?`<div class="items">${lines.map(([k,q])=>`<div><span>${prod(k).nombre} × ${q}</span><span>${sol(prod(k).precio*q)}</span></div>`).join('')}</div><div class="totline"><span>Total del pedido</span><b>${sol(tot)}</b></div><button class="btn block mt" data-a="bpEnviar">Enviar pedido al bar</button>`:'<p class="muted small mt">Usa los botones + de la carta para armar tu pedido.</p>'}
- ${peds.length?`<h4>Tus pedidos en curso</h4>${peds.map(p=>`<div class="row between small" style="padding:4px 0"><span>#${p.id} · ${p.items.map(([k,q])=>prod(k).nombre+' × '+q).join(', ')}</span>${pill(p.estado==='nuevo'?'Recibido':'Preparando',p.estado==='nuevo'?'wood':'info')}</div>`).join('')}`:''}
- <h4>Tu cuenta hasta ahora</h4><div class="items">${items.map(i=>`<div class="${i.pag?'paid':''}"><span>${esc(i.d)}</span><span>${sol(i.m)}</span></div>`).join('')}</div><div class="totline"><span>Por pagar al salir</span><b>${sol(pendienteG(c))}</b></div>`}
-
 /* ---------- regalos ---------- */
 const GOPTS=()=>{const c=S.cfg;return [['circuito','Circuito Hammam',c.precios.circuito],...c.paquetes.flatMap(p=>[[p.id+'-ind',p.nombre+' individual',p.ind],[p.id+'-dos',p.nombre+' para dos',p.dos]]),['monto','Monto libre',null]]};
 const validGift=()=>!!(U.gift.de.trim()&&U.gift.para.trim()&&U.gift.pago);
@@ -1932,10 +1953,10 @@ function resCard(r,acc){const pc=U.pc&&U.pc.codigo===r.codigo;const rp=U.rep&&U.
  ${acc&&activa?`${pc?precheckForm(r):rp?repForm(r):`<div class="rc-acts">${!r.pre?`<button class="btn sm" data-a="pcAbrir" data-v="${r.codigo}">${ic('bolt','sm')} Check-in exprés</button>`:''}<a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=Hammam%20Wellness%20Center%20Palmas%20del%20Golf%20Trujillo" target="_blank" rel="noopener">${ic('pin','sm')} Cómo llegar</a>${r.tipo!=='masaje'?`<button class="btn sm ghost" data-a="repAbrir" data-v="${r.codigo}">Cambiar día u hora</button>`:''}<button class="btn sm danger" data-a="misCancelar" data-v="${r.codigo}">Cancelar</button></div>`}`:''}</div>`}
 function precheckForm(r){const P=U.pc;const ad=P.m+P.v;return `<div class="pcbox"><b>Check-in exprés</b><p class="small muted m0">¿Quiénes vienen? Con esto dejamos tus lockers listos y en recepción solo muestras tu QR.</p>
  ${ctrRow('Damas','Un locker de damas cada una','pcm',P.m,0,10)}${ctrRow('Varones','Un locker de varones cada uno','pcv',P.v,0,10)}${r.tipo!=='masaje'?ctrRow('Niños','Solo piscina, sin locker','pcn',P.n,0,6):''}
- ${ad!==r.adultos?`<p class="note warn">Tu reserva es para ${r.adultos} adulto${r.adultos>1?'s':''}; aquí marcaste ${ad}.</p>`:''}
+ ${ad!==r.adultos||(P.n||0)!==(r.ninos||0)?`<p class="note warn">Tu reserva es para ${r.adultos} adulto${r.adultos>1?'s':''}${r.ninos?` y ${r.ninos} niño${r.ninos>1?'s':''}`:''}; aquí marcaste ${ad}${P.n?` y ${P.n} niño${P.n>1?'s':''}`:''}. Para cambiar la cantidad de personas (y el precio), escríbenos por <a href="${WA}" target="_blank" rel="noopener">WhatsApp</a>.</p>`:''}
  <label class="check mt"><input type="checkbox" data-in="U.pc.ropa" ${P.ropa?'checked':''}> <span>Traemos ropa de baño (obligatoria para el sauna).</span></label>
  <div class="row mt"><button class="btn" data-a="pcGuardar" ${ad<1||!P.ropa?'disabled':''} data-valid="pc">Listo, confirmar</button><button class="btn ghost" data-a="pcCerrar">Ahora no</button></div></div>`}
-function repForm(r){const P=U.rep;const fechas=proximas(10);return `<div class="pcbox"><b>Cambiar día u hora</b>${dateStrip(fechas,P.fecha,'repFecha')}<div class="slots mt">${HORAS_ING.map(h=>{const cu=cuposIngreso(P.fecha,h),pas=pasada(P.fecha,h);return `<button class="${P.hora===h?'on':''} ${cu>8?'ok':'few'}" data-a="repHora" data-v="${h}" ${pas||cu<r.adultos+r.ninos?'disabled':''}><b>${h12(h)}</b><small>${pas?'ya pasó':'quedan '+cu}</small></button>`}).join('')}</div><div class="row mt"><button class="btn" data-a="repGuardar" ${P.hora?'':'disabled'}>Guardar cambio</button><button class="btn ghost" data-a="repCerrar">Volver</button></div>${r.tipo==='paquete'?'<p class="xs muted mt">Tu masaje se mueve solo a la primera hora libre después de tu ingreso.</p>':''}</div>`}
+function repForm(r){const P=U.rep;const fechas=proximas(10);return `<div class="pcbox"><b>Cambiar día u hora</b>${dateStrip(fechas,P.fecha,'repFecha')}<div class="slots mt">${HORAS_ING.map(h=>{const cu=cuposIngreso(P.fecha,h),pas=pasada(P.fecha,h);const kids=!horaNinosOk(h,r.ninos);return `<button class="${P.hora===h?'on':''} ${cu>8?'ok':'few'}" data-a="repHora" data-v="${h}" ${pas||kids||cu<r.adultos+r.ninos?'disabled':''}><b>${h12(h)}</b><small>${pas?'ya pasó':kids?'sin niños':'quedan '+cu}</small></button>`}).join('')}</div><div class="row mt"><button class="btn" data-a="repGuardar" ${P.hora?'':'disabled'}>Guardar cambio</button><button class="btn ghost" data-a="repCerrar">Volver</button></div>${r.tipo==='paquete'?'<p class="xs muted mt">Tu masaje se mueve solo a la primera hora libre después de tu ingreso.</p>':''}</div>`}
 function histCliente(c){const R=S.diario.filter(r=>!r.anulado&&((c.dni&&r.dni===c.dni)||(c.cel&&r.cel===c.cel)));const by={};R.forEach(r=>{const x=by[r.fecha]||(by[r.fecha]={f:r.fecha,s:new Set(),m:0});x.s.add(r.serv.startsWith('PAQUETE')&&r.paq?paqueteDe(r.paq).nombre:(SERV_CORTO[r.serv]||r.serv));x.m+=(r.total||0)+sum(r.cons||[],k=>k.m)});return Object.values(by).sort((a,b)=>b.f.localeCompare(a.f)).slice(0,12).map(x=>({f:x.f,s:[...x.s].join(', '),m:x.m}))}
 function cCuentaDash(){const c=clientePorCel(U.auth.cel);const ix=S.clientes.indexOf(c);const P=S.cfg.puntos;const key=c.dni||c.cel;const pf=c.pref||{};
  const prox=S.reservas.filter(r=>(r.cel===c.cel||(c.dni&&r.dni===c.dni))&&r.estado==='por llegar'&&r.fecha>=HOY).sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));const hist=histCliente(c);const gifts=S.gifts.filter(g=>(c.cel&&(g.cel===c.cel||g.tel===c.cel))||(c.dni&&g.dni===c.dni));const m=c.dni?membActiva(c.dni):null;
@@ -1979,7 +2000,7 @@ function iLegal(){return `<div class="grid g2"><div class="card pad-lg"><h3>Tér
 function cFooter(){return `<footer class="site-foot"><div class="in"><div><div class="logo">${LOGO()}</div><p class="small muted mt">Sauna · Masajes · Bienestar · Familia. Tu refugio de relajación y calma en Trujillo desde 2024.</p></div>
  <div><h4>Visítanos</h4><p class="small m0">Palmas del Golf II, Mz. F Lt. 24<br>Víctor Larco Herrera, Trujillo</p><p class="small mt">Martes a domingo<br>${h12(S.cfg.horario.abre)} a ${h12(S.cfg.horario.cierra)}</p></div>
  <div><h4>Explora</h4>${[['experiencias','Experiencias y precios'],['masajes','Horario de masajes'],['bar','Carta del bar'],['regalos','Tarjetas de regalo'],['cuenta','Mi reserva']].map(([k,t])=>`<button class="lb" data-a="ctab" data-v="${k}">${t}</button>`).join('')}</div>
- <div><h4>Contacto</h4><a class="lb" href="${WA}" target="_blank" rel="noopener">${ic('wa','sm')} 984 587 616</a><a class="lb" href="mailto:hammamsaunayspa@gmail.com">${ic('mail','sm')} Correo</a><a class="lb" href="https://www.instagram.com/sauna.hammamgolf/" target="_blank" rel="noopener">${ic('ig','sm')} @sauna.hammamgolf</a><button class="librobtn" data-a="infoTab" data-v="reclamos">${ic('book')} <b class="small" style="font-weight:500">Libro de Reclamaciones</b></button></div></div>
+ <div><h4>Contacto</h4><a class="lb" href="tel:+51984587616">${ic('phone','sm')} Llamar al 984 587 616</a><a class="lb" href="${WA}" target="_blank" rel="noopener">${ic('wa','sm')} WhatsApp</a><a class="lb" href="mailto:hammamsaunayspa@gmail.com">${ic('mail','sm')} Correo</a><a class="lb" href="https://www.instagram.com/sauna.hammamgolf/" target="_blank" rel="noopener">${ic('ig','sm')} @sauna.hammamgolf</a><button class="librobtn" data-a="infoTab" data-v="reclamos">${ic('book')} <b class="small" style="font-weight:500">Libro de Reclamaciones</b></button></div></div>
  <div class="legal"><span>© 2026 Hammam Wellness Center · Titular: INDIVILSA (razón social y RUC por confirmar)</span><span>Fotos: Hammam Wellness Center, Trujillo.</span><span><button class="lnk" data-a="infoTab" data-v="legal">Términos</button> · <button class="lnk" data-a="infoTab" data-v="legal">Privacidad</button></span></div></footer>`}
 
 /* ---------- reserva: 3 pasos ---------- */
@@ -2010,10 +2031,10 @@ function cReservar(){const R=U.R;if(R.paso===4)return resListo();const c=S.cfg;l
 function paso2(R){const need=personasMasaje(R),c=S.cfg,lim=toMin(c.horario.ninosHasta),pers=adultosR(R)+R.ninos;
  let h=`<h2>¿Cuándo vienes?</h2>${dateStrip(proximas(10),R.fecha,'rfecha')}<p class="xs muted">Los lunes no atendemos.</p>`;
  if(!R.fecha)return h+'<p class="note">Elige un día para ver las horas libres.</p>';
- if(R.tipo!=='masaje'){h+=`<h4>Hora de llegada</h4><div class="slots">${HORAS_ING.map(x=>{const cu=cuposIngreso(R.fecha,x),kids=R.ninos>0&&toMin(x)>lim-90,pas=pasada(R.fecha,x);const dis=cu<pers||pas||kids;return `<button class="${R.hora===x?'on':''} ${cu>8?'ok':'few'}" data-a="rhora" data-v="${x}" ${dis?'disabled':''}><b>${h12(x)}</b><small>${pas?'ya pasó':kids?'sin niños':cu<pers?'lleno':cu>8?'hay espacio':'quedan '+cu}</small></button>`}).join('')}</div>
+ if(R.tipo!=='masaje'){h+=`<h4>Hora de llegada</h4><div class="slots">${HORAS_ING.map(x=>{const cu=cuposIngreso(R.fecha,x),kids=!horaNinosOk(x,R.ninos),pas=pasada(R.fecha,x);const dis=cu<pers||pas||kids;return `<button class="${R.hora===x?'on':''} ${cu>8?'ok':'few'}" data-a="rhora" data-v="${x}" ${dis?'disabled':''}><b>${h12(x)}</b><small>${pas?'ya pasó':kids?'sin niños':cu<pers?'lleno':cu>8?'hay espacio':'quedan '+cu}</small></button>`}).join('')}</div>
   ${R.ninos?`<p class="xs muted mt">Con niños, la llegada es hasta las ${h12(toHM(lim-90))} para que aprovechen la piscina hasta las ${h12(c.horario.ninosHasta)}.</p>`:''}
   ${R.hora&&toMin(R.hora)+c.horario.horas*60>toMin(c.horario.cierra)?`<p class="note warn">Cerramos a las ${h12(c.horario.cierra)}: si llegas a las ${h12(R.hora)}, tu circuito durará ${((toMin(c.horario.cierra)-toMin(R.hora))/60).toLocaleString('es-PE')} horas.</p>`:''}`}
- if(need&&R.tipo==='paquete'&&R.hora){h+=R.mhora?`<div class="chosen"><span>${ic('leaf')} Tu masaje${need>1?' (los dos a la vez)':''} será a las <b>${h12(R.mhora)}</b>, una hora después de llegar.</span><button class="lnk" data-a="rverMas">${R.verMas?'Listo':'Cambiar'}</button></div>`:'<p class="note bad">No quedan cabinas libres durante tu circuito. Prueba otra hora u otro día.</p>';
+ if(need&&R.tipo==='paquete'&&R.hora){h+=R.mhora?`<div class="chosen"><span>${ic('leaf')} Tu masaje${need>1?' (los dos a la vez)':''} será a las <b>${h12(R.mhora)}</b>${R.hora?`, ${Math.round((toMin(R.mhora)-toMin(R.hora))/5)*5} minutos después de tu llegada`:''}.</span><button class="lnk" data-a="rverMas">${R.verMas?'Listo':'Cambiar'}</button></div>`:'<p class="note bad">No quedan cabinas libres durante tu circuito. Prueba otra hora u otro día.</p>';
   if(R.verMas)h+=masSlots(R,need)}
  if(need&&R.tipo==='masaje')h+=`<h4>Hora del masaje</h4>${masSlots(R,need)}`;
  return h}
@@ -2030,7 +2051,7 @@ function paso3(R){const q=cotizar(R),localOk=R.tipo==='circuito';const need=pers
 function resumenR(){const R=U.R;
  if(!R.tipo)return `<aside class="card sum sumph"><div class="ph" style="${bgi('vapor',700,400)}"></div><h3>Tu reserva</h3><p class="small muted">Elige una experiencia para ver el precio.</p><div class="note">${ic('clock','sm')} Martes a domingo, de ${h12(S.cfg.horario.abre)} a ${h12(S.cfg.horario.cierra)}.</div></aside>`;
  const q=cotizar(R);const ad=adultosR(R);const img=R.tipo==='circuito'?'seco':R.tipo==='paquete'?'piedras':'aceite';
- return `<aside class="card sum sumph"><div class="ph" style="${bgi(img,700,400)}"></div><h3>Tu reserva</h3><dl>${R.fecha?`<dt>Día</dt><dd>${R.fecha===HOY?'Hoy':fmtF(R.fecha)}</dd>`:''}${R.hora&&R.tipo!=='masaje'?`<dt>Llegada</dt><dd>${h12(R.hora)}</dd>`:''}${R.mhora?`<dt>Masaje</dt><dd>${h12(R.mhora)}</dd>`:''}<dt>Personas</dt><dd>${ad} adulto${ad>1?'s':''}${R.ninos&&R.tipo!=='masaje'?` · ${R.ninos} niño${R.ninos>1?'s':''}`:''}</dd></dl>
+ return `<aside class="card sum sumph"><div class="ph" style="${bgi(img,700,400)}"></div><h3>Tu reserva</h3><dl>${R.fecha?`<dt>Día</dt><dd>${R.fecha===HOY?'Hoy':fmtF(R.fecha)}</dd>`:''}${R.hora&&R.tipo!=='masaje'?`<dt>Llegada</dt><dd>${h12(R.hora)}</dd>`:''}${R.mhora?`<dt>Masaje</dt><dd>${h12(R.mhora)}</dd>`:''}${R.hora&&R.tipo!=='masaje'&&toMin(S.cfg.horario.cierra)-toMin(R.hora)<S.cfg.horario.horas*60?`<dt>Duración</dt><dd>${((toMin(S.cfg.horario.cierra)-toMin(R.hora))/60).toLocaleString('es-PE',{maximumFractionDigits:1})} h (cerramos a las ${h12(S.cfg.horario.cierra)})</dd>`:''}<dt>Personas</dt><dd>${ad} adulto${ad>1?'s':''}${R.ninos&&R.tipo!=='masaje'?` · ${R.ninos} niño${R.ninos>1?'s':''}`:''}</dd></dl>
  <div class="lines">${q.L.map(([d,m])=>`<div><span>${d}</span><span class="nowrap">${sol(m)}</span></div>`).join('')||'<div class="muted"><span>Elige una opción</span></div>'}${q.desc?`<div style="color:var(--ok)"><span>Descuento ${R.promo}</span><span>− ${sol(q.desc)}</span></div>`:''}${q.gift?`<div style="color:var(--ok)"><span>Tarjeta de regalo</span><span>− ${sol(q.gift)}</span></div>`:''}</div>
  <div class="tot"><span>Total</span><span class="price">${sol(q.total)}</span></div>${q.total?`<p class="xs muted" style="margin-top:8px">Sumas ${Math.floor(q.total/S.cfg.puntos.porSol)} puntos Colibrí.</p>`:''}</aside>`}
 function modalPago(){const R=U.R,t=cotizar(R).total;
@@ -2086,14 +2107,7 @@ const people=(m,v,n)=>`<span class="people" aria-label="${m} damas, ${v} varones
 const dateNav=(act,f,path)=>`<div class="datenav"><button class="btn xs ghost" data-a="${act}" data-v="${addDays(f,-1)}" aria-label="Día anterior">${ic('chevl','sm')}</button><input class="inp sm" type="date" data-in="${path}" data-live value="${f}"><button class="btn xs ghost" data-a="${act}" data-v="${addDays(f,1)}" aria-label="Día siguiente">${ic('chevr','sm')}</button>${f!==HOY?`<button class="btn xs" data-a="${act}" data-v="${HOY}">Hoy</button>`:''}</div>`;
 const consChip=(dni,c)=>c&&c.consent?`<span class="pill ok">${ic('check','sm')} Aceptó términos</span>`:`<button class="chip mini warnc" data-a="consAbrir" data-v="staff|${dni}">${ic('alert','sm')} Falta aceptar términos · mostrar</button>`;
 
-function vPersonal(){if(!U.rol)return vLogin();const R=ROLES[U.rol];if(!R.mods.includes(U.mod))U.mod=R.main[0];const resto=R.mods.filter(m=>!R.main.includes(m));const abrir=U.mas||resto.includes(U.mod);const it=m=>`<button class="it ${U.mod===m?'on':''}" data-a="mod" data-v="${m}" title="${MODS[m].t}">${ic(MODS[m].ic)}<span>${MODS[m].t}</span></button>`;
- const groups=[...new Set(R.mods.map(m=>MODS[m].g))];const now=ahoraMin();
- const cnt={bar:S.bar.pedidos.filter(p=>p.estado!=='entregado').length,reclamos:S.reclamos.filter(r=>r.estado==='Pendiente').length,mantenimiento:S.mant.incid.filter(i=>i.estado!=='Resuelta').length,reservas:S.reservas.filter(r=>r.fecha===HOY&&r.estado==='por llegar').length,recepcion:S.reservas.filter(r=>r.fecha===HOY&&r.estado==='por llegar'&&toMin(r.hora)+15<now).length};
- const V={hoy:aHoy,diario:aDiario,recepcion:aRecepcion,reservas:aReservas,masajes:aMasajes,lockers:aLockers,aforo:aAforo,cuadre:aCuadre,gastos:aGastos,bar:aBar,clientes:aClientes,membresias:aMemb,gifts:aGifts,marketing:aMkt,reclamos:aRecl,registro:aRegistro,reportes:aReportes,importar:aImport,config:aConfig,personal:aPersonal,almacen:aAlmacen,mantenimiento:aMant};
- return `<div class="staff ${U.mod==='diario'&&U.dview==='excel'?'compact':''}"><aside class="snav"><div class="logo">${LOGO('PANEL DEL PERSONAL')}</div><div class="who"><small>Conectado como</small><b>${QUIEN[U.rol]} · ${R.nombre}</b><button data-a="salir">Cambiar de usuario</button></div>
- ${R.main.map(it).join('')}${resto.length?`<button class="it mas" data-a="masToggle" title="${abrir?'Menos opciones':'Más opciones'}">${ic(abrir?'chevl':'plus')}<span>${abrir?'Menos opciones':'Más opciones'}</span></button>${abrir?`<div class="masl">${resto.map(it).join('')}</div>`:''}`:''}
- ${S.importado?`<div class="impbadge">${ic('check','sm')} Datos reales importados</div>`:''}</aside>
- <main class="smain">${V[U.mod]()}</main></div>${U.drawer?drawer():''}`}
+/* (el panel vigente, vPersonal, está en libro.js) */
 function vLogin(){return `<div class="wrap"><div class="login"><div class="center mb"><span class="mark" style="width:60px;height:60px"></span><h2 class="mt">Panel del personal</h2><p class="muted" style="max-width:62ch;margin:10px auto 0">En la versión real cada trabajador entra con su usuario y contraseña, y solo ve lo que le toca. Todo lo que hace queda registrado con su nombre y la hora. Para la demo, elige un perfil:</p></div>
  <div class="grid g2">${Object.entries(ROLES).map(([k,r])=>`<button class="role" data-a="rol" data-v="${k}"><b>${ic(r.ic)} ${r.nombre}</b><span>${r.desc}</span><span class="xs">Entra como ${QUIEN[k]} · ${r.mods.length} módulo${r.mods.length>1?'s':''}</span></button>`).join('')}</div></div></div>`}
 
@@ -2186,25 +2200,28 @@ function agendaDeCom(r){const m=r.com.match(/(SALAM|FALAK|NAJAH|MASAJE)\s*-\s*(\
 function setCampo(r,k,v){const f=r.fecha,hoy=f===HOY;
  if(k==='ing'||k==='sal'){const h=parseHora(v);if(h===null){toast('Escribe la hora así: 3:10 o 15:10.');return}
   if(k==='sal'){r.sal=h||null;return}
-  if(!h)return;r.ing=h;const o=filasDia(f).find(x=>x!==r&&x.ing===h);if(o)r.grp=o.grp;else if(filasDia(f).some(x=>x!==r&&x.grp===r.grp))r.grp=++S.seq.grp;return}
+  if(!h)return;r.ing=h;return}
  if(k==='dni'){const d=normDni(v);r.dni=d;const c=d?clienteDni(d):null;if(c){if(!r.nombre||r.nombre==='SIN NOMBRE'||r.auto){r.nombre=String(c.nombre||'').toUpperCase();r.auto=1}if(!r.cel&&c.cel)r.cel=c.cel}else if(d.length>=6&&r.nombre&&r.nombre!=='SIN NOMBRE')nuevoCliente(d,r.nombre,r.cel,{alta:f});return}
  if(k==='nombre'){r.nombre=String(v).trim().toUpperCase();delete r.auto;if(r.dni&&r.dni.length>=6&&!clienteDni(r.dni)&&r.nombre)nuevoCliente(r.dni,r.nombre,r.cel,{alta:f});return}
  if(k==='cel'){const c9=String(v).replace(/\D/g,'').slice(0,9);r.cel=c9;const c=r.dni?clienteDni(r.dni):null;if(c&&!c.cel&&/^9\d{8}$/.test(c9))c.cel=c9;return}
- if(k==='bol'){r.bol=String(v).trim();return}
+ if(k==='bol'){r.bol=String(v).trim().toUpperCase();const o=r.bol?filasDia(f).find(x=>x!==r&&x.bol===r.bol&&x.grp!==r.grp):null;if(o){r.grp=o.grp;toast(`Misma boleta que ${titulo(o.nombre)}: quedan en la misma cuenta y salen juntos.`)}return}
  if(k==='cas'){const nv=String(v).trim().toUpperCase();if(nv===r.cas)return;if(nv&&hoy){const l=casilleros().find(x=>x.id===nv);if(l&&l.estado!=='libre'&&!(l.row&&l.row.id===r.id)){toast(`El casillero ${nv} no está libre.`);return}}
   const sd=S.almacen.find(a=>a.id==='sandalias');if(sd&&hoy){if(!r.cas&&nv)sd.stock=Math.max(0,sd.stock-1);else if(r.cas&&!nv)sd.stock++}r.cas=nv;return}
  if(k==='serv'){r.serv=v||'SAUNA';r.paq=r.serv.startsWith('PAQUETE')?paqDeCom(r.com):null;if(r.serv==='MASAJE'){r.mt=r.mt||'relajante';r.md=r.md||45}if(r.serv==='PISCINA'&&r.cas)setCampo(r,'cas','');recalc(r);return}
  if(k==='com'){r.com=String(v).trim();if(r.serv.startsWith('PAQUETE'))r.paq=paqDeCom(r.com);if(hoy)agendaDeCom(r);recalc(r);return}
  if(k==='ext'){const prev=r.ext||[];const nv=v?String(v).split(' + '):[];const sh=S.almacen.find(a=>a.id==='shorts');if(sh&&hoy){const a=prev.includes('SHORT'),b=nv.includes('SHORT');if(!a&&b)sh.stock=Math.max(0,sh.stock-1);if(a&&!b)sh.stock++}r.ext=nv;recalc(r);return}
  if(k==='pago'){const old=r.pago,nv=v||'EFECTIVO';if(old===nv)return;
+  if(nv==='MEMBRESIA'&&!(r.dni&&membActiva(r.dni))){toast(r.dni?'Este DNI no tiene una membresía activa: el pago no cambió.':'Escribe primero el DNI para usar la membresía: el pago no cambió.');return}
+  if(nv==='GIFT CARD'&&!(r.dni&&giftDe(r.dni))){toast('No hay una gift card vigente con este DNI: el pago no cambió. Si la tarjeta es de otra persona, escribe su DNI en la hoja GIFT CARD.');return}
   if(old==='MEMBRESIA'&&r.membId){const m=S.membresias.find(x=>x.id===r.membId);if(m){const i=m.usos.lastIndexOf(f);if(i>=0)m.usos.splice(i,1)}delete r.membId}
-  if(old==='GIFT CARD'&&r.giftCod){const g=S.gifts.find(x=>x.codigo===r.giftCod);if(g){g.estado='VIGENTE';g.uso=null;g.saldo=g.monto}delete r.giftCod}
+  if(old==='GIFT CARD'&&r.giftCod){const g=S.gifts.find(x=>x.codigo===r.giftCod);if(g){g.saldo=r1((g.saldo||0)+(r.giftUso||g.monto));g.estado='VIGENTE';g.uso=null}r.cons=(r.cons||[]).filter(c=>c.t!=='difgift');delete r.giftCod;delete r.giftUso}
   r.pago=nv;r.pagado=nv!=='POR CANCELAR';
   if(nv==='MEMBRESIA'){const m=r.dni?membActiva(r.dni):null;if(m){m.usos.push(f);m.usos.sort();r.membId=m.id;toast(`Membresía: uso ${m.usos.length} de ${m.cupos}.`)}else toast(r.dni?'Este DNI no tiene una membresía activa.':'Escribe primero el DNI para usar la membresía.')}
-  if(nv==='GIFT CARD'){const g=r.dni?giftDe(r.dni):null;if(g){g.estado='USADO';g.uso=f;g.saldo=0;r.giftCod=g.codigo;if(!r.com.includes(g.codigo))r.com=r.com?`${r.com}, ${g.codigo}`:g.codigo;toast(`Se marcó como usada la gift card ${g.codigo}.`)}else toast('No hay una gift card vigente con este DNI: márcala como usada en «Gift cards».')}
+  if(nv==='GIFT CARD'){const g=giftDe(r.dni);const valor=precioServicio(r);const cubre=Math.min(g.saldo||0,valor);g.saldo=r1((g.saldo||0)-cubre);g.uso=f;if(g.saldo<=0)g.estado='USADO';r.giftCod=g.codigo;r.giftUso=cubre;if(!r.com.includes(g.codigo))r.com=r.com?`${r.com}, ${g.codigo}`:g.codigo;
+   if(valor>cubre){(r.cons=r.cons||[]).push({d:`Diferencia no cubierta por la gift card ${g.codigo}`,m:r1(valor-cubre),t:'difgift',pag:false});toast(`La gift card ${g.codigo} cubre ${sol(cubre)}. Quedan ${sol(valor-cubre)} por cobrar en su cuenta.`)}else toast(`Gift card ${g.codigo}: se usaron ${sol(cubre)}${g.saldo>0?`; le quedan ${sol(g.saldo)}`:''}.`)}
   recalc(r);return}
  if(k==='total'){const t=String(v).replace(',','.').replace(/[^\d.]/g,'');if(t===''){delete r.totalManual;recalc(r)}else{r.total=+t;r.totalManual=1}return}}
-function crearFila(f,N){const ing=parseHora(N.ing)||(f===HOY?ahora():'15:00');const o=filasDia(f).find(x=>x.ing===ing);
+function crearFila(f,N){const ing=parseHora(N.ing)||(f===HOY?ahora():'15:00');const o=null;
  const r={id:S.seq.row++,fecha:f,ing,sal:null,dni:'',nombre:'',cel:'',bol:'',cas:'',serv:'SAUNA',paq:null,mt:null,md:null,com:'',ext:[],pago:'EFECTIVO',total:0,pagado:true,cons:[],grp:o?o.grp:++S.seq.grp,res:null,por:quien()};
  S.diario.push(r);
  ['dni','nombre','cel','bol','cas','serv','com','ext','pago'].forEach(k=>{const v=N[k];if(v!==''&&v!=null&&String(v)!==String(r[k]))setCampo(r,k,v)});
@@ -2285,7 +2302,7 @@ function cuentaDetalle(g){const A=U.cadd,pend=pendienteG(g),m=ahoraMin()-toMin(g
  return `<p class="small muted m0">Entró ${h12(g.hora)}, hace ${Math.floor(m/60)} h ${m%60} min · PIN del bar ${g.pin}</p>${people(g.m,g.v,g.n)}
  <div class="items">${g.rows.map(r=>`<div class="${r.pagado?'paid':''}"><span>${esc(titulo(r.nombre))} · ${SERV_CORTO[r.serv]||r.serv}${r.cas?` · ${r.cas}`:''}${(r.ext||[]).length?` · ${r.ext.map(exn).join(', ')}`:''} <span class="xs muted">· ${PAGO_CORTO(r.pago)}</span>${r.sal?` <span class="xs muted">· salió ${h12(r.sal)}</span>`:''}</span><span>${sol(r.total)}</span></div>${(r.cons||[]).map(c=>`<div class="${c.pag?'paid':''}"><span>↳ ${esc(c.d)}</span><span>${sol(c.m)}</span></div>`).join('')}`).join('')}</div>
  <div class="totline"><span class="small muted">Consumo total ${sol(consumoG(g))}</span><span>Por cobrar <b>${sol(pend)}</b></span></div>
- <h4>Cargar algo a la cuenta</h4><div class="row"><select class="inp sm grow" data-in="U.cadd.p">${S.bar.productos.map(p=>`<option value="${p.id}" ${A.p===p.id?'selected':''}>${p.nombre} · ${sol(p.precio)}</option>`).join('')}</select><input class="inp sm" style="width:62px" type="number" min="1" max="20" data-in="U.cadd.q" data-num value="${A.q}"><button class="btn sm soft" data-a="cuentaBar" data-v="${g.ticket}">Cargar</button></div>
+ <h4>Cargar algo a la cuenta</h4><div class="row"><select class="inp sm grow" data-in="U.cadd.p">${CARTA_CATS.map(ct=>{const L=S.carta.filter(p=>p.cat===ct&&p.precio>0);return L.length?`<optgroup label="${ct}">${L.map(p=>`<option value="${p.id}" ${A.p===p.id?'selected':''}>${esc(titulo(p.nombre))} · ${sol(p.precio)}</option>`).join('')}</optgroup>`:''}).join('')}</select><input class="inp sm" style="width:62px" type="number" min="1" max="20" data-in="U.cadd.q" data-num value="${A.q}"><button class="btn sm soft" data-a="cuentaBar" data-v="${g.ticket}">Cargar</button></div>
  <div class="row mt"><select class="inp sm grow" data-in="U.cadd.ex">${S.cfg.extras.map(e=>`<option value="${e.n}" ${A.ex===e.n?'selected':''}>${exn(e.n)} · ${sol(e.p)}</option>`).join('')}</select><button class="btn sm soft" data-a="cuentaExtra" data-v="${g.ticket}">Cargar extra</button></div>
  <div class="row mt"><select class="inp sm grow" data-in="U.cadd.mt">${Object.keys(MTIPOS).map(t=>`<option value="${t}" ${A.mt===t?'selected':''}>Masaje ${MTIPOS[t].toLowerCase()}</option>`).join('')}</select><select class="inp sm" data-in="U.cadd.md" data-num>${DURS.map(d=>`<option value="${d}" ${+A.md===d?'selected':''}>${d} min</option>`).join('')}</select><button class="btn sm soft" data-a="cuentaMasaje" data-v="${g.ticket}">Agendar</button></div>
  ${pend?`<h4>¿Cómo paga la salida?</h4><div class="chips">${MEDIOS.map(m=>`<button class="chip ${A.medio===m?'on':''}" data-a="caddMedio" data-v="${m}">${PAGO_CORTO(m)}</button>`).join('')}</div>`:'<p class="note ok mt">No tiene nada pendiente.</p>'}
@@ -2637,7 +2654,7 @@ function vLoginLibro(){return `<div class="wrap"><div class="login"><div class="
 const HOJA_IC={guia:'book',diario:'sheet',bar:'glass',masajes:'leaf',reservas:'cal',gastos:'card',bd:'users',gift:'gift',memb:'repeat',invh:'towel',inventario:'box',resumen:'chart',ajustes:'gear'};
 function vPersonal(){if(!U.rol||!LROL[U.rol])return vLoginLibro();const R=LROL[U.rol];if(!R.hojas.includes(U.hoja))U.hoja=R.hojas[0];
  const V={guia:hGuia,diario:hDiario,bar:hBar,masajes:hMasajes,inventario:hInv,invh:hInvH,gastos:hGastos,bd:hBD,reservas:hReservas,gift:hGift,memb:hMemb,resumen:hResumen,ajustes:hAjustes};
- const tot=U.hoja==='diario'?`Total del día ${sol(cuadreDia(U.dd).total)}`:U.hoja==='bar'?`Total del bar ${sol(cuadreBar(U.dd).tot)}`:'';
+ const tot=U.hoja==='diario'?`Total del día ${sol(cuadreDia(U.dd).totalDia)}`:U.hoja==='bar'?`Total del bar ${sol(cuadreBar(U.dd).tot)}`:'';
  if(servOk()&&cfgP().claveStaff)servIniciar();return `<div class="libro" data-tema="${TEMAS[S.cfg.tema]?S.cfg.tema:'verde'}"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${QUIEN[U.rol]} · ${R.nombre} <button class="lnk" data-a="salir">cambiar</button></div></header>
  <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}" title="${HOJAS[h]}">${ic(HOJA_IC[h],'sm')}<span>${HOJA_TAB[h]||HOJAS[h]}</span>${h==='bar'&&pedPend().length?`<b class="lb-badge" aria-label="pedidos por entregar">${pedidosGrupos(HOY).length}</b>`:''}${h==='reservas'&&S.reservas.some(r=>r.porConfirmar&&r.estado!=='cancelada')?`<b class="lb-badge" aria-label="pagos por confirmar">${S.reservas.filter(r=>r.porConfirmar&&r.estado!=='cancelada').length}</b>`:''}${h==='gift'&&S.gifts.some(g=>g.estado==='POR CONFIRMAR')?`<b class="lb-badge" aria-label="pagos por confirmar">${S.gifts.filter(g=>g.estado==='POR CONFIRMAR').length}</b>`:''}</button>`).join('')}</nav>
  <main class="lb-hoja">${V[U.hoja]()}</main></div>${U.drawer?drawer():''}`}
@@ -2658,7 +2675,7 @@ const GUIA={
  ajustes:['Precios, carta del bar, inventarios y conexiones.','Cambia un precio y se aplica al instante.','Aquí se importan los Excel y se conecta Google.'],
 };
 function hGuia(){const R=LROL[U.rol];const q=cuadreDia(HOY),d=dentro(),I=invHDia(HOY),t=I&&I.toalla;const porLl=S.reservas.filter(r=>r.fecha===HOY&&r.estado==='por llegar').length;
- const hoy=U.rol==='admin'?[['Dentro ahora',d.a+d.n],['Total del día',sol(q.total)],['Reservas por llegar',porLl],['Toallas disponibles',t?t.fin:'—']]:[['Pedidos por entregar',pedidosGrupos(HOY).length],['Total del bar',sol(cuadreBar(HOY).tot)],['Por cobrar al salir',sol(cuadreBar(HOY).pend)]];
+ const hoy=U.rol==='admin'?[['Dentro ahora',d.a+d.n],['Total del día',sol(q.totalDia)],['Reservas por llegar',porLl],['Toallas disponibles',t?t.fin:'—']]:[['Pedidos por entregar',pedidosGrupos(HOY).length],['Total del bar',sol(cuadreBar(HOY).tot)],['Por cobrar al salir',sol(cuadreBar(HOY).pend)]];
  return `<div class="lb-guia"><div class="lg-head"><div><h2>Guía rápida</h2><p>Toca una tarjeta para abrir esa hoja. Todas se llenan como el Excel: celdas y listas con flechita.</p></div><div class="lg-hoy">${hoy.map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('')}</div></div>
  ${U.rol==='admin'?`<div class="lg-pasos">${[['1','Llega el cliente','DIARIO: DNI, casillero, servicio y pago.'],['2','Consume algo','BAR: casillero y producto. «NO CANCELO» si paga al salir.'],['3','Se va','DIARIO: toca el reloj. Si debe algo, te pide cobrarlo.'],['4','Cierra el día','DIARIO: anota el depósito y revisa «Caja cierra».']].map(([n,tt,dd])=>`<div><span>${n}</span><b>${tt}</b><small>${dd}</small></div>`).join('')}</div>`:''}
  <div class="lg-cards">${R.hojas.filter(h=>h!=='guia').map(h=>{const g=GUIA[h];return `<button class="lg-card" data-a="hoja" data-v="${h}"><span class="lg-ic">${ic(HOJA_IC[h])}</span><b>${HOJAS[h]}</b><span class="lg-que">${g[0]}</span><ol><li>${g[1]}</li><li>${g[2]}</li>${g[3]?`<li>${g[3]}</li>`:''}</ol></button>`}).join('')}</div></div>`}
@@ -2711,7 +2728,7 @@ function dFila(r,n,f){const nueva=!r.id;const k=nueva?'new':r.id;const N=U.nf;co
   <td class="num">${inp('total',nueva?N.total:r.total,`inputmode="decimal" ${nueva?`placeholder="${auto}"`:''}`)}</td></tr>`}
 function hDiario(){const f=U.dd;const rows=[...filasDia(f)].sort((a,b)=>a.ing.localeCompare(b.ing)||a.id-b.id);const q=cuadreDia(f),C=S.cuadre[f]||(S.cuadre[f]={inicio:0,deposito:0}),pm=q.porMedio,d=dentro();
  const ed=campo=>`<input class="xc num" type="number" step="0.5" data-in="S.cuadre.${f}.${campo}" data-num data-live value="${C[campo]??''}" aria-label="${campo}">`;
- const L=[['INICIO EFECTIVO',ed('inicio'),'ed'],['EFECTIVO',n2(pm.EFECTIVO)],['TARJETA',n2(pm.TARJETA+pm['TARJETA CREDITO']+pm['TARJETA DEBITO'])],['YAPE',n2(pm.YAPE)],['PLIN',n2(pm.PLIN)],['QR',n2(pm.QR)],['TRANSFERENCIA',n2(pm.TRANSFERENCIA+pm['LINK DE PAGO']+pm.WESTERN)],['GASTO EFECTIVO',n2(q.gastoEfectivo)],['DEPÓSITO',ed('deposito'),'ed'],['CAJA CIERRA',n2(q.cierre),'tot'],['TOTAL DEL DÍA',n2(q.total),'tot'],null,
+ const L=[['INICIO EFECTIVO',ed('inicio'),'ed'],['EFECTIVO',n2(pm.EFECTIVO)],['TARJETA',n2(pm.TARJETA+pm['TARJETA CREDITO']+pm['TARJETA DEBITO'])],['YAPE',n2(pm.YAPE)],['PLIN',n2(pm.PLIN)],['QR',n2(pm.QR)],['TRANSFERENCIA',n2(pm.TRANSFERENCIA+pm['LINK DE PAGO']+pm.WESTERN)],['GASTO EFECTIVO',n2(q.gastoEfectivo)],['DEPÓSITO',ed('deposito'),'ed'],['CAJA CIERRA',n2(q.cierre),'tot'],['PAGADO EN LA WEB',n2(q.enLinea)],['TOTAL DEL DÍA',n2(q.totalDia),'tot'],null,
   ['SAUNEROS',q.cont.SAUNA],['PISCINA (NIÑOS)',q.cont.PISCINA],['PAQUETES',q.cont['PAQUETE INDIVIDUAL']+q.cont['PAQUETE DUO']],['MASAJES',q.cont.MASAJE],['MEMBRESÍA',q.pre.MEMBRESIA],['GIFT CARD',q.pre['GIFT CARD']],['RESERVA',q.pre.RESERVA],null,
   ...(f===HOY?[['DENTRO AHORA',`${d.a+d.n}${d.n?` (${d.n} niños)`:''}`],['CASILLEROS LIBRES',`${libresSec('D').length} D · ${libresSec('V').length} V`]]:[]),['POR COBRAR',n2(q.porCobrar)]];
  return `<div class="lb-grid"><div>${tabla(D_COLS,rows.map((r,i)=>dFila(r,i+1,f)).join('')+dFila({},rows.length+1,f)+vacias(6,D_COLS,rows.length+2))}
@@ -2730,7 +2747,7 @@ function barSet(b,k,v){
  if(k==='hora'){const h=parseHora(v);if(h===null){toast('Escribe la hora así: 6:15');return}if(h)b.hora=h;return}
  if(k==='cas'){b.cas=String(v).trim().toUpperCase().replace(/\s|-/g,'');const r=diarioDeCas(b.fecha,b.cas);if(r){b.nombre=r.nombre;b.diarioId=r.id;b.autoN=1}else{b.diarioId=null;if(b.autoN){b.nombre='';delete b.autoN}}syncBar(b);return}
  if(k==='nombre'){b.nombre=String(v).trim().toUpperCase();delete b.autoN;return}
- if(k==='prod'){b.prod=v;delete b.txt;recalcBar(b);syncBar(b);return}
+ if(k==='prod'){b.prod=v;delete b.txt;recalcBar(b);syncBar(b);const p=cartaDe(v);const a=p&&avisoProducto(p,b.fecha,+b.cant||1);if(a)toast(a);return}
  if(k==='cant'){b.cant=Math.max(1,Math.round(+String(v).replace(',','.'))||1);recalcBar(b);syncBar(b);return}
  if(k==='pago'){b.pago=v||'EFECTIVO';if(b.pago==='NO CANCELO'&&!diarioDeCas(b.fecha,b.cas)&&!b.diarioId)toast('Elige el casillero para cargarlo a su cuenta: lo paga al salir.');syncBar(b);return}
  if(k==='total'){const t=String(v).replace(',','.').replace(/[^\d.]/g,'');if(t===''){delete b.totalManual;recalcBar(b)}else{b.total=+t;b.totalManual=1}syncBar(b)}}
@@ -2783,7 +2800,7 @@ function hBD(){const q=U.bdQ.trim().toLowerCase(),qd=normDni(q);const st=statsCl
  L=[...L].sort((a,b)=>sinTilde(a.nombre).trim().localeCompare(sinTilde(b.nombre).trim(),'es'));const P=L.slice(0,U.bdN);
  const cols=[['NOMBRE Y APELLIDO',260],['DNI',98],['CELULAR',106],['VISITAS',66],['ÚLTIMA VISITA',94],['TRAGO FAVORITO',150],['MASAJE',150],['CÓMO NOS CONOCIÓ',160],['REGLAS',120]];const O=S.cfg.opciones;const NC=U.nc;
  const fila=(c,n)=>{if(!c)return `<tr class="nueva"><th class="rn">+</th><td>${kIn('c:new|nombre',NC.nombre,'placeholder="Cliente nuevo: nombre"')}</td><td>${kIn('c:new|dni',NC.dni,'inputmode="numeric" maxlength="12" placeholder="DNI"')}</td><td>${kIn('c:new|cel',NC.cel,'inputmode="numeric" maxlength="9"')}</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
-  const s2=st[c.dni]||{};const pf=c.pref||{};const k='c:'+c.dni;return `<tr><th class="rn">${n}</th><td>${kIn(`${k}|nombre`,c.nombre)}</td>${ro(esc(c.dni))}<td>${kIn(`${k}|cel`,c.cel,'inputmode="numeric" maxlength="9"')}</td>${ro(s2.visitas||0)}${ro(s2.ultima?fDM2(s2.ultima)+'/'+s2.ultima.slice(2,4):'—')}<td>${kSel(`${k}|tragos`,(pf.tragos||[])[0]||'',O.tragos,'Trago favorito')}</td><td>${kSel(`${k}|masaje`,(pf.masaje||[])[0]||'',O.masaje,'Masaje')}</td><td>${kSel(`${k}|conocio`,(pf.conocio||[])[0]||'',O.conocio,'Cómo nos conoció')}</td><td class="${c.consent?'ok':''}">${c.consent?`<span class="ro">✓ ${fDM2(c.consent.fecha)}</span>`:`<button class="xbtn" data-a="consAbrir" data-v="staff|${c.dni}">Mostrar reglas</button>`}</td></tr>`};
+  const s2=st[c.dni]||{};const pf=c.pref||{};const k='c:'+(c.id||c.dni);return `<tr><th class="rn">${n}</th><td>${kIn(`${k}|nombre`,c.nombre)}</td>${c.dni?ro(esc(c.dni)):`<td>${kIn(`${k}|dni`,'','inputmode="numeric" maxlength="8" placeholder="Sin DNI"')}</td>`}<td>${kIn(`${k}|cel`,c.cel,'inputmode="numeric" maxlength="9"')}</td>${ro(s2.visitas||0)}${ro(s2.ultima?fDM2(s2.ultima)+'/'+s2.ultima.slice(2,4):'—')}<td>${kSel(`${k}|tragos`,(pf.tragos||[])[0]||'',O.tragos,'Trago favorito')}</td><td>${kSel(`${k}|masaje`,(pf.masaje||[])[0]||'',O.masaje,'Masaje')}</td><td>${kSel(`${k}|conocio`,(pf.conocio||[])[0]||'',O.conocio,'Cómo nos conoció')}</td><td class="${c.consent?'ok':''}">${c.consent?`<span class="ro">✓ ${fDM2(c.consent.fecha)}</span>`:`<button class="xbtn" data-a="consAbrir" data-v="staff|${c.dni}">Mostrar reglas</button>`}</td></tr>`};
  return `<div class="lb-bar"><input class="inp" data-in="U.bdQ" data-live placeholder="Buscar nombre, DNI o celular" value="${esc(U.bdQ)}" style="max-width:320px"><span class="small muted">${L.length.toLocaleString('es-PE')} de ${S.clientes.length.toLocaleString('es-PE')} clientes, de la A a la Z</span></div>
  <div class="lb-letras"><button class="${U.bdL?'':'on'}" data-a="bdLetra" data-v="">Todos</button>${'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(x=>`<button class="${U.bdL===x?'on':''}" data-a="bdLetra" data-v="${x}">${x}</button>`).join('')}</div>
  ${tabla(cols,(q||U.bdL?'':fila(null))+P.map((c,i)=>fila(c,i+1)).join(''))}${L.length>P.length?`<div class="lb-more"><button class="btn sm ghost" data-a="bdMas">Mostrar más clientes</button></div>`:''}
@@ -2795,7 +2812,7 @@ const R_EST=[['por llegar','POR LLEGAR'],['llegó','LLEGÓ'],['no asistió','NO 
 function hReservas(){const f=U.rf,man=proximas(2)[1];let L=S.reservas.filter(r=>f==='hoy'?r.fecha===HOY:f==='prox'?r.fecha>=HOY:true);L=[...L].sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));
  const cols=[['FECHA',64],['HORA',86],['NOMBRE',190],['CELULAR',100],['RESERVA',210],['PERS.',54],['MASAJE',76],['TOTAL',72],['PAGO',110],['ESTADO',130]];const N=U.nr2;
  const tipos=[['circuito','CIRCUITO'],...S.cfg.paquetes.map(p=>[p.id,p.nombre.toUpperCase()])];
- const body=L.map((r,i)=>`<tr class="${r.estado==='cancelada'||r.estado==='no asistió'?'fuera':''}"><th class="rn">${i+1}</th>${ro(r.fecha===HOY?'HOY':fDM2(r.fecha))}${ro(h12(r.hora))}${ro(`<b>${esc(r.nombre)}</b>${r.nueva?' <span class="xs muted">nueva</span>':''}`)}${ro(esc(r.cel))}${ro(descReserva(r))}${ro(r.adultos+r.ninos)}${ro(r.mhora?h12(r.mhora):'—')}${ro(n2(r.total))}${r.porConfirmar?`<td class="pend">${kSel(`r:${r.codigo}|pago`,'POR CONFIRMAR',['POR CONFIRMAR','YAPE','PLIN','TARJETA','LINK IZIPAY','NO PAGÓ'],'Pago')}${r.oper?`<small class="ih-tipo" style="padding:0 10px 4px">Op. ${esc(r.oper)}</small>`:''}</td>`:ro(r.pagado?esc(String(r.pago).toUpperCase()):'EN EL LOCAL')}<td class="${r.estado==='llegó'?'ok':''}">${kSel(`r:${r.codigo}|estado`,r.estado,R_EST,'Estado')}</td></tr>`).join('');
+ const body=L.map((r,i)=>`<tr class="${r.estado==='cancelada'||r.estado==='no asistió'?'fuera':''}"><th class="rn">${i+1}</th>${ro(r.fecha===HOY?'HOY':fDM2(r.fecha))}${ro(h12(r.hora))}${ro(`<b>${esc(r.nombre)}</b>${r.nueva?' <span class="xs muted">nueva</span>':''}`)}${ro(esc(r.cel))}${ro(descReserva(r))}${ro(r.adultos+r.ninos)}${ro(r.mhora?h12(r.mhora):'—')}${ro(n2(r.total))}${r.devolucion&&r.devolucion.estado==='POR DEVOLVER'?`<td class="pend">${kSel(`r:${r.codigo}|dev`,'POR DEVOLVER',['POR DEVOLVER','DEVUELTO','SALDO A FAVOR','NO SE DEVUELVE'],'Devolución')}<small class="ih-tipo" style="padding:0 10px 4px">${sol(r.devolucion.monto)}</small></td>`:r.devolucion?ro(esc(r.devolucion.estado)):r.porConfirmar?`<td class="pend">${kSel(`r:${r.codigo}|pago`,'POR CONFIRMAR',['POR CONFIRMAR','YAPE','PLIN','TARJETA','LINK IZIPAY','NO PAGÓ'],'Pago')}${r.oper?`<small class="ih-tipo" style="padding:0 10px 4px">Op. ${esc(r.oper)}</small>`:''}</td>`:ro(r.pagado?esc(String(r.pago).toUpperCase()):'EN EL LOCAL')}<td class="${r.estado==='llegó'?'ok':''}">${kSel(`r:${r.codigo}|estado`,r.estado,R_EST,'Estado')}</td></tr>`).join('');
  const nueva=`<tr class="nueva"><th class="rn">${L.length+1}</th><td>${kSel('r:new|fecha',N.fecha,proximas(10).map(x=>[x,x===HOY?'HOY':fDM2(x)]),'Fecha')}</td><td>${kSel('r:new|hora',N.hora,HORAS_ING.map(h=>[h,h12(h)]),'Hora')}</td><td>${kIn('r:new|nombre',N.nombre,'placeholder="Nueva reserva: nombre"')}</td><td>${kIn('r:new|cel',N.cel,'inputmode="numeric" maxlength="9"')}</td><td>${kSel('r:new|tipo',N.tipo,tipos,'Reserva')}</td><td class="num">${kIn('r:new|pers',N.pers,'inputmode="numeric"')}</td><td></td><td></td><td>${kSel('r:new|pago',N.pago,['EN EL LOCAL','YAPE','PLIN','TRANSFERENCIA'],'Pago')}</td><td></td></tr>`;
  return `<div class="lb-bar">${[['hoy','Hoy'],['prox','Desde hoy'],['todas','Todas']].map(([k,t])=>`<button class="chip ${U.rf===k?'on':''}" data-a="rf" data-v="${k}">${t}</button>`).join('')}</div>${tabla(cols,body+nueva)}
  <p class="lb-help">Las reservas de la web aparecen solas. Si el PAGO dice «POR CONFIRMAR» (pagó con QR o link), revisa que el dinero llegó y elige con qué pagó. Cuando el cliente llegue, cambia el ESTADO a «LLEGÓ»: pasa al DIARIO para que solo elijas el casillero. Las de WhatsApp o teléfono se anotan en la fila amarilla.</p>`}
@@ -2805,10 +2822,10 @@ function crearReserva(N){const tipo=N.tipo==='circuito'?'circuito':'paquete';con
  let c=clientePorCel(N.cel);if(!c)c=nuevoCliente('',N.nombre,N.cel);const Rq={tipo,paq:tipo==='paquete'?N.tipo:null,modal,adultos:tipo==='paquete'?(modal==='dos'?2:1):pers,ninos:0};const q=cotizar(Rq);const pag=N.pago!=='EN EL LOCAL';
  const r={codigo:code,fecha:N.fecha,hora:N.hora,mhora,dni:c.dni,nombre:N.nombre.trim(),cel:N.cel,...Rq,total:q.total,pago:N.pago,pagado:pag,web:pag,pagadoEl:pag?HOY:null,estado:'por llegar',origen:'WhatsApp',slots,notas:c.notas||'',nueva:true};S.reservas.push(r);
  log(`Anotó la reserva ${code}: ${r.nombre}, ${descReserva(r)}, ${fmtF(r.fecha)} ${h12(r.hora)}.`);return r}
-function llegoReserva(rv){if(rv.fecha!==HOY){toast('«Llegó» se marca el mismo día de la reserva.');return null}const n=rv.adultos,k=rv.ninos||0;const pago=rv.pagado?'RESERVA':'EFECTIVO';const grp=++S.seq.grp;let first=null;
+function llegoReserva(rv){if(rv.fecha!==HOY){toast('«Llegó» se marca el mismo día de la reserva.');return null}const n=rv.pre?rv.pre.m+rv.pre.v:rv.adultos,k=rv.pre?rv.pre.n||0:rv.ninos||0;const pago=rv.pagado?'RESERVA':'POR CANCELAR';const grp=++S.seq.grp;let first=null;
  const serv=rv.tipo==='paquete'?(rv.modal==='dos'?'PAQUETE DUO':'PAQUETE INDIVIDUAL'):rv.tipo==='masaje'?'MASAJE':'SAUNA';
- for(let i=0;i<n+k;i++){const nino=i>=n;const r=crearFila(HOY,{...newNf(),dni:i===0?(rv.dni||''):'',nombre:i===0?rv.nombre:(nino?'NIÑO':`ACOMPAÑANTE DE ${rv.nombre.split(' ')[0].toUpperCase()}`),serv:nino?'PISCINA':serv,pago});r.grp=grp;r.res=rv.codigo;
-  if(!nino&&rv.tipo==='paquete'){r.paq=rv.paq;r.com=`${paqueteDe(rv.paq).nombre.split(' ')[0].toUpperCase()}${rv.mhora?' - '+h12(rv.mhora).toUpperCase():''}`;recalc(r)}if(!nino&&rv.tipo==='masaje'){r.md=rv.mdur;recalc(r)}if(!first)first=r}
+ for(let i=0;i<n+k;i++){const nino=i>=n;const r=crearFila(HOY,{...newNf(),dni:i===0?(rv.dni||''):'',nombre:i===0?rv.nombre:(nino?'NIÑO':`ACOMPAÑANTE DE ${rv.nombre.split(' ')[0].toUpperCase()}`),serv:nino?'PISCINA':serv,pago});r.grp=grp;r.res=rv.codigo;if(i===0&&rv.cel&&!r.cel)r.cel=rv.cel;
+  if(!nino&&rv.tipo==='paquete'){r.paq=rv.paq;r.com=`${paqueteDe(rv.paq).nombre.split(' ')[0].toUpperCase()}${rv.mhora?' - '+h12(rv.mhora).toUpperCase():''}`;recalc(r)}if(!nino&&rv.tipo==='masaje'){r.mt=rv.mtipo||r.mt||'relajante';r.md=rv.mdur;r.mslot=(rv.slots||[])[i]||null;r.com=r.com||`MASAJE - ${h12(rv.mhora).toUpperCase()}`;recalc(r)}if(!first)first=r}
  rv.estado='llegó';rv.ticket=grp;(rv.slots||[]).forEach(k2=>{if(S.agenda[k2])S.agenda[k2].ticket=grp});return first}
 
 /* ---------- GIFT CARD ---------- */
@@ -2828,12 +2845,18 @@ function hMemb(){const base=[['DNI',94],['CELULAR',100],['NOMBRE',200],['SUSCRIP
 /* ---------- RESUMEN (lo que antes era HAMMAM REGISTRO) ---------- */
 function hResumen(){const fechas=[...new Set([...S.diario.map(r=>r.fecha),...S.barRows.map(b=>b.fecha)])].sort().reverse();const meses=[...new Set(fechas.map(f=>f.slice(0,7)))];if(!meses.includes(U.rm))U.rm=meses[0]||HOY.slice(0,7);
  const dias=fechas.filter(f=>f.slice(0,7)===U.rm);const cols=[['FECHA',80],['PERSONAS',86],['INGRESO HAMMAM',120],['INGRESO BAR',110],['TOTAL INGRESOS',120],['GASTOS',100],['GANANCIA',110],['GASTOS APARTE',120]];
- const D=dias.map(f=>{const q=cuadreDia(f),b=cuadreBar(f);const gas=q.gastoOper+b.gTot;return {f,p:q.personas,h:q.total,b:b.tot,t:q.total+b.tot,g:gas,gan:q.total+b.tot-gas,ap:q.retiros}});const T=k=>sum(D,x=>x[k]);
+ const D=dias.map(f=>{const q=cuadreDia(f),b=cuadreBar(f);const gas=q.gastoOper+b.gTot;return {f,p:q.personas,h:q.totalDia,b:b.tot,t:q.totalDia+b.tot,g:gas,gan:q.total+b.tot-gas,ap:q.retiros}});const T=k=>sum(D,x=>x[k]);
  const nm=m=>fromK(m+'-01').toLocaleDateString('es-PE',{month:'long',year:'numeric'});const pend=S.reclamos.filter(r=>r.estado==='Pendiente');
  return `<div class="lb-bar">${meses.slice(0,12).map(m=>`<button class="chip ${U.rm===m?'on':''}" data-a="rmSet" data-v="${m}">${nm(m)}</button>`).join('')}</div>
  ${tabla(cols,D.map((x,i)=>`<tr class="click" data-a="irDiario" data-v="${x.f}"><th class="rn">${i+1}</th>${ro(fDM2(x.f))}${ro(x.p)}${ro(n2(x.h))}${ro(n2(x.b))}${ro('<b>'+n2(x.t)+'</b>')}${ro(n2(x.g))}<td class="ro ${x.gan<0?'pend':''}"><b>${n2(x.gan)}</b></td>${ro(x.ap?n2(x.ap):'')}</tr>`).join('')+`<tr class="tot"><th class="rn"></th>${ro('TOTAL')}${ro(T('p'))}${ro(n2(T('h')))}${ro(n2(T('b')))}${ro('<b>'+n2(T('t'))+'</b>')}${ro(n2(T('g')))}${ro('<b>'+n2(T('gan'))+'</b>')}${ro(n2(T('ap')))}</tr>`)}
  <p class="lb-help">Se arma solo con el DIARIO, el BAR y los GASTOS. «Gastos aparte» son los de categorías personales o por clasificar, que no se restan de la ganancia. Toca un día para abrir su DIARIO.</p>
- ${pend.length?`<h4>Libro de reclamaciones · por responder</h4>${tabla([['HOJA',96],['FECHA',72],['TIPO',80],['DETALLE',420],['VENCE',80]],pend.map((r,i)=>`<tr><th class="rn">${i+1}</th>${ro(r.num)}${ro(fDM2(r.fecha))}${ro(r.tipo)}${ro(esc(r.detalle))}${ro(fDM2(diasHabiles(r.fecha,15)))}</tr>`).join(''))}`:''}`}
+ ${hReclamos()}`}
+function hReclamos(){const L=S.reclamos;if(!L.length)return '';const sel=U.reclSel?L.find(r=>r.num===U.reclSel):null;const ven=r=>r.vence||diasHabiles(r.fecha,15);
+ return `<h4>Libro de reclamaciones · ${L.filter(r=>r.estado==='Pendiente').length} por responder</h4>${tabla([['HOJA',96],['FECHA',72],['TIPO',80],['CONSUMIDOR',170],['DETALLE',330],['VENCE',80],['ESTADO',110]],L.map((r,i)=>`<tr class="click ${r.estado==='Pendiente'&&ven(r)<=diasHabiles(HOY,3)?'bajo':''}" data-a="reclSel" data-v="${r.num}"><th class="rn">${i+1}</th>${ro(r.num)}${ro(fDM2(r.fecha))}${ro(r.tipo)}${ro(esc(r.nombre))}${ro(esc(r.detalle))}${ro(fDM2(ven(r)))}${ro(r.estado.toUpperCase())}</tr>`).join(''))}
+ ${sel?`<div class="recl-hoja"><div class="row between"><b>Hoja ${sel.num}</b><button class="btn xs ghost" data-a="reclSel" data-v="">Cerrar vista</button></div>
+  <dl class="kv"><dt>Fecha</dt><dd>${fmtFL(sel.fecha)}${sel.hora?' · '+h12(sel.hora):''}</dd><dt>Consumidor</dt><dd>${esc(sel.nombre)}</dd><dt>Documento</dt><dd>${esc(sel.doc)}</dd>${sel.dom?`<dt>Domicilio</dt><dd>${esc(sel.dom)}</dd>`:''}${sel.cel?`<dt>Celular</dt><dd>${esc(sel.cel)}</dd>`:''}${sel.correo?`<dt>Correo</dt><dd>${esc(sel.correo)}</dd>`:''}<dt>Tipo</dt><dd>${sel.tipo}</dd><dt>Bien contratado</dt><dd>${esc(sel.bien||'')}${sel.desc?' · '+esc(sel.desc):''}${sel.monto?' · '+sol(+sel.monto):''}</dd><dt>Vence</dt><dd>${fmtFL(ven(sel))} (15 días hábiles)</dd></dl>
+  <p class="small"><b>Detalle:</b> ${esc(sel.detalle)}</p><p class="small"><b>Pedido:</b> ${esc(sel.pedido)}</p>
+  ${sel.estado==='Pendiente'?`<label class="fld">Respuesta<textarea data-in="U.reclResp" rows="4">${esc(U.reclResp)}</textarea></label><button class="btn sm mt" data-a="reclResponder" data-v="${sel.num}">Registrar respuesta</button>`:`<p class="small"><b>Respuesta (${fDM2(sel.respFecha||sel.fecha)}${sel.respPor?', '+esc(sel.respPor):''}):</b> ${esc(sel.resp)}</p><p class="small"><b>Envío:</b> ${sel.envio?esc(sel.envio):'falta registrar'}</p><div class="row">${sel.envio?'':`<button class="btn sm" data-a="reclEnviado" data-v="${sel.num}">Marcar como enviada</button>`}${sel.estado!=='Cerrado'?`<button class="btn sm ghost" data-a="reclCerrar" data-v="${sel.num}">Cerrar la hoja</button>`:''}</div>`}</div>`:''}`}
 
 /* ---------- AJUSTES ---------- */
 function hAjustes(){const c=S.cfg;const num=(path,val)=>`<input class="xc num" type="number" step="0.5" data-in="${path}" data-num data-live value="${val}">`;const I=U.imp;
@@ -2911,18 +2934,22 @@ function celdaLibro(tipo,id,k,v){
  if(tipo==='ms'){celdaMasaje(id,k,v);return}
  if(tipo==='ih'||tipo==='ihc'){celdaInvH(tipo,id,k,v);return}
  if(tipo==='b'){if(id==='new'){U.nb[k]=v;if((k==='prod'&&v)||(k==='total'&&v!=='')){const b=crearBar(U.dd,U.nb);U.nb=newNb();U.focus=`[data-cell="b:${b.id}|pago"]`}return}const b=S.barRows.find(x=>x.id===+id);if(b)barSet(b,k,v);return}
- if(tipo==='gs'){if(id==='new'){U.ng2[k]=v;if((k==='desc'&&String(v).trim().length>=2)||(k==='total'&&+String(v).replace(',','.')>0)){const N=U.ng2;const g={id:S.seq.gasto++,fecha:U.dd,caja:N.caja||'HAMMAM',cat:N.cat||'',desc:String(N.desc).trim().toUpperCase(),medio:N.medio||'EFECTIVO',total:+String(N.total).replace(',','.')||0,por:quien()};S.gastos.push(g);U.ng2=newNg2();U.focus=`[data-cell="gs:${g.id}|${k==='desc'?'total':'desc'}"]`;log(`Registró un gasto: ${g.desc||g.cat} (${sol(g.total)}).`)}return}
-  const g=S.gastos.find(x=>x.id===+id);if(!g)return;if(k==='total')g.total=+String(v).replace(',','.')||0;else if(k==='desc')g.desc=String(v).trim().toUpperCase();else g[k]=v;return}
+ if(tipo==='gs'){if(id==='new'){U.ng2[k]=v;if(k==='total'&&String(v).trim()!==''&&!(+String(v).replace(',','.')>0)){U.ng2.total='';toast('El monto del gasto debe ser mayor a 0.');return}const N=U.ng2,tot=+String(N.total||'').replace(',','.');if(tot>0&&(String(N.desc||'').trim().length>=2||N.cat)){const g={id:S.seq.gasto++,fecha:U.dd,caja:N.caja||'HAMMAM',cat:N.cat||'',desc:String(N.desc).trim().toUpperCase(),medio:N.medio||'EFECTIVO',total:+String(N.total).replace(',','.')||0,por:quien()};S.gastos.push(g);U.ng2=newNg2();U.focus=`[data-cell="gs:${g.id}|${k==='desc'?'total':'desc'}"]`;log(`Registró un gasto: ${g.desc||g.cat} (${sol(g.total)}).`)}return}
+  const g=S.gastos.find(x=>x.id===+id);if(!g)return;if(k==='total'){const t=+String(v).replace(',','.');if(!(t>0)){toast('El monto del gasto debe ser mayor a 0. Para anularlo, bórralo tocando su número.');return}g.total=t}else if(k==='desc')g.desc=String(v).trim().toUpperCase();else g[k]=v;return}
  if(tipo==='c'){if(id==='new'){U.nc[k]=k==='cel'?String(v).replace(/\D/g,'').slice(0,9):v;const N=U.nc,d=normDni(N.dni);if((k==='dni'||k==='nombre')&&d.length>=6&&N.nombre.trim().length>=2){if(clienteDni(d)){toast('Ese DNI ya está en la base de datos.');return}nuevoCliente(d,N.nombre,N.cel);U.nc={dni:'',nombre:'',cel:''};log(`Agregó a ${titulo(N.nombre)} a la base de datos.`)}return}
-  const c=clienteDni(id);if(!c)return;if(k==='nombre')c.nombre=String(v).trim().toUpperCase()||c.nombre;else if(k==='cel'){const c9=String(v).replace(/\D/g,'').slice(0,9);if(!c9||/^9\d{8}$/.test(c9))c.cel=c9;else toast('El celular debe tener 9 dígitos y empezar con 9.')}else{c.pref=c.pref||{};c.pref[k]=v?[v]:[]}return}
+  const c=S.clientes.find(x=>x.id===id)||clienteDni(id);if(!c)return;if(k==='dni'){const d=normDni(v);if(d.length<6){toast('El DNI debe tener 8 números.');return}if(clienteDni(d)){toast('Ese DNI ya es de otro cliente.');return}c.dni=d;return}if(k==='nombre')c.nombre=String(v).trim().toUpperCase()||c.nombre;else if(k==='cel'){const c9=String(v).replace(/\D/g,'').slice(0,9);if(!c9||/^9\d{8}$/.test(c9))c.cel=c9;else toast('El celular debe tener 9 dígitos y empezar con 9.')}else{c.pref=c.pref||{};c.pref[k]=v?[v]:[]}return}
  if(tipo==='r'){if(id==='new'){U.nr2[k]=k==='cel'?String(v).replace(/\D/g,'').slice(0,9):v;const N=U.nr2;if((k==='nombre'||k==='cel')&&N.nombre.trim().length>=3&&/^9\d{8}$/.test(N.cel)){const r=crearReserva(N);if(r){U.nr2=newNr2();toast(`Reserva ${r.codigo} anotada${r.mhora?`; masaje a las ${h12(r.mhora)}`:''}.`)}}return}
   const r=S.reservas.find(x=>x.codigo===id);
+  if(k==='dev'){if(!r||!r.devolucion||!v||v==='POR DEVOLVER')return;const d=r.devolucion;d.estado=v;d.fecha=HOY;d.por=quien();
+   if(v==='DEVUELTO')S.gastos.push({id:S.seq.gasto++,fecha:HOY,caja:'HAMMAM',cat:'DEVOLUCIÓN',desc:`DEVOLUCIÓN RESERVA ${r.codigo}`,medio:MEDIOS_CAJA.includes(String(r.pago).toUpperCase())?String(r.pago).toUpperCase():'EFECTIVO',total:d.monto,por:quien()});
+   if(v==='SALDO A FAVOR'){const code='SAF-'+String(r.codigo).slice(-4);S.gifts.push({item:Math.max(0,...S.gifts.map(g=>g.item||0))+1,codigo:code,comprador:'SALDO A FAVOR',monto:d.monto,saldo:d.monto,pago:'SALDO A FAVOR',fecha:HOY,vence:addDays(HOY,90),receptor:r.nombre,dni:r.dni||'',tel:r.cel||'',desc:`Saldo a favor por la reserva ${r.codigo}`,estado:'VIGENTE',uso:null,cel:r.cel||''});d.codigo=code;toast(`Se creó el saldo a favor ${code} por ${sol(d.monto)}.`)}
+   log(`Reserva ${r.codigo}: devolución «${v}».`);return}
   if(k==='pago'){if(!r||!v||v==='POR CONFIRMAR')return;if(v==='NO PAGÓ'){r.porConfirmar=false;r.pagado=false;r.pago='EN EL LOCAL'}else{r.porConfirmar=false;r.pagado=true;r.pago=v;r.pagadoEl=HOY}log(`Confirmó el pago de la reserva ${r.codigo}: ${v}.`);servConfirmar('reserva',r.codigo,{pagado:r.pagado,pago:r.pago});return}
   if(!r||!v||r.estado===v)return;
   if(v==='llegó'){const first=llegoReserva(r);if(first){U.hoja='diario';U.dd=HOY;U.focus=`[data-cell="${first.id}|cas"]`;toast(`${titulo(r.nombre)} pasó al DIARIO: elige su casillero.`);log(`Llegó la reserva ${r.codigo}.`)}return}
-  if(v==='cancelada'){(r.slots||[]).forEach(k2=>delete S.agenda[k2])}if(v==='no asistió'){(r.slots||[]).forEach(k2=>{if(S.agenda[k2])S.agenda[k2].estado='no asistió'})}r.estado=v;log(`Reserva ${r.codigo}: ${v}.`);return}
+  if(v==='cancelada'){const res=cancelarReserva(r,quien());toast('Reserva cancelada.'+(res.gift?` Se devolvieron ${sol(res.gift)} a la gift card.`:'')+(res.devolver?` Queda por devolver ${sol(res.devolver)}: elige qué se hizo en la columna PAGO.`:''));return}if(v==='no asistió'){(r.slots||[]).forEach(k2=>{if(S.agenda[k2])S.agenda[k2].estado='no asistió'})}r.estado=v;log(`Reserva ${r.codigo}: ${v}.`);return}
  if(tipo==='g'){if(id==='new'){U.ngc[k]=v;const N=U.ngc;if(k==='comprador'&&String(v).trim().length>=2){const item=Math.max(0,...S.gifts.map(g=>g.item||0))+1;const g={item,codigo:'GC-'+String(item).padStart(4,'0'),comprador:String(v).trim(),monto:+N.monto||0,saldo:+N.monto||0,pago:N.pago||'YAPE',fecha:HOY,vence:addDays(HOY,S.cfg.giftDias),receptor:N.receptor||'',dni:normDni(N.dni),tel:N.tel||'',desc:String(N.desc||'').toUpperCase(),estado:'VIGENTE',uso:null,cel:N.tel||''};S.gifts.push(g);U.ngc=newNgc();U.focus=`[data-cell="g:${g.codigo}|monto"]`;log(`Vendió la gift card ${g.codigo}.`)}return}
-  const g=S.gifts.find(x=>x.codigo===id);if(!g)return;if(k==='monto'){g.monto=+v||0;if(g.estado==='VIGENTE')g.saldo=g.monto}else if(k==='dni')g.dni=normDni(v);else if(k==='estado'){if(g.estado==='POR CONFIRMAR'&&v==='VIGENTE'){log(`Confirmó el pago de la gift card ${g.codigo}.`);servConfirmar('gift',g.codigo,{estado:'VIGENTE'})}g.estado=v||'VIGENTE';if(v==='USADO'){g.uso=g.uso||HOY;g.saldo=0}else if(v==='VIGENTE'){g.uso=null;g.saldo=g.monto}}else if(k==='desc')g.desc=String(v).toUpperCase();else g[k]=v;return}
+  const g=S.gifts.find(x=>x.codigo===id);if(!g)return;if(k==='monto'){g.monto=+v||0;if(g.estado==='VIGENTE')g.saldo=g.monto}else if(k==='dni')g.dni=normDni(v);else if(k==='estado'){if(g.estado==='POR CONFIRMAR'&&v==='VIGENTE'){g.pagadoEl=HOY;log(`Confirmó el pago de la gift card ${g.codigo}.`);servConfirmar('gift',g.codigo,{estado:'VIGENTE'})}g.estado=v||'VIGENTE';if(v==='USADO'){g.uso=g.uso||HOY;g.saldo=0}else if(v==='VIGENTE'){g.uso=null;g.saldo=g.monto}}else if(k==='desc')g.desc=String(v).toUpperCase();else g[k]=v;return}
  if(tipo==='m'){if(id==='new'){U.nmm[k]=v;const N=U.nmm,d=normDni(N.dni);if(k==='dni'){const c=clienteDni(d);if(c){N.nombre=N.nombre||c.nombre;N.cel=N.cel||c.cel}}if((k==='dni'||k==='nombre')&&d.length>=6&&String(N.nombre).trim().length>=2){if(!clienteDni(d))nuevoCliente(d,N.nombre,N.cel);const m={id:S.seq.memb++,dni:d,cel:N.cel||'',nombre:String(N.nombre).toUpperCase(),inicio:HOY,cupos:+N.cupos||30,precio:+N.precio||0,pago:N.pago||'YAPE',usos:[]};S.membresias.push(m);U.nmm=newNmm();log(`Vendió una membresía a ${titulo(m.nombre)}.`);toast('Membresía creada. Su pago entra a la caja de hoy.')}return}
   const m=S.membresias.find(x=>x.id===+id);if(!m)return;if(k==='cupos'||k==='precio')m[k]=+v||0;else if(k==='nombre')m.nombre=String(v).toUpperCase();else m[k]=v;return}
  if(tipo==='inv'){const f=U.dd;(S.inv.ing[f]=S.inv.ing[f]||{})[id]=+v||0;return}
@@ -2988,7 +3015,7 @@ function importarBar(hojas,opt={}){const norm=s=>String(s??'').trim().toUpperCas
 /* ---------- la carta del bar en la web y pedidos desde el casillero ---------- */
 function cBar(){const B=U.bp;const g0=B.ticket?grupoDe(B.ticket):null;const cta=g0&&!g0.salida?g0:null;if(B.ticket&&!cta)B.ticket=null;const hint=abiertos().find(g=>g.lockers.length);
  return `<div class="pagehead" style="${bgi('bar',1600)}"><div><p class="eyebrow" style="color:#D9E2C4">Hammam Restobar</p><h2>Algo rico después del circuito</h2><p>Pide desde tu celular sin salir de la piscina. Se carga a tu locker y pagas todo al salir.</p></div></div>
- <div class="split wide mt"><div class="card pad-lg carta-resto">${CARTA_CATS.map(ct=>{const L=S.carta.filter(p=>p.cat===ct&&!p.soloBar&&p.precio>0);return L.length?`<div class="menu-cat"><h4 style="margin-top:0">${titulo(ct)}</h4>${L.map(p=>`<div class="menu-item"><div><b class="menu-nom">${esc(p.nombre)}</b>${p.desc?`<small class="menu-desc">${esc(p.desc)}</small>`:''}</div><div class="row"><span class="nowrap">${sol(p.precio)}</span>${cta?ctr('bpq',B.cart[p.id]||0,p.id+'|',0,9):''}</div></div>`).join('')}</div>`:''}).join('')}<p class="xs muted">No se venden bebidas alcohólicas a menores de 18 años.</p></div>
+ <div class="split wide mt"><div class="card pad-lg carta-resto">${CARTA_CATS.map(ct=>{const L=S.carta.filter(p=>p.cat===ct&&!p.soloBar&&p.precio>0);return L.length?`<div class="menu-cat"><h4 style="margin-top:0">${titulo(ct)}</h4>${L.map(p=>`<div class="menu-item"><div><b class="menu-nom">${esc(p.nombre)}</b>${p.desc?`<small class="menu-desc">${esc(p.desc)}</small>`:''}</div><div class="row"><span class="nowrap">${sol(p.precio)}</span>${dispWeb(p)?`<span class="agotado">${dispWeb(p)}</span>`:cta?ctr('bpq',B.cart[p.id]||0,p.id+'|',0,Math.min(9,stockProd(p,HOY))):''}</div></div>`).join('')}</div>`:''}).join('')}<p class="xs muted">No se venden bebidas alcohólicas a menores de 18 años.</p></div>
  <aside class="card sticky">${cta?bpCart(cta):bpLogin(hint)}</aside></div>`}
 function bpCart(c){const B=U.bp;const lines=Object.entries(B.cart).filter(([k,q])=>q>0);const tot=sum(lines,([k,q])=>cartaDe(k).precio*q);
  const items=c.rows.flatMap(r=>[{d:`${SERV_CORTO[r.serv]||r.serv} · ${titulo(r.nombre).split(' ')[0]}`,m:r.total,pag:r.pagado},...(r.cons||[]).map(x=>({d:x.d,m:x.m,pag:x.pag}))]);
@@ -2996,6 +3023,14 @@ function bpCart(c){const B=U.bp;const lines=Object.entries(B.cart).filter(([k,q]
  ${lines.length?`<div class="items">${lines.map(([k,q])=>`<div><span>${titulo(cartaDe(k).nombre)} × ${q}</span><span>${sol(cartaDe(k).precio*q)}</span></div>`).join('')}</div><div class="totline"><span>Total del pedido</span><b>${sol(tot)}</b></div><button class="btn block mt" data-a="bpEnviar">Enviar pedido al bar</button>`:'<p class="muted small mt">Usa los botones + de la carta para armar tu pedido.</p>'}
  ${(()=>{const mis=S.barRows.filter(b=>b.web&&!b.anulado&&b.fecha===HOY&&c.rows.some(r=>r.id===b.diarioId));return mis.length?`<h4>Tus pedidos de hoy</h4><div class="items">${mis.map(b=>`<div><span>${+b.cant||1} × ${esc(titulo(prodNom(b)))}</span><span class="pill ${b.ent?'ok':'warn'}">${b.ent?'Entregado':'En camino'}</span></div>`).join('')}</div>`:''})()}<h4>Tu cuenta hasta ahora</h4><div class="items">${items.map(i=>`<div class="${i.pag?'paid':''}"><span>${esc(i.d)}</span><span>${i.pag&&!i.m?'Pagado':sol(i.m)}</span></div>`).join('')}</div><div class="totline"><span>Por pagar al salir</span><b>${sol(pendienteG(c))}</b></div>`}
 
+
+/* días en que se vende un producto (0 = domingo … 6 = sábado) y existencias */
+const DIAS_CARTA={caldo:[2],sancocho:[3]};const DIA_NOM=['domingos','lunes','martes','miércoles','jueves','viernes','sábados'];
+const diasProd=p=>p.dias||DIAS_CARTA[p.id]||null;
+const diaSem=f=>fromK(f).getDay();
+function stockProd(p,f){const I=invDia(f);const u=Object.entries(p.usa||{});if(!u.length)return Infinity;return Math.min(...u.map(([id,q])=>I[id]?Math.floor(I[id].fin/(q||1)):Infinity))}
+function avisoProducto(p,f,cant=1){const d=diasProd(p);if(d&&!d.includes(diaSem(f)))return `Ojo: ${titulo(p.nombre)} es solo de los ${d.map(x=>DIA_NOM[x]).join(' y ')}.`;const s=stockProd(p,f);if(s<cant)return s<=0?`Ojo: el inventario dice que no queda ${titulo(p.nombre).toLowerCase()}.`:`Ojo: el inventario dice que solo quedan ${s}.`;return ''}
+function dispWeb(p){const d=diasProd(p);if(d&&!d.includes(diaSem(HOY)))return 'Solo los '+d.map(x=>DIA_NOM[x]).join(' y ');if(stockProd(p,HOY)<=0)return 'Agotado';return ''}
 
 /* =================== PAGOS: Izipay (tarjeta y Yape), QR de billeteras y link de pago =================== */
 const PAGO_DEF={servidor:'',qr:'',numero:'984 587 616',titular:'Hammam Wellness Center',link:'',claveStaff:''};
@@ -3006,14 +3041,14 @@ const cfgW=()=>{const c=cfgP(),o={...PAGOS_WEB};Object.keys(PAGOS_WEB).forEach(k
 const urlServ=()=>String(cfgW().servidor||'').trim().replace(/\/+$/,'');
 const servOk=()=>/^https:\/\/[\w.-]+(\/[\w./-]*)?$/.test(urlServ())||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(urlServ());
 const MEDIO_TXT={izipay:'Izipay',qr:'QR billetera',link:'Link Izipay',local:'En el local',yape:'Yape',tarjeta:'Tarjeta'};
-const codAzar=pre=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const v=new Uint32Array(6);(window.crypto||{getRandomValues:x=>x.map(()=>Math.random()*4e9)}).getRandomValues(v);v.forEach(n=>s+=a[n%a.length]);return pre+s};
+const codAzar=pre=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';for(let i=0;i<20;i++){const v=new Uint32Array(6);if(window.crypto&&window.crypto.getRandomValues)window.crypto.getRandomValues(v);else v.forEach((_,j)=>v[j]=Math.floor(Math.random()*4e9));let s='';v.forEach(n=>s+=a[n%a.length]);const c=pre+s;if(!S.gifts.some(g=>g.codigo===c)&&!S.reservas.some(r=>r.codigo===c))return c}return pre+Date.now().toString(36).toUpperCase()};
 /* medios que ve el cliente */
 function mediosPago(){const L=[['izipay','Tarjeta o Yape','Formulario seguro de Izipay'],['qr','Yape, Plin u otra billetera','Escaneas nuestro QR']];if(cfgW().link)L.push(['link','Link de pago','Se abre la página de Izipay']);return L}
 
 /* ---- ventana de cobro (QR, link o pago simulado mientras no hay servidor) ---- */
 function montoCobro(pg){return pg.ctx==='gift'?valorGiftSel():cotizar(U.R).total}
 function valorGiftSel(){const G=U.gift,sel=GOPTS().find(o=>o[0]===G.tipo);return G.tipo==='monto'?+G.monto||0:sel?sel[2]:0}
-function modalCobro(){const pg=U.pg;if(!pg)return '';const P=cfgW(),t=montoCobro(pg);
+function modalCobro(){const pg=U.pg;if(!pg)return '';setTimeout(()=>{const m=document.querySelector('.modal.cobro');if(m&&!m.contains(document.activeElement)){const f=m.querySelector('input,a.btn,button.btn:not([data-a="pgCerrar"])');if(f)f.focus()}},0);const P=cfgW(),t=montoCobro(pg);
  const cab=tt=>`<div class="backdrop" data-a="pgCerrar"></div><div class="modal cobro" role="dialog" aria-modal="true" aria-label="${tt}"><div class="mh"><b>${tt}</b><button class="btn xs ghost" data-a="pgCerrar" aria-label="Cerrar">${ic('x','sm')}</button></div>`;
  if(pg.medio==='qr')return `${cab(`Paga ${sol(t)} con tu billetera`)}
   <div class="qrpago">${P.qr?`<img src="${esc(P.qr)}" alt="Código QR de Hammam para pagar">`:`<div class="qr-vacio">${ic('qr','lg')}<span>Aquí va el QR de Hammam</span></div>`}
@@ -3068,7 +3103,7 @@ function izipayPagar(ctx){const R=U.R,G=U.gift;const monto=ctx==='gift'?valorGif
 /* ---- gift card creada desde la web ---- */
 function crearGiftWeb(info){const G=U.gift;if(!validGift())return null;const sel=GOPTS().find(o=>o[0]===G.tipo);const valor=valorGiftSel();
  const code=G.codigoPre||codAzar('REG-');const conf=info.medio==='izipay'||info.sim;
- const item=Math.max(0,...S.gifts.map(g=>g.item||0))+1;const g={item,codigo:code,comprador:G.de.trim(),monto:valor,saldo:valor,pago:info.medio==='izipay'?'WEB · '+String(info.metodo||'IZIPAY').toUpperCase():MEDIO_TXT[info.medio].toUpperCase(),fecha:HOY,vence:addDays(HOY,S.cfg.giftDias),receptor:G.para.trim(),dni:'',tel:G.cel,desc:G.tipo==='monto'?'Monto libre':sel[1],estado:conf?'VIGENTE':'POR CONFIRMAR',oper:info.oper||'',uso:null,cel:G.cel,nueva:true};
+ const item=Math.max(0,...S.gifts.map(g=>g.item||0))+1;const g={item,codigo:code,comprador:G.de.trim(),monto:valor,saldo:valor,pago:info.medio==='izipay'?'WEB · '+String(info.metodo||'IZIPAY').toUpperCase():MEDIO_TXT[info.medio].toUpperCase(),fecha:HOY,vence:addDays(HOY,S.cfg.giftDias),receptor:G.para.trim(),dni:'',tel:G.cel,desc:G.tipo==='monto'?'Monto libre':sel[1],estado:conf?'VIGENTE':'POR CONFIRMAR',web:true,medio:info.medio,pagadoEl:conf?HOY:null,oper:info.oper||'',uso:null,cel:G.cel,nueva:true};
  S.gifts.push(g);G.codigo=code;log(`Venta de gift card ${code} por ${sol(valor)} desde la web (${MEDIO_TXT[info.medio]}${conf?'':', pago por confirmar'}).`,'Web');
  toast(conf?'Pago aprobado.':'Recibimos tu pedido. Recepción confirma el pago y te enviamos la tarjeta.');return g}
 
@@ -3108,7 +3143,7 @@ function freshU(){return {view:'cliente',ctab:'inicio',itab:'reglas',pmodo:'ind'
  cons:null,consPend:{},
  rol:null,mod:'hoy',sub:{bar:'pos',mant:'piscina'},
  dd:HOY,dq:'',nf:newNf(),fe:null,q:newQ(),lastQ:null,mas:false,dview:'simple',hoja:'diario',bdQ:'',bdL:'',bdN:80,nms:newNms(),gcalVisto:null,nb:newNb(),ng2:newNg2(),nr2:newNr2(),ngc:newNgc(),nmm:newNmm(),ncb:{nombre:'',cat:'BEBIDAS',precio:''},
- ing:newIng(),cadd:{p:'sour',q:1,ex:'SHORT',mt:'relajante',md:30,medio:'EFECTIVO'},lockerSel:null,rsq:'',drawer:null,focus:null,
+ ing:newIng(),cadd:{p:'tinto',q:1,ex:'SHORT',mt:'relajante',md:30,medio:'EFECTIVO'},lockerSel:null,rsq:'',drawer:null,focus:null,
  cq:HOY,gp:'hoy',gc:'',gq:'',ngst:{fecha:HOY,cat:'MASAJISTA',desc:'',medio:'EFECTIVO',total:''},
  cliQ:'',cliF:'',cliP:1,nc:{dni:'',nombre:'',cel:''},nm:null,ng:null,gf:'',rm:HOY.slice(0,7),imp:{reemplazar:true,estado:'',error:false,listo:false},opcNew:{},
  rf:'hoy',rq:'',nres:false,nr:{nombre:'',cel:'',dni:'',origen:'WhatsApp',tipo:'circuito',fecha:HOY,hora:'18:00',adultos:2,ninos:0,pago:'En el local'},
@@ -3117,12 +3152,13 @@ function freshU(){return {view:'cliente',ctab:'inicio',itab:'reglas',pmodo:'ind'
  med:{cloro:1.5,ph:7.4,agua:32},tmp:{seco:84,vapor:44},inc:{area:AREAS[0],desc:'',prio:'Media'},
  pnew:{codigo:'',tipo:'%',valor:10,desc:''},reclSel:null,reclResp:'',repPer:30}}
 let U;
-const VALID={pg:()=>!!U.pg&&(U.pg.medio!=='qr'||/^[\w-]{4,20}$/.test(String(U.pg.oper||'').trim())),q:()=>validQ(),R:()=>validR(),gift:()=>validGift(),authCel:()=>/^9\d{8}$/.test(U.auth.cel),nr:()=>validNr(),pnew:()=>validPnew(),inc:()=>U.inc.desc.trim().length>0,rc:()=>validRc(),yape:()=>/^\d{6}$/.test(U.R.yapeCod),pc:()=>!!U.pc&&U.pc.m+U.pc.v>0&&U.pc.ropa,gasto:()=>validGasto(),cons:()=>!!U.cons&&U.cons.a1&&U.cons.a2};
+const VALID={pg:()=>!!U.pg&&(U.pg.medio!=='qr'||/^[\w-]{4,20}$/.test(String(U.pg.oper||'').trim())),q:()=>validQ(),R:()=>validR(),gift:()=>validGift(),authCel:()=>/^9\d{8}$/.test(U.auth.cel),nr:()=>validNr(),pnew:()=>validPnew(),inc:()=>U.inc.desc.trim().length>0,rc:()=>validRc(),yape:()=>/^\d{6}$/.test(U.R.yapeCod),pc:()=>pcCuadra()&&!!U.pc.ropa,gasto:()=>validGasto(),cons:()=>!!U.cons&&U.cons.a1&&U.cons.a2};
 const app=$('#app');
 const top0=()=>window.scrollTo({top:0,behavior:'instant'});
 const quien=()=>QUIEN[U.rol]||'Web';
 const filaAbierta=g=>g.rows.find(r=>!r.sal)||g.rows[0];
-function nuevoCliente(dni,nombre,cel,extra={}){const c={dni:normDni(dni),nombre:String(nombre||'').trim().toUpperCase()||'SIN NOMBRE',cel:/^9\d{8}$/.test(cel||'')?cel:'',cumple:'',notas:'',promos:false,alta:HOY,puntos:0,...extra};const p=c.dni&&U.consPend[c.dni];if(p){c.consent=p;c.promos=p.mkt;delete U.consPend[c.dni]}S.clientes.push(c);return c}
+const cliId=()=>'C'+((S.seq.cli=(S.seq.cli||S.clientes.length+1)+1));
+function nuevoCliente(dni,nombre,cel,extra={}){const c={id:cliId(),dni:normDni(dni),nombre:String(nombre||'').trim().toUpperCase()||'SIN NOMBRE',cel:/^9\d{8}$/.test(cel||'')?cel:'',cumple:'',notas:'',promos:false,alta:HOY,puntos:0,...extra};const p=c.dni&&U.consPend[c.dni];if(p){c.consent=p;c.promos=p.mkt;delete U.consPend[c.dni]}S.clientes.push(c);return c}
 function consentimiento(canal,mkt){return {fecha:HOY,hora:ahora(),canal,v:TERMS_V,mkt:!!mkt}}
 function horaMasajeLibre(f,desde,need=1){return HORAS_MAS.find(h=>toMin(h)>=desde&&libresEn(f,h).length>=need&&!pasada(f,h))||null}
 function agendarMasaje(f,h,need,datos){const cabs=libresEn(f,h).slice(0,need);cabs.forEach(cb=>{S.agenda[sk(f,cb,h)]={estado:'reservado',origen:'Local',...datos}});return cabs}
@@ -3147,6 +3183,7 @@ const A={
  /* web */
  ctab:v=>{U.ctab=(v==='servicios'||v==='paquetes')?'experiencias':v;top0()},
  mmenu:()=>{U.mmenu=!U.mmenu},
+ heroPausa:()=>{U.heroPausa=!U.heroPausa},
  pgCerrar:()=>{U.pg=null},
  pgSim:()=>{const pg=U.pg;if(pg)pagoAprobado(pg.ctx,{medio:'izipay',metodo:'Tarjeta (simulado)',sim:true})},
  pgListo:()=>{const pg=U.pg;if(!pg)return;const op=String(pg.oper||'').trim();if(pg.medio==='qr'&&!/^[\w-]{4,20}$/.test(op))return;pagoAprobado(pg.ctx,{medio:pg.medio,oper:op})},
@@ -3198,17 +3235,17 @@ const A={
  /* check-in exprés y cambios de reserva */
  pcAbrir:v=>{const r=S.reservas.find(x=>x.codigo===v);U.rep=null;U.pc={codigo:v,m:0,v:0,n:r?r.ninos:0,ropa:false}},
  pcm:v=>{U.pc.m=clamp(U.pc.m+ +v,0,10)},pcv:v=>{U.pc.v=clamp(U.pc.v+ +v,0,10)},pcn:v=>{U.pc.n=clamp(U.pc.n+ +v,0,6)},
- pcGuardar:()=>{const P=U.pc;if(!P)return;const r=S.reservas.find(x=>x.codigo===P.codigo);if(!r||P.m+P.v<1||!P.ropa)return;r.pre={m:P.m,v:P.v,n:P.n,hora:ahora()};log(`Check-in exprés de ${r.nombre} (${r.codigo}): ${P.m} damas, ${P.v} varones${P.n?`, ${P.n} niños`:''}.`,'Web');U.pc=null;toast('¡Listo! En recepción solo muestra tu código QR.')},
+ pcGuardar:()=>{const P=U.pc;if(!P)return;const r=S.reservas.find(x=>x.codigo===P.codigo);if(!r||!pcCuadra()||!P.ropa)return;r.pre={m:P.m,v:P.v,n:P.n,hora:ahora()};log(`Check-in exprés de ${r.nombre} (${r.codigo}): ${P.m} damas, ${P.v} varones${P.n?`, ${P.n} niños`:''}.`,'Web');U.pc=null;toast('¡Listo! En recepción solo muestra tu código QR.')},
  pcCerrar:()=>{U.pc=null},
  repAbrir:v=>{const r=S.reservas.find(x=>x.codigo===v);U.pc=null;U.rep={codigo:v,fecha:r.fecha,hora:null}},
  repFecha:v=>{U.rep.fecha=v;U.rep.hora=null},repHora:v=>{U.rep.hora=v},repCerrar:()=>{U.rep=null},
- repGuardar:()=>{const P=U.rep;if(!P||!P.hora)return;const r=S.reservas.find(x=>x.codigo===P.codigo);if(!r)return;const old=(r.slots||[]).map(k=>[k,S.agenda[k]]).filter(x=>x[1]);old.forEach(([k])=>delete S.agenda[k]);let slots=[],mh=null;
+ repGuardar:()=>{const P=U.rep;if(!P||!P.hora)return;const r=S.reservas.find(x=>x.codigo===P.codigo);if(!r)return;if(!horaNinosOk(P.hora,r.ninos)){toast(`Con niños, el ingreso debe ser hasta las ${h12(toHM(toMin(S.cfg.horario.ninosHasta)-90))}.`);return}const old=(r.slots||[]).map(k=>[k,S.agenda[k]]).filter(x=>x[1]);old.forEach(([k])=>delete S.agenda[k]);let slots=[],mh=null;
   if(r.tipo==='paquete'){const Rq={tipo:'paquete',modal:r.modal,fecha:P.fecha,hora:P.hora};mh=autoMasaje(Rq);if(!mh){old.forEach(([k,v])=>S.agenda[k]=v);toast('No hay cabinas libres en ese horario. Prueba otro.');return}const base=old[0]?old[0][1]:{cliente:r.nombre,mtipo:paqueteDe(r.paq).masaje,dur:45,origen:'Web',codigo:r.codigo};libresEn(P.fecha,mh).slice(0,personasMasaje(Rq)).forEach(cb=>{const k=sk(P.fecha,cb,mh);S.agenda[k]={...base,estado:'reservado'};slots.push(k)})}
   r.fecha=P.fecha;r.hora=P.hora;r.mhora=mh;r.slots=slots;log(`${r.nombre} cambió su reserva ${r.codigo} al ${fmtF(r.fecha)}, ${h12(r.hora)}.`,'Web');U.rep=null;toast(`Listo: ${fmtF(r.fecha)} a las ${h12(r.hora)}${mh?`, masaje a las ${h12(mh)}`:''}.`)},
  /* bar desde el casillero */
  bpEntrar:()=>{const B=U.bp;const cas=B.locker.trim().toUpperCase().replace(/\s|-/g,'');const g=abiertos().find(x=>x.lockers.includes(cas));if(g&&g.pin===B.pin.trim()){B.ticket=g.ticket;B.cart={};toast(`Bienvenido. Casillero ${cas}.`)}else toast('El casillero y el PIN no coinciden.')},
  bpSalir:()=>{U.bp={locker:'',pin:'',ticket:null,cart:{}}},
- bpq:v=>{const [id,d]=v.split('|');U.bp.cart[id]=clamp((U.bp.cart[id]||0)+ +d,0,9)},
+ bpq:v=>{const [id,d]=v.split('|');const p=cartaDe(id);if(!p)return;if(+d>0&&dispWeb(p)){toast(`${titulo(p.nombre)}: ${dispWeb(p).toLowerCase()}.`);return}U.bp.cart[id]=clamp((U.bp.cart[id]||0)+ +d,0,Math.min(9,stockProd(p,HOY)))},
  bpEnviar:()=>{const B=U.bp,g=grupoDe(B.ticket);const lines=Object.entries(B.cart).filter(([k,q])=>q>0);if(!g||g.salida||!lines.length)return;const row=g.rows.find(r=>r.cas&&!r.sal)||g.rows.find(r=>!r.sal);
   const ped='p'+Date.now().toString(36);lines.forEach(([k,q])=>{const b={id:S.seq.barRow=(S.seq.barRow||1)+1,fecha:HOY,hora:ahora(),cas:row.cas||'',nombre:row.nombre,prod:k,cant:q,pago:'NO CANCELO',total:0,por:'Celular',web:true,ped,diarioId:row.id};recalcBar(b);S.barRows.push(b);syncBar(b)});
   log(`Pedido al bar desde el casillero ${row.cas||'—'} (${titulo(row.nombre)}).`,'Celular');B.cart={};toast('Pedido enviado al bar. Te lo llevamos; se carga a tu cuenta y lo pagas al salir.')},
@@ -3225,11 +3262,11 @@ const A={
  authVerificar:()=>{const A2=U.auth;if(A2.code.trim()!=='4821'){toast('Código incorrecto.');return}if(!clientePorCel(A2.cel))nuevoCliente('','Cliente nuevo',A2.cel);A2.ok=true},
  authSalir:()=>{U.auth={paso:'cel',cel:'',code:'',ok:false}},
  misBuscar:()=>{const q=U.mis;const r=S.reservas.find(x=>x.codigo.toUpperCase()===q.codigo.trim().toUpperCase()&&x.cel===q.cel.trim());q.res=r?r.codigo:'none'},
- misCancelar:v=>{const r=S.reservas.find(x=>x.codigo===v);if(!r)return;r.estado='cancelada';(r.slots||[]).forEach(k=>delete S.agenda[k]);log(`El cliente canceló la reserva ${r.codigo} desde la web.`,'Web');toast(r.pagado?'Reserva cancelada. La devolución se procesa según la política.':'Reserva cancelada. El cupo quedó libre.')},
+ misCancelar:v=>{const r=S.reservas.find(x=>x.codigo===v);if(!r)return;const res=cancelarReserva(r,'Web');toast('Reserva cancelada.'+(res.gift?` Se devolvieron ${sol(res.gift)} a tu gift card.`:'')+(res.devolver?` Recepción gestiona la devolución de ${sol(res.devolver)} según la política.`:' El cupo quedó libre.'))},
  prefT:v=>{const [k,campo,o]=v.split('|');const c=cliente(k);if(!c)return;c.pref=c.pref||{};const L=c.pref[campo]=c.pref[campo]||[];const i=L.indexOf(o);if(i>=0)L.splice(i,1);else L.push(o)},
  /* información */
  rcTipo:v=>{U.rc.tipo=v},
- rcEnviar:()=>{if(!validRc())return;const R=U.rc;const num='2026-'+String(S.seq.recl++).padStart(4,'0');S.reclamos.unshift({num,fecha:HOY,nombre:R.nombre.trim(),doc:'DNI ••••'+R.doc.trim().slice(-4),tipo:R.tipo,bien:R.bien,detalle:R.detalle.trim(),pedido:R.pedido.trim(),estado:'Pendiente',resp:''});U.rcDone=num;log(`Nueva hoja de reclamación ${num} (${R.tipo.toLowerCase()}).`,'Web')},
+ rcEnviar:()=>{if(!validRc())return;const R=U.rc;const num='2026-'+String(S.seq.recl++).padStart(4,'0');S.reclamos.unshift({num,fecha:HOY,hora:ahora(),nombre:R.nombre.trim(),doc:R.doc.trim(),dom:String(R.dom||'').trim(),cel:String(R.cel||'').trim(),correo:String(R.correo||'').trim(),tipo:R.tipo,bien:R.bien,monto:R.monto,desc:String(R.desc||'').trim(),detalle:R.detalle.trim(),pedido:R.pedido.trim(),estado:'Pendiente',resp:'',vence:diasHabiles(HOY,15)});U.rcDone=num;log(`Nueva hoja de reclamación ${num} (${R.tipo.toLowerCase()}).`,'Web')},
  rcNuevo:()=>{U.rcDone=null;U.rc=freshU().rc},
  /* personal: navegación */
  rol:v=>{U.rol=v;U.hoja=LROL[v].hojas[0];U.nb=newNb();U.ng2=newNg2();top0()},
@@ -3318,7 +3355,9 @@ const A={
   U.ing=newIng();U.drawer={t:'ticket',ref:grp}},
  verCuenta:v=>{U.mod='recepcion';U.drawer={t:'cuenta',ref:+v}},
  caddMedio:v=>{U.cadd.medio=v},
- cuentaBar:v=>{const g=grupoDe(v),p=prod(U.cadd.p),q=Math.max(1,+U.cadd.q||1);if(!g)return;const f=venderInsumos(p.rec,q);if(f){toast(`No alcanza ${f.nombre.toLowerCase()}.`);return}S.bar.ventas[p.id]=(S.bar.ventas[p.id]||0)+q;filaAbierta(g).cons.push({d:`${p.nombre} × ${q}`,m:p.precio*q,t:'bar',pag:false,pid:p.id,q});log(`Cargó ${p.nombre.toLowerCase()} × ${q} a la cuenta #${g.ticket}.`);toast(`${p.nombre} × ${q} cargado a la cuenta.`)},
+ cuentaBar:v=>{const g=grupoDe(v),p=cartaDe(U.cadd.p)||S.carta.find(x=>x.precio>0&&!x.soloBar),q=Math.max(1,+U.cadd.q||1);if(!g||!p)return;const row=filaAbierta(g);
+  const aviso=avisoProducto(p,HOY,q);const b={id:S.seq.barRow=(S.seq.barRow||1)+1,fecha:HOY,hora:ahora(),cas:row.cas||'',nombre:row.nombre,prod:p.id,cant:q,pago:'NO CANCELO',total:0,por:quien(),diarioId:row.id};recalcBar(b);S.barRows.push(b);syncBar(b);
+  log(`Cargó ${p.nombre.toLowerCase()} × ${q} a la cuenta #${g.ticket}.`);toast(`${titulo(p.nombre)} × ${q} cargado a la cuenta (también figura en la hoja BAR).${aviso?' '+aviso:''}`)},
  cuentaExtra:v=>{const g=grupoDe(v),e=U.cadd.ex;if(!g)return;const row=filaAbierta(g);row.ext=[...(row.ext||[]),e];row.cons.push({d:exn(e),m:precioExtra(e),t:'extra',pag:false});if(e==='SHORT'){const s=S.almacen.find(a=>a.id==='shorts');if(s)s.stock=Math.max(0,s.stock-1)}log(`Cargó ${exn(e).toLowerCase()} a la cuenta #${g.ticket}.`);toast(`${exn(e)} cargado a la cuenta.`)},
  cuentaMasaje:v=>{const g=grupoDe(v),A2=U.cadd;if(!g)return;const h=horaMasajeLibre(HOY,ahoraMin()+1);if(!h){toast('No quedan cabinas libres hoy.');return}const cb=agendarMasaje(HOY,h,1,{cliente:titulo(g.titular.nombre),mtipo:A2.mt,dur:+A2.md,ticket:g.ticket,notas:(clienteDni(g.titular.dni)||{}).notas||''})[0];filaAbierta(g).cons.push({d:`Masaje ${MTIPOS[A2.mt].toLowerCase()} ${A2.md} min (${h12(h)})`,m:precioMasaje(A2.mt,+A2.md),t:'masaje',pag:false});log(`Agendó masaje para el ticket #${g.ticket} a las ${h12(h)} en ${cb}.`);toast(`Masaje agendado a las ${h12(h)} en ${cb} con ${terapeutaDe(cb)}.`)},
  cerrarCuenta:v=>{const g=grupoDe(v);if(!g)return;const pend=pendienteG(g),medio=U.cadd.medio,hora=ahora();
@@ -3419,7 +3458,9 @@ const A={
  promoCrear:()=>{if(!validPnew())return;const N=U.pnew;const cod=N.codigo.trim().toUpperCase();S.promos.unshift({codigo:cod,desc:N.desc.trim()||`${N.tipo==='%'?N.valor+' %':sol(N.valor)} de descuento`,tipo:N.tipo,valor:+N.valor,activo:true,usos:0});log(`Creó el código de descuento ${cod}.`);U.pnew={codigo:'',tipo:'%',valor:10,desc:''};toast(`Código ${cod} creado. Ya funciona en la web.`)},
  campana:()=>{const st=statsClientes();const n=S.clientes.filter(c=>c.promos&&c.cel&&((st[c.dni]||{}).ultima||'')<addDays(HOY,-30)).length;log(`Preparó campaña de reactivación para ${n} clientes.`);toast(`Mensaje listo para ${n} clientes (simulado).`)},
  reclSel:v=>{U.reclSel=v;U.reclResp=''},
- reclResponder:v=>{const r=S.reclamos.find(x=>x.num===v);if(!U.reclResp.trim()){toast('Escribe la respuesta.');return}r.estado='Respondido';r.resp=U.reclResp.trim();log(`Respondió la hoja de reclamación ${r.num}.`);U.reclResp='';toast('Respuesta registrada; se envía al correo del consumidor.')},
+ reclResponder:v=>{const r=S.reclamos.find(x=>x.num===v);if(!r)return;if(!U.reclResp.trim()){toast('Escribe la respuesta.');return}r.estado='Respondido';r.resp=U.reclResp.trim();r.respFecha=HOY;r.respPor=quien();log(`Respondió la hoja de reclamación ${r.num}.`);U.reclResp='';toast('Respuesta registrada. Envíala al correo del consumidor y marca la fecha de envío.')},
+ reclEnviado:v=>{const r=S.reclamos.find(x=>x.num===v);if(!r)return;r.envio=`${fmtF(HOY)} ${ahora()} · ${quien()}`;log(`Envió la respuesta de la hoja ${r.num}.`)},
+ reclCerrar:v=>{const r=S.reclamos.find(x=>x.num===v);if(!r)return;r.estado='Cerrado';r.cierre=HOY;log(`Cerró la hoja de reclamación ${r.num}.`);U.reclSel=null},
  repPer:v=>{U.repPer=+v},
 };
 
@@ -3433,7 +3474,7 @@ function confirmarReserva(){const R=U.R,q=cotizar(R);const code=R.codigoPre||('H
  const r={codigo:code,fecha:R.fecha,hora:R.tipo==='masaje'?R.mhora:R.hora,mhora:R.mhora,dni:c.dni,nombre:R.nombre.trim(),cel:R.cel,tipo:R.tipo,paq:R.paq,modal:R.modal,mtipo:R.mtipo,mdur:R.mdur,mpers:R.mpers,adultos:R.tipo==='masaje'?R.mpers:R.tipo==='paquete'?(R.modal==='dos'?2:1):R.adultos,ninos:R.tipo==='masaje'?0:R.ninos,total:q.total,pago:pagoTxt,pagado:(R.pago!=='local'&&!pc)||q.total===0,porConfirmar:pc,oper:PI.oper||'',izipay:PI.uuid||'',web:R.pago!=='local'&&q.total>0,pagadoEl:R.pago!=='local'&&!pc?HOY:null,estado:'por llegar',origen:'Web',slots,notas:R.notas.trim(),nueva:true,comp:R.comp};
  S.reservas.push(r);
  if(R.promo){const p=S.promos.find(x=>x.codigo===R.promo);if(p)p.usos++}
- if(R.gift){const g=S.gifts.find(x=>x.codigo===R.gift);g.saldo=r1(g.saldo-q.gift);if(g.saldo<=0){g.estado='USADO';g.uso=HOY}}
+ if(R.gift){const g=S.gifts.find(x=>x.codigo===R.gift);g.saldo=r1(g.saldo-q.gift);if(g.saldo<=0){g.estado='USADO';g.uso=HOY}r.giftCod=R.gift;r.giftUso=q.gift;r.bruto=r1(q.total+q.gift+(q.desc||0))}
  log(`Nueva reserva ${code} desde la web: ${r.nombre}, ${descReserva(r)}, ${fmtF(r.fecha)} ${h12(r.hora)}.`,'Web');servEnviar('reserva',r);
  R.codigo=code;R.paso=4;U.pc=null;toast(R.pago==='local'?'Reserva registrada.':'Pago aprobado (simulado).')}
 
@@ -3457,7 +3498,7 @@ function morph(a,b){
 function morphHijos(a,b){const ac=[...a.childNodes],bc=[...b.childNodes];for(let i=0;i<bc.length;i++){if(i<ac.length)morph(ac[i],bc[i]);else a.appendChild(bc[i])}for(let i=bc.length;i<ac.length;i++)ac[i].remove()}
 function render(){const ae=document.activeElement;const key=ae&&ae.dataset?(ae.dataset.in||ae.dataset.merma||ae.dataset.cell):null;
  document.querySelectorAll('.demobar [data-a="view"]').forEach(b=>b.classList.toggle('on',b.dataset.v===U.view));
- const html=(U.view==='cliente'?vCliente():vPersonal())+(U.cons?consentModal():'');{const n=U.view==='personal'&&U.rol?pedidosGrupos(HOY).length:0;document.title=(n?`(${n}) Pedido del bar · `:'')+'Hammam · Web y sistema'}
+ const html=(U.view==='cliente'?vCliente():vPersonal())+(U.cons?consentModal():'');syncUrl();{const n=U.view==='personal'&&U.rol?pedidosGrupos(HOY).length:0;if(n)setTimeout(()=>{document.title=`(${n}) Pedido del bar · `+document.title.replace(/^\(\d+\) Pedido del bar · /,'')},0)}
  const tmp=document.createElement('div');
  if(tmp.childNodes===undefined||!app.childNodes){app.innerHTML=html}else{tmp.innerHTML=html;morphHijos(app,tmp)}
  const dk=U.drawer?JSON.stringify(U.drawer):'';if(dk!==render.dk){const b=document.querySelector('.drawer .db');if(b)b.scrollTop=0;render.dk=dk}
@@ -3496,15 +3537,16 @@ function onField(e){const t=e.target;
 document.addEventListener('input',onField);
 document.addEventListener('change',onField);
 document.addEventListener('scroll',e=>{if(U&&U.cons&&e.target&&e.target.dataset&&e.target.dataset.tbody!==undefined)consMarcarVisto()},true);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(U.mmenu){U.mmenu=false;render();return}if(U.cons){U.cons.ctx==='ver'?A.consCerrar():A.consCancelar();render();return}if(U.drawer||U.R.dlg){U.drawer=null;U.R.dlg=null;render();return}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(U.pg){U.pg=null;render();const b=document.querySelector('[data-a="rnext"],[data-a="giftPagar"]');if(b)b.focus();return}if(U.mmenu){U.mmenu=false;render();return}if(U.cons){U.cons.ctx==='ver'?A.consCerrar():A.consCancelar();render();return}if(U.drawer||U.R.dlg){U.drawer=null;U.R.dlg=null;render();return}}
  if(e.key==='Enter'&&e.target&&e.target.dataset&&e.target.dataset.cell&&e.target.tagName==='INPUT'){const t=e.target;e.preventDefault();const k=t.dataset.cell.split('|')[1];const all=[...document.querySelectorAll(`[data-cell$="|${k}"]`)];const nx=all[all.indexOf(t)+1];onField({target:t,type:'change'});if(nx&&!U.focus)U.focus=`[data-cell="${nx.dataset.cell}"]`;setTimeout(render,0);return}
  if(e.key==='Enter'){const t=e.target;if(t&&t.dataset&&t.dataset.enter&&A[t.dataset.enter]){e.preventDefault();onField({target:t,type:'change-silent'});A[t.dataset.enter](t.dataset.k);save();render()}}});
 window.addEventListener('storage',e=>{if(e.key!==KEY||!e.newValue)return;try{const o=JSON.parse(e.newValue);if(o&&o.v===VERSION){const antes=new Set(pedPend().map(b=>b.id));S=o;gcalBase();const nuevos=pedPend().filter(b=>!antes.has(b.id));render();if(nuevos.length&&U.view==='personal'&&U.rol)avisarPedido(nuevos)}}catch(_){}});
 setInterval(()=>{document.querySelectorAll('[data-clock]').forEach(el=>el.textContent=h12(ahora()))},20000);
 
 /* =================== inicio =================== */
-S=load()||initState();gcalBase();save();U=freshU();
-if(location.hash==='#personal')U.view='personal';
+S=load()||initState();S.clientes.forEach(c=>{if(!c.id)c.id=cliId()});gcalBase();save();U=freshU();
+{const h=location.hash.slice(1);if(h==='personal')U.view='personal';else if(TIT_PAG[h]){U.view='cliente';U.ctab=h}}
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h==='personal'&&U.view!=='personal'){U.view='personal';render()}else if(TIT_PAG[h]&&(U.view!=='cliente'||U.ctab!==h)){U.view='cliente';U.ctab=h;U.mmenu=false;render();window.scrollTo(0,0)}});
 render();
 
 /* aviso de pedido nuevo del bar: sonido, mensaje y, si se activó, notificación de la computadora */
@@ -3518,6 +3560,17 @@ window.addEventListener('scroll',()=>{const h=document.querySelector('.site-head
 
 /* carrusel: las fotos 2 a 5 se piden cuando la página ya terminó de cargar */
 window.addEventListener('load',()=>setTimeout(()=>{HERO_OK=1;if(U.view==='cliente'&&U.ctab==='inicio')render()},1200));
+
+/* cancelar una reserva, desde la web o desde recepción: libera cabinas, devuelve la gift card y deja la devolución por hacer */
+function cancelarReserva(r,por){const res={gift:0,devolver:0};if(!r||r.estado==='cancelada')return res;r.estado='cancelada';(r.slots||[]).forEach(k=>delete S.agenda[k]);
+ if(r.giftCod&&r.giftUso){const g=S.gifts.find(x=>x.codigo===r.giftCod);if(g){g.saldo=r1((g.saldo||0)+r.giftUso);g.estado='VIGENTE';g.uso=null;res.gift=r.giftUso;log(`Se devolvieron ${sol(r.giftUso)} a la gift card ${g.codigo} por la cancelación de ${r.codigo}.`,por)}r.giftUso=0}
+ if(r.pagado&&r.total>0){r.devolucion={monto:r.total,estado:'POR DEVOLVER',desde:HOY};res.devolver=r.total}
+ log(`Reserva ${r.codigo} cancelada${res.devolver?`; queda por devolver ${sol(res.devolver)}`:''}.`,por);return res}
+
+function pcCuadra(){const P=U.pc;if(!P)return false;const r=S.reservas.find(x=>x.codigo===P.codigo);return !!r&&P.m+P.v===r.adultos&&(P.n||0)===(r.ninos||0)}
+
+/* la sección abierta queda en la dirección de la página (se puede compartir y usar Atrás) */
+function syncUrl(){try{const h=U.view==='personal'?'personal':U.ctab;if(location.hash.slice(1)!==h)history.pushState(null,'','#'+h);document.title=U.view==='personal'?'Sistema · Hammam':(U.ctab==='inicio'?'Hammam Wellness Center · Sauna, vapor y masajes en Trujillo':`${TIT_PAG[U.ctab]||'Hammam'} · Hammam Wellness Center`)}catch(e){}}
 
 </script>
 </body>
