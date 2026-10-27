@@ -1074,6 +1074,41 @@ h4{font-family:'Montserrat',sans-serif}
 /* inventario del bar: la lista POR COMPRAR queda a la derecha */
 .lb-grid>.lb-main{flex:0 1 920px;min-width:0}
 
+/* cuadros de caja: si no entran al costado, se acomodan lado a lado debajo de la hoja */
+.lb-grid>.lb-side{flex:1 1 270px;width:auto;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;align-content:flex-start}
+.lb-grid>.lb-side>*{flex:0 0 270px;width:270px;margin:0}
+/* DIARIO: filtro, columna NOMBRE fija, grupos, avisos y total al pie */
+.lb-filtros{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 12px}
+.lb-filtros .chips{display:flex;gap:6px;flex-wrap:wrap}
+.lb-filtros .chip b{font-weight:600;margin-left:4px}
+.lb-filtros .inp{max-width:340px;flex:1 1 220px}
+.lb-hoja>.lb-filtros:first-child{margin-top:18px}
+.lb-diario .xl thead th:nth-child(4){position:sticky;left:36px;top:0;z-index:5}
+.lb-diario .xl tbody tr:not(.xl-sum)>td:nth-child(4){position:sticky;left:36px;z-index:1;background:#fff;box-shadow:1px 0 0 #E2E1D8}
+.lb-diario .xl tbody tr.nueva>td:nth-child(4){background:#FFFBEF}
+.xl tr.g0>th.rn{box-shadow:inset 4px 0 0 var(--t-head,#4B5D43)}
+.xl tr.g1>th.rn{box-shadow:inset 4px 0 0 #C9A227}
+.xl td.mal{background:#FDF1EA}
+.xl td.mal .xc{color:#B4561A}
+.xl td.tarde{background:#FFF4D6}
+.xl tr.xl-sum td,.xl tr.xl-sum th{background:#F4F6EE;height:36px;font-size:13.5px;color:#3d4636}
+.xl tr.xl-sum td{padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* inventarios: línea de cuánto queda */
+.xl td.niv{position:relative;padding-bottom:6px}
+.nivel{position:absolute;left:10px;right:10px;bottom:5px;height:5px;border-radius:5px;background:#ECEDE6;overflow:hidden}
+.nivel i{display:block;height:100%;border-radius:5px;background:#6E9150}
+.nivel.medio i{background:#D9A23A}
+.nivel.bajo i{background:#C0582B}
+.lb-h4 .t-bajo{color:#B4561A;text-transform:none;letter-spacing:0}
+.lb-h4 .t-medio{color:#9a7a1c;text-transform:none;letter-spacing:0}
+/* horario de masajes */
+.xl td.hm-no{background:#F6F6F2}
+/* ingreso */
+.login-1{max-width:380px}
+.login-1 .fld{display:block}
+.login-1 .inp{width:100%}
+.login-btn{width:100%}
+
 /* ===== v10: web de clientes editorial — esquinas rectas, líneas finas, fotos grandes ===== */
 .web{--w-paper:#F4EFE6;--w-paper2:#FBF8F2;--w-sand:#EAE3D6;--w-ink:#1B1915;--w-ink2:#5A544C;--w-line:rgba(27,25,21,.15);--w-dark:#14120E;--w-cream:#EDE6D8;--w-gold:#C3A446;--w-gold2:#D9C27C;--w-brown:#2A1A0F;
  --bg:var(--w-paper);--surface:var(--w-paper2);--surface2:var(--w-sand);--line:var(--w-line);--ink:var(--w-ink);--muted:var(--w-ink2);--brand:var(--w-ink);--brand-soft:var(--w-sand);--on-brand:var(--w-paper);
@@ -1391,6 +1426,14 @@ h4{font-family:'Montserrat',sans-serif}
 .recl-hoja .kv{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:13.5px;margin:10px 0}
 .recl-hoja .kv dt{color:#6b7262}
 .recl-hoja textarea{width:100%}
+
+/* precios: los números de Italiana se ven raros; van en Montserrat */
+.web .carta-resto .nowrap,.web .w-menu b,.web .w-tres b,.web .num-h{font-family:'Montserrat',sans-serif;font-weight:400;font-variant-numeric:lining-nums tabular-nums;letter-spacing:.02em}
+.web .carta-resto .nowrap{font-size:16px}
+.web .w-menu b{font-size:16px}
+.web .w-tres b{font-size:24px;font-weight:300}
+.web .num-h{font-weight:300;font-size:.78em}
+.web .carta-sola{max-width:820px;margin:0 auto}
 </style>
 </head>
 <body>
@@ -1543,7 +1586,14 @@ const promoTxt=()=>`2×${2*promoCfg().precio}`;
 function masajeDeCom(com){const c=String(com||'').toUpperCase();const t=/DESC/.test(c)?'descontracturante':/EXFO/.test(c)?'exfoliante':'relajante';let d=30;const a=c.match(/(\d{2})\s*(?:"|''|”|MIN)/),b=c.match(/\b(\d)\s*H\b/);if(a)d=+a[1];else if(b)d=+b[1]*60;if(!DURS.includes(d))d=d>45?60:d>30?45:30;return precioMasaje(t,d)}
 const sk=(f,c,h)=>`${f}|${c}|${h}`;
 const terapeutaDe=c=>(S.personal.find(p=>p.cabina===c)||{}).nombre||'—';
-const libresEn=(f,h)=>CABINAS.filter(c=>!S.agenda[sk(f,c,h)]);
+/* horario de masajes: quién atiende cada día y hora (semana tipo); vacío = no hay masajes a esa hora */
+const DIAS_MAS=[2,3,4,5,6,0],DIA_LARGO=['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+function horarioMas(){const c=S.cfg;if(!c.masajistas)c.masajistas=['JUDITH','GABY'];if(!c.horarioMas){c.horarioMas={};DIAS_MAS.forEach(d=>{c.horarioMas[d]={};HORAS_MAS.forEach(h=>c.horarioMas[d][h]=d===6||d===0?'JUDITH Y GABY':'JUDITH')})}return c.horarioMas}
+const masDe=(f,h)=>{const v=((horarioMas()[fromK(f).getDay()])||{})[h]||'';return v?v.split(' Y ').map(x=>x.trim()).filter(Boolean):[]};
+const capMas=(f,h)=>masDe(f,h).length;
+/* libres = masajistas de turno menos los masajes ya agendados (y, en la web, lo ocupado en Google Calendar) */
+const libresEn=(f,h)=>{const occ=CABINAS.filter(c=>S.agenda[sk(f,c,h)]).length+(typeof ocupGoogle==='function'?ocupGoogle(f,h):0);return CABINAS.filter(c=>!S.agenda[sk(f,c,h)]).slice(0,Math.max(0,capMas(f,h)-occ))};
+function masajistaDe(f,cb,h){const L=masDe(f,h);const i=CABINAS.filter(c=>S.agenda[sk(f,c,h)]).indexOf(cb);return L[i]||L[0]||'—'}
 const normDni=d=>String(d??'').replace(/\D/g,'');
 const clienteDni=dni=>dni?S.clientes.find(c=>c.dni===normDni(dni)):null;
 const clientePorCel=cel=>cel?S.clientes.find(c=>c.cel===cel):null;
@@ -1662,7 +1712,7 @@ function initState(){
   {f:fut[2],h:'19:00',n:'Andrea Ruiz',tipo:'paquete',paq:'najah',modal:'ind',mh:'20:10',cab:['Cabina 3'],pago:'Yape',pag:true,est:'por llegar',o:'Web'});
  /* agenda de masajes: 12 días */
  const NOM=S.clientes.slice(0,18).map(c=>c.nombre.replace(/^Familia /,''));
- proximas(12).forEach(f=>{CABINAS.forEach(c=>HORAS_MAS.forEach(h=>{const r=rnd();if(r<(f===HOY?0.16:0.33)){const t=pick(Object.keys(MTIPOS)),d=pick(DURS);S.agenda[sk(f,c,h)]={cliente:pick(NOM),mtipo:t,dur:d,estado:f===HOY&&toMin(h)+60<=BASE?'atendido':'reservado',origen:pick(['Web','Web','WhatsApp','Teléfono'])}}}))});
+ proximas(12).forEach(f=>{CABINAS.forEach(c=>HORAS_MAS.forEach(h=>{if(CABINAS.indexOf(c)>=capMas(f,h))return;const r=rnd();if(r<(f===HOY?0.16:0.33)){const t=pick(Object.keys(MTIPOS)),d=pick(DURS);S.agenda[sk(f,c,h)]={cliente:pick(NOM),mtipo:t,dur:d,estado:f===HOY&&toMin(h)+60<=BASE?'atendido':'reservado',origen:pick(['Web','Web','WhatsApp','Teléfono'])}}}))});
  RES.forEach(x=>{const c=cn(x.n);const R={tipo:x.tipo,paq:x.paq,modal:x.modal,adultos:x.tipo==='paquete'?(x.modal==='dos'?2:1):x.tipo==='masaje'?(x.mpers||1):(x.ad||0),ninos:x.ni||0,mtipo:x.mtipo,mdur:x.mdur,mpers:x.mpers||1};const q=cotizar(R);
   const r={codigo:'HM-'+(S.seq.res++),fecha:x.f||HOY,hora:x.h,mhora:x.mh||null,dni:c.dni,nombre:c.nombre,cel:c.cel,tipo:x.tipo,paq:x.paq,modal:x.modal,mtipo:x.mtipo,mdur:x.mdur,mpers:x.mpers,adultos:R.adultos,ninos:R.ninos,total:q.total,pago:x.pago,pagado:x.pag,web:x.pag,pagadoEl:x.pag?addDays(HOY,-(1+Math.floor(rnd()*6))):null,estado:x.est,origen:x.o,slots:[],notas:c.notas||''};
   if(x.cab){const mt=x.tipo==='paquete'?paqueteDe(x.paq).masaje:x.mtipo,md=x.tipo==='paquete'?45:x.mdur;x.cab.forEach(cb=>{const k=sk(r.fecha,cb,x.mh);const done=r.fecha===HOY&&toMin(x.mh)+60<=BASE;const cur=r.fecha===HOY&&!done&&toMin(x.mh)<=BASE;S.agenda[k]={cliente:c.nombre.replace(/^Familia /,''),mtipo:mt,dur:md,estado:done?'atendido':cur?'en curso':'reservado',origen:x.o,codigo:r.codigo,notas:c.notas||''};r.slots.push(k)})}
@@ -1809,7 +1859,7 @@ function cuadreDia(f){const porMedio={};MEDIOS_CAJA.forEach(m=>porMedio[m]=0);co
   cierre:(+q.inicio||0)+porMedio.EFECTIVO+barCob-gastoEfectivo-(+q.deposito||0)+(+q.entro||0)-(+q.salio||0),barCob,entro:+q.entro||0,salio:+q.salio||0,promo:filas.filter(esPromo).length,personas:filas.filter(r=>r.serv!=='EXTRA').length,ninos:cont.PISCINA,membresias:pre.MEMBRESIA,ganancia:total+webRes+giftWeb-gastoOper}}
 const pendiente=pendienteG,consumo=consumoG;
 function statsClientes(){const m={};S.diario.forEach(r=>{if(!r.dni||r.anulado)return;const s=m[r.dni]||(m[r.dni]={visitas:0,ultima:'',gasto:0,dias:new Set()});if(!s.dias.has(r.fecha)){s.dias.add(r.fecha);s.visitas++}s.gasto+=(r.total||(r.pago==='RESERVA'?r.valor||0:0))+sum(r.cons||[],c=>c.m);if(r.fecha>s.ultima)s.ultima=r.fecha});return m}
-const QUIEN={admin:'Carmen',recepcion:'Luis',bar:'Iván',masajes:'Rosa',mant:'Pedro'};
+const QUIEN={admin:'Administración',recepcion:'Luis',bar:'Iván',masajes:'Rosa',mant:'Pedro'};
 function log(que,quien){S.log.unshift({fecha:HOY,hora:ahora(),quien:quien||QUIEN[U.rol]||'Web',que});S.log=S.log.slice(0,1000)}
 function estadoAforo(){const d=dentro(),tot=d.a+d.n,p=tot/S.cfg.cap.total;return {tot,p,label:p<.4?'Tranquilo':p<.7?'Moderado':'Muy concurrido',cls:p<.4?'ok':p<.7?'warn':'bad'}}
 const minsNinos=()=>toMin(S.cfg.horario.ninosHasta)-ahoraMin();
@@ -1882,7 +1932,7 @@ const dosd=i=>String(i).padStart(2,'0');
 let HERO_OK=0;
 /* foto que se carga recién cuando aparece en pantalla (900 o 1800 px según el ancho) */
 const fimg=(k,alt,sizes,cls='w-img')=>`<img class="${cls}" src="${fotoUrl(k,900)}" srcset="${fotoUrl(k,900)} ${Math.min(900,FOTO_W[IMG[k]||k]||900)}w, ${fotoUrl(k,1800)} ${FOTO_W[IMG[k]||k]||1800}w" sizes="${sizes}" alt="${esc(alt)}" loading="lazy" decoding="async">`;
-function cHero(){const c=S.cfg,e=estadoAforo(),B=U.bk;const libres=sum(CABINAS,cb=>HORAS_MAS.filter(h=>!S.agenda[sk(HOY,cb,h)]&&!pasada(HOY,h)).length);const fechas=proximas(8);
+function cHero(){const c=S.cfg,e=estadoAforo(),B=U.bk;const libres=sum(HORAS_MAS.filter(h=>!pasada(HOY,h)),h=>libresEn(HOY,h).length);const fechas=proximas(8);
  return `<section class="hero-lux ${U.heroPausa?'pausa':''}"><div class="hero-slides" aria-hidden="true">${HERO.map(([k],i)=>`<div class="hs" style="--d:${i*6-1.5}s${i===0||HERO_OK?`;--img:url('${FOTO}${k}.jpg');--imgm:url('${FOTO}${k}-movil.jpg')`:''}"></div>`).join('')}</div><div class="in">
   <p class="eyebrow">Wellness center · Trujillo</p>
   <h1>El momento de <em>relajo</em> que necesitas</h1>
@@ -1895,7 +1945,7 @@ function cHero(){const c=S.cfg,e=estadoAforo(),B=U.bk;const libres=sum(CABINAS,c
    <button class="btn lg go" data-a="bkIr">Ver horarios ${ic('arrow')}</button>
   </div></div></section>`}
 function cInicio(){const c=S.cfg;
- const menu=['alitas','lomito','saltado','chilcano','jugo'].map(id=>cartaDe(id)).filter(Boolean);
+ const menu=['tinto','mojito','chilcano','stella','sporade'].map(id=>cartaDe(id)).filter(Boolean);
  return `<section class="w-intro"><div class="in"><p class="lbl">Hammam Wellness Center</p><div><p class="w-statement">Un refugio de calor, vapor y agua en Trujillo. Cuatro horas para soltar el día: del sauna seco al vapor, y del vapor a la piscina tibia.</p><button class="w-link" data-a="ctab" data-v="experiencias">Experiencias y precios</button></div></div></section>
 
  <section class="w-xp"><div class="in">${XP().map(([k,tt,img,d,p,pre],i)=>`<article class="w-row ${i%2?'inv':''}">${fimg(img,tt,'(max-width:860px) 100vw, 56vw')}<div class="w-txt"><span class="w-num">${dosd(i+1)}</span><h2>${tt}</h2><p>${d}</p><p class="w-precio">${pre==='desde'?'Desde ':''}${sol(p)}${pre==='por persona'?' por persona':''}</p><button class="w-link" data-a="reservarTipo" data-v="${k}">Reservar</button></div></article>`).join('')}</div></section>
@@ -1907,12 +1957,12 @@ function cInicio(){const c=S.cfg;
  <section class="w-lugar"><div class="in"><div class="w-head2"><div><p class="lbl">El lugar</p><h2>Conoce Hammam <em>por dentro</em></h2></div><p>Sauna, vapor, piscina, bar y sala de masajes en Palmas del Golf.</p></div>
   <div class="w-mosaico">${[['pool','Piscina y zona de descanso'],['bar','Bar'],['seco','Sauna seco'],['vapor','Cámara de vapor'],['lounge','Zona de mesas'],['piedras','Masajes'],['recepcion','Recepción'],['lockers','Vestidores y lockers']].map(([k,tt],i)=>`<figure class="m${i}">${fimg(k,tt,i<2?'(max-width:860px) 100vw, 58vw':'(max-width:860px) 50vw, 33vw')}<figcaption>${tt}</figcaption></figure>`).join('')}</div></div></section>
 
- <section class="w-resto"><div class="in">${fimg('bar','Bar de Hammam','(max-width:860px) 100vw, 52vw','w-resto-img')}<div class="w-resto-txt"><p class="lbl">Hammam Restobar</p><h2>Algo rico<br><em>después del circuito</em></h2>
+ <section class="w-resto"><div class="in">${fimg('bar','Bar de Hammam','(max-width:860px) 100vw, 52vw','w-resto-img')}<div class="w-resto-txt"><p class="lbl">Hammam Bar</p><h2>Algo para refrescarte<br><em>después del circuito</em></h2>
   <ul class="w-menu">${menu.map(p=>`<li><span>${esc(p.nombre)}</span><i></i><b>${p.precio}</b></li>`).join('')}</ul><button class="w-link" data-a="ctab" data-v="bar">Ver la carta completa</button></div></div></section>
 
  <section class="w-familia"><div class="in"><div class="w-txt"><p class="lbl">Para niños · menores de 12 años</p><h2>Un sauna<br><em>para la familia</em></h2><p>Mientras tú disfrutas del circuito, tus hijos usan la piscina de ${h12(c.horario.abre)} a ${h12(c.horario.ninosHasta)}. No incluye locker: trae toalla y sandalias para tu menor. Desde los 12 años pagan la tarifa de adulto.</p><p class="w-precio">${sol(c.precios.nino)} por niño</p><button class="w-link" data-a="reservarFamilia">Reservar en familia</button></div>${fimg('familia','Piscina y reposeras','(max-width:860px) 100vw, 45vw')}</div></section>
 
- <section class="w-pasos"><div class="in"><p class="lbl">Cómo funciona</p><ol>${[['Reserva','Experiencia, día y hora en una sola pantalla. Ves los cupos libres al instante.'],['Paga con Yape','O con tarjeta. El circuito también se puede pagar al llegar.'],['Check-in exprés','Desde tu celular dices quiénes vienen; en recepción solo muestras tu código.'],['Pide desde tu locker','Tus tragos llegan a la piscina y pagas todo al salir.']].map(([tt,d],i)=>`<li><span class="w-num">${dosd(i+1)}</span><b>${tt}</b><p>${d}</p></li>`).join('')}</ol></div></section>
+ <section class="w-pasos"><div class="in"><p class="lbl">Cómo funciona</p><ol>${[['Reserva','Experiencia, día y hora en una sola pantalla. Ves los cupos libres al instante.'],['Paga con Yape','O con tarjeta. El circuito también se puede pagar al llegar.'],['Check-in exprés','Desde tu celular dices quiénes vienen; en recepción solo muestras tu código.'],['Relájate','Sauna seco, vapor y piscina; en el bar, tragos y bebidas frías.']].map(([tt,d],i)=>`<li><span class="w-num">${dosd(i+1)}</span><b>${tt}</b><p>${d}</p></li>`).join('')}</ol></div></section>
 
  <section class="w-cita">${fimg('cupula','','100vw','w-cita-bg')}<div class="in"><blockquote>“Un bienestar inigualable, sales como nuevo.”</blockquote><p class="lbl claro">Comunidad Hammam · Instagram</p><div class="w-btns"><button class="btn oro" data-a="reservar">Reservar mi visita</button><button class="btn linea claro" data-a="ctab" data-v="regalos">Regalar Hammam</button></div></div></section>`}
 
@@ -1922,17 +1972,17 @@ function pkgCard(p,modo){const c=S.cfg;const precio=modo==='dos'?p.dos:p.ind;con
 function cExperiencias(){const c=S.cfg,m=U.pmodo;
  return `<div class="sec-head"><div><p class="eyebrow">Experiencias</p><h2>Experiencias que cuidan tu cuerpo y equilibran tu mente</h2></div></div>
  <div class="split2"><div class="gallery"><div class="ph a" style="${bgi('seco',900)}" role="img" aria-label="Sauna seco"></div><div class="ph" style="${bgi('marmol',600)}" role="img" aria-label="Cámara de vapor"></div><div class="ph" style="${bgi('pool',600)}" role="img" aria-label="Piscina térmica de Hammam"></div></div>
- <div><p class="eyebrow">Circuito Hammam</p><h2>${sol(c.precios.circuito)} <small class="muted" style="font-size:16px">por persona</small></h2><p class="small m0">De martes a jueves, promo ${promoTxt()}: dos personas por ${sol(2*promoCfg().precio)}.</p><ul class="feats mt">${[['flame','Sauna seco'],['steam','Cámara de vapor'],['waves','Piscina térmica con hidromasaje'],['towel','Toalla y sandalias'],['clock',`${c.horario.horas} horas de acceso`]].map(([i,t])=>`<li>${ic(i)}<span>${t}</span></li>`).join('')}</ul><button class="btn mt" data-a="reservarTipo" data-v="circuito">Reservar circuito</button></div></div>
+ <div><p class="eyebrow">Circuito Hammam</p><h2><span class="num-h">${sol(c.precios.circuito)}</span> <small class="muted" style="font-size:16px">por persona</small></h2><p class="small m0">De martes a jueves, promo ${promoTxt()}: dos personas por ${sol(2*promoCfg().precio)}.</p><ul class="feats mt">${[['flame','Sauna seco'],['steam','Cámara de vapor'],['waves','Piscina térmica con hidromasaje'],['towel','Toalla y sandalias'],['clock',`${c.horario.horas} horas de acceso`]].map(([i,t])=>`<li>${ic(i)}<span>${t}</span></li>`).join('')}</ul><button class="btn mt" data-a="reservarTipo" data-v="circuito">Reservar circuito</button></div></div>
  <div class="sec-head mt2"><div><p class="eyebrow">Paquetes</p><h2>Circuito y masaje, en un solo precio</h2></div><div class="toggle"><button class="${m==='ind'?'on':''}" data-a="pmodo" data-v="ind">Individual</button><button class="${m==='dos'?'on':''}" data-a="pmodo" data-v="dos">Para dos</button></div></div>
  <div class="grid g3">${c.paquetes.map(p=>pkgCard(p,m)).join('')}</div>
  <div class="grid g2 mt2"><div class="card pad-lg"><p class="eyebrow">Masajes</p><h3>Elige tipo y duración</h3><div class="tscroll"><table class="pricetable"><thead><tr><th></th>${DURS.map(d=>`<th class="num">${d} min</th>`).join('')}</tr></thead><tbody>${Object.keys(MTIPOS).map(t=>`<tr><td><b style="font-weight:500">${MTIPOS[t]}</b></td>${DURS.map(d=>`<td class="num">${sol(c.masajes[t][d])}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="xs muted">Precio por persona.</p><button class="btn sm mt" data-a="ctab" data-v="masajes">Ver horarios libres</button></div>
- <div class="card pad-lg"><p class="eyebrow">Para niños · menores de 12 años</p><h3>${sol(c.precios.nino)} por niño</h3><ul class="feats">${[['waves','Acceso a la piscina'],['clock',`De ${h12(c.horario.abre)} a ${h12(c.horario.ninosHasta)}`],['users','Siempre con un adulto'],['towel','Sin locker: trae toalla y sandalias']].map(([i,t])=>`<li>${ic(i)}<span>${t}</span></li>`).join('')}</ul><button class="btn sm mt" data-a="reservarFamilia">Reservar en familia</button></div></div>
+ <div class="card pad-lg"><p class="eyebrow">Para niños · menores de 12 años</p><h3><span class="num-h">${sol(c.precios.nino)}</span> por niño</h3><ul class="feats">${[['waves','Acceso a la piscina'],['clock',`De ${h12(c.horario.abre)} a ${h12(c.horario.ninosHasta)}`],['users','Siempre con un adulto'],['towel','Sin locker: trae toalla y sandalias']].map(([i,t])=>`<li>${ic(i)}<span>${t}</span></li>`).join('')}</ul><button class="btn sm mt" data-a="reservarFamilia">Reservar en familia</button></div></div>
  <div class="card pad-lg mt2"><p class="eyebrow">Tu visita, paso a paso</p><div class="timeline" style="margin-top:12px">
    <div><span><b>Haces tu check-in exprés desde el celular</b><span>Nos dices cuántas damas, varones y niños vienen. Así tus lockers ya están listos.</span></span></div>
    <div><span><b>Muestras tu código QR en recepción</b><span>Te entregan toalla, sandalias y la llave de tu locker en segundos.</span></span></div>
    <div><span><b>Disfrutas el circuito</b><span>${c.horario.horas} horas de sauna seco, vapor y piscina.</span></span></div>
    <div><span><b>Tu masaje, a la hora que elegiste</b><span>La masajista ya conoce tus notas: alergias, lesiones o preferencias.</span></span></div>
-   <div><span><b>Pides al bar desde tu locker</b><span>Sin llevar dinero ni celular a la piscina.</span></span></div>
+   <div><span><b>Un trago en el bar</b><span>Cócteles, cervezas y bebidas frías.</span></span></div>
    <div><span><b>Al salir, pagas tus consumos</b><span>Devuelves la llave y sumas puntos Colibrí.</span></span></div></div></div>`}
 
 /* ---------- masajes ---------- */
@@ -2672,15 +2722,14 @@ function importarLibro(hojas,opt={}){if(Object.keys(hojas).some(n=>/^BAR DIARIO/
 /* =================== PANEL DEL PERSONAL: un libro como el Excel, con pocas hojas =================== */
 const HOJAS={guia:'GUÍA',invh:'INVENTARIO TOALLAS',diario:'DIARIO',bar:'BAR',masajes:'MASAJES',inventario:'INVENTARIO BAR',gastos:'GASTOS',bd:'BASE DE DATOS',reservas:'RESERVAS',gift:'GIFT CARD',memb:'MEMBRESÍAS',resumen:'RESUMEN',ajustes:'AJUSTES'};
 const LROL={
- admin:{nombre:'Recepción y administración',desc:'Todas las hojas: diario, bar, masajes, reservas, gastos, clientes, resumen y ajustes.',hojas:['guia','diario','bar','masajes','reservas','gastos','bd','gift','memb','invh','inventario','resumen','ajustes']},
- bar:{nombre:'Bar',desc:'Ventas del bar, su inventario y sus gastos.',hojas:['guia','bar','inventario','gastos']},
+ admin:{nombre:'Administración',desc:'Todas las hojas: diario, bar, masajes, reservas, gastos, clientes, resumen y ajustes.',hojas:['guia','diario','bar','masajes','reservas','gastos','bd','gift','memb','invh','inventario','resumen','ajustes']},
 };
 const HOJA_DIA=['diario','bar','masajes','invh','inventario','gastos'];
 const B_PAGO=['EFECTIVO','YAPE','PLIN','QR','TARJETA','CORTESIA','NO CANCELO','CONSUMO INTERNO'];
 const G_MEDIO=['EFECTIVO','YAPE','PLIN','BCP','TRANSFERENCIA','DEUDA'];
 const HOJA_TAB={invh:'TOALLAS'};
 const TEMAS={verde:['Verde Hammam','#4B5D43','#A8B389'],dorado:['Dorado','#4A2C17','#E3C873'],arena:['Arena y terracota','#3A3A3A','#C98E77'],excel:['Excel clásico','#217346','#E2EFDA']};
-const CARTA_CATS=['PLATOS','ESPECIALES','CÓCTELES','CERVEZAS','SIN ALCOHOL','BEBIDAS'];
+const CARTA_CATS=['CÓCTELES','CERVEZAS','SIN ALCOHOL','BEBIDAS'];
 const cartaDe=id=>S.carta.find(p=>p.id===id);
 const prodNom=b=>(b.prod&&cartaDe(b.prod)||{}).nombre||b.txt||'consumo';
 const pedPend=f=>S.barRows.filter(b=>b.web&&!b.anulado&&!b.ent&&b.fecha===(f||HOY));
@@ -2698,19 +2747,24 @@ const vacias=(n,cols,start)=>Array.from({length:Math.max(0,n)},(_,i)=>`<tr class
 const bloque=(titulo,L)=>`<table class="xl lb-blk"><colgroup><col><col style="width:96px"></colgroup>${titulo?`<tr class="hdr"><th colspan="2">${titulo}</th></tr>`:''}${L.map(x=>x?`<tr class="${x[2]||''}"><td class="l">${x[0]}</td><td class="num ${x[2]==='ed'?'':'ro'}">${x[1]}</td></tr>`:'<tr class="gap"><td></td><td></td></tr>').join('')}</table>`;
 const n2=x=>(Math.round((+x||0)*100)/100).toLocaleString('es-PE',{maximumFractionDigits:2});
 
-function vLoginLibro(){return `<div class="wrap"><div class="login"><div class="center mb"><span class="lb-logo big" role="img" aria-label="Hammam Wellness Center"></span><h2 class="mt">Sistema de Hammam</h2><p class="muted">¿Quién eres?</p></div><div class="grid g2">${Object.entries(LROL).map(([k,r])=>`<button class="role" data-a="rol" data-v="${k}"><b>${r.nombre}</b><span>${r.desc}</span></button>`).join('')}</div><p class="xs muted center mt">En la versión real cada persona entra con su usuario y contraseña.</p></div></div>`}
+function vLoginLibro(){const L=U.login||(U.login={usuario:'administracion',clave:'',error:''});
+ return `<div class="wrap"><div class="login login-1"><div class="center mb"><span class="lb-logo big" role="img" aria-label="Hammam Wellness Center"></span><h2 class="mt">Sistema de Hammam</h2><p class="muted">Entra con la cuenta de administración.</p></div>
+ <label class="fld">Usuario<input class="inp" data-in="U.login.usuario" value="${esc(L.usuario)}" autocomplete="username"></label>
+ <label class="fld mt">Contraseña<input class="inp" type="password" data-in="U.login.clave" data-enter="entrar" value="" autocomplete="current-password"></label>
+ ${L.error?`<p class="note bad mt">${esc(L.error)}</p>`:''}<button class="btn mt login-btn" data-a="entrar">Entrar</button>
+ <p class="xs muted center mt">${servOk()?'La contraseña se revisa en el servidor de Hammam.':'Versión de prueba: todavía no hay servidor, así que entra con cualquier contraseña.'}</p></div></div>`}
 const HOJA_IC={guia:'book',diario:'sheet',bar:'glass',masajes:'leaf',reservas:'cal',gastos:'card',bd:'users',gift:'gift',memb:'repeat',invh:'towel',inventario:'box',resumen:'chart',ajustes:'gear'};
 function vPersonal(){if(!U.rol||!LROL[U.rol])return vLoginLibro();const R=LROL[U.rol];if(!R.hojas.includes(U.hoja))U.hoja=R.hojas[0];
  const V={guia:hGuia,diario:hDiario,bar:hBar,masajes:hMasajes,inventario:hInv,invh:hInvH,gastos:hGastos,bd:hBD,reservas:hReservas,gift:hGift,memb:hMemb,resumen:hResumen,ajustes:hAjustes};
  const tot=U.hoja==='diario'?`Total del día ${sol(cuadreDia(U.dd).totalDia)}`:U.hoja==='bar'?`Total del bar ${sol(cuadreBar(U.dd).tot)}`:'';
- if(servOk()&&cfgP().claveStaff)servIniciar();return `<div class="libro" data-tema="${TEMAS[S.cfg.tema]?S.cfg.tema:'verde'}"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${QUIEN[U.rol]} · ${R.nombre} <button class="lnk" data-a="salir">cambiar</button></div></header>
- <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}" title="${HOJAS[h]}">${ic(HOJA_IC[h],'sm')}<span>${HOJA_TAB[h]||HOJAS[h]}</span>${h==='bar'&&pedPend().length?`<b class="lb-badge" aria-label="pedidos por entregar">${pedidosGrupos(HOY).length}</b>`:''}${h==='reservas'&&S.reservas.some(r=>r.porConfirmar&&r.estado!=='cancelada')?`<b class="lb-badge" aria-label="pagos por confirmar">${S.reservas.filter(r=>r.porConfirmar&&r.estado!=='cancelada').length}</b>`:''}${h==='gift'&&S.gifts.some(g=>g.estado==='POR CONFIRMAR')?`<b class="lb-badge" aria-label="pagos por confirmar">${S.gifts.filter(g=>g.estado==='POR CONFIRMAR').length}</b>`:''}</button>`).join('')}</nav>
+ if(servOk()&&cfgP().claveStaff)servIniciar();return `<div class="libro" data-tema="${TEMAS[S.cfg.tema]?S.cfg.tema:'verde'}"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${R.nombre} <button class="lnk" data-a="salir">Salir</button></div></header>
+ <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}" title="${HOJAS[h]}">${ic(HOJA_IC[h],'sm')}<span>${HOJA_TAB[h]||HOJAS[h]}</span>${h==='reservas'&&S.reservas.some(r=>r.porConfirmar&&r.estado!=='cancelada')?`<b class="lb-badge" aria-label="pagos por confirmar">${S.reservas.filter(r=>r.porConfirmar&&r.estado!=='cancelada').length}</b>`:''}${h==='gift'&&S.gifts.some(g=>g.estado==='POR CONFIRMAR')?`<b class="lb-badge" aria-label="pagos por confirmar">${S.gifts.filter(g=>g.estado==='POR CONFIRMAR').length}</b>`:''}</button>`).join('')}</nav>
  <main class="lb-hoja">${V[U.hoja]()}</main></div>${U.drawer?drawer():''}`}
 
 /* ---------- GUÍA RÁPIDA: las hojas explicadas en una pantalla ---------- */
 const GUIA={
  diario:['Cada persona que entra, en una fila.','Escribe el DNI en la fila de abajo: el nombre sale solo.','Elige casillero, servicio y pago con la flechita. Al salir, toca el reloj.','En BAR se carga un trago a su cuenta. Al salir, su casillero queda «por reponer».'],
- bar:['Lo que se vende en el bar.','Elige el casillero (el nombre sale solo) y el producto.','Si no paga en el momento, pon «NO CANCELO»: se le cobra al salir.','Los pedidos del celular salen arriba con aviso: al llevarlos, toca «Entregado».'],
+ bar:['Lo que se vende en el bar.','Elige el casillero (el nombre sale solo) y el producto.','Si no paga en el momento, pon «NO CANCELO»: se le cobra al salir.'],
  masajes:['Los masajes del día y el Google Calendar.','Los de la web y del DIARIO aparecen solos.','Para uno nuevo, elige la hora y escribe el nombre en la fila de abajo.'],
  reservas:['Las reservas de la web y de WhatsApp.','Cuando el cliente llega, cambia ESTADO a «LLEGÓ».','Pasa solo al DIARIO; ahí eliges su casillero.'],
  gastos:['Lo que se paga en el día.','Escribe el gasto y el monto en la fila de abajo.','Lo pagado en efectivo se descuenta solo de la caja.'],
@@ -2736,7 +2790,7 @@ function invHDia(f){const H=S.invH;if(!H||f<H.desde)return null;const por=salida
  return row}
 function hInvH(){const f=U.dd;const I=invHDia(f);if(!I)return `<p class="lb-help">El inventario empieza el ${fmtFL(S.invH.desde)}.</p>`;
  const cols=[['ARTÍCULO',250],['INICIO',80],['VOLVIÓ O INGRESÓ',140],['SALIDA',80],['QUEDA',86],['MÍNIMO',76]];const man=S.invH.ing[f]||{};
- const body=S.invH.items.map((it,i)=>{const x=I[it.id];const bajo=x.fin<=it.min;return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(it.nombre)}</b><small class="ih-tipo">${it.tipo==='vuelve'?'se lava y vuelve':'se gasta'}</small></td>${ro(x.ini)}<td class="num">${kIn(`ih:${it.id}|ing`,man[it.id]??'',`inputmode="numeric" placeholder="${x.ing}"`)}</td>${ro(x.sal)}<td class="ro"><b>${x.fin}</b>${bajo?' · reponer':''}</td>${ro(it.min)}</tr>`}).join('');
+ const body=S.invH.items.map((it,i)=>{const x=I[it.id];const bajo=x.fin<=it.min;return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(it.nombre)}</b><small class="ih-tipo">${it.tipo==='vuelve'?'se lava y vuelve':'se gasta'}</small></td>${ro(x.ini)}<td class="num">${kIn(`ih:${it.id}|ing`,man[it.id]??'',`inputmode="numeric" placeholder="${x.ing}"`)}</td>${ro(x.sal)}<td class="ro niv"><b>${x.fin}</b>${bajo?' · reponer':''}${nivel(x.fin,it.min,Math.max(+it.base||0,x.ini+x.ing))}</td>${ro(it.min)}</tr>`}).join('');
  const t=I.toalla;const L=t?[['TOALLAS AL EMPEZAR',t.ini+t.ing],['USADAS HOY',t.sal],['DISPONIBLES AHORA',t.fin,'tot'],['VUELVEN MAÑANA',t.sal],...(f===HOY?[null,['CASILLEROS POR REPONER',porReponer().length]]:[])]:[];
  return `<div class="lb-grid"><div>${tabla(cols,body)}<p class="lb-help">SALIDA se llena sola con el DIARIO: una toalla y un par de sandalias por cada adulto con casillero, más los extras vendidos (short, shampoo, bikini…). Las toallas, las sandalias y las batas vuelven solas al día siguiente; si volvieron menos, escribe el número real en VOLVIÓ O INGRESÓ. También ahí se anota lo que llega nuevo.</p></div>${L.length?`<aside class="lb-side">${bloque('TOALLAS HOY',L)}</aside>`:''}</div>`}
 function initInvH(){S.invH={desde:addDays(HOY,-15),ing:{},items:[
@@ -2756,17 +2810,19 @@ function celdaInvH(tipo,id,k,v){if(tipo==='ih'){const f=U.dd;const m=S.invH.ing[
 
 /* ---------- DIARIO ---------- */
 const D_COLS=[['INGRESO',82],['SALIDA',82],['NOMBRE',188],['DNI',94],['TELÉFONO',98],['N° BOLETA',96],['CASILLERO',88],['SERVICIO',162],['COMENTARIOS',140],['EXTRA',146],['BAR',150],['MÉTODO DE PAGO',148],['S/. TOTAL',78]];
-function dFila(r,n,f){const nueva=!r.id;const k=nueva?'new':r.id;const N=U.nf;const v=fld=>nueva?N[fld]:r[fld];
+function dFila(r,n,f,xc=''){const nueva=!r.id;const k=nueva?'new':r.id;const N=U.nf;const v=fld=>nueva?N[fld]:r[fld];
  const cl=!nueva&&r.dni?clienteDni(r.dni):null;const falta=!nueva&&f===HOY&&r.dni&&!(cl&&cl.consent);
+ const horas=+((S.cfg.horario||{}).horas)||4,tarde=!nueva&&f===HOY&&!r.sal&&r.serv!=='EXTRA'&&ahoraMin()-toMin(r.ing)>=horas*60-15;const celV=v('cel')||(cl?cl.cel:'');
+ const mal={nombre:!nueva&&r.nombre==='SIN NOMBRE',dni:!nueva&&!!r.dni&&!/^\d{8}$/.test(r.dni)&&!/^[A-Z0-9]{9,12}$/i.test(r.dni),cel:!nueva&&!!celV&&!/^9\d{8}$/.test(celV)};const debe=!nueva&&((!r.pagado&&+r.total>0)||(r.cons||[]).some(c=>!c.pag));
  const inp=(fld,val,extra='')=>`<input class="xc" data-cell="${k}|${fld}" value="${esc(val??'')}" autocomplete="off" ${extra}>`;
  const ext=nueva?N.ext:(r.ext||[]).length>1?r.ext.join(' + '):((r.ext||[])[0]||'');
  const auto=nueva?(()=>{const t={serv:N.serv,paq:paqDeCom(N.com),ext:N.ext?[N.ext]:[]};return PREPAGO.includes(N.pago)?0:precioServicio(t)})():'';
- return `<tr class="${nueva?'nueva':''} ${!nueva&&r.sal?'fuera':''}"><th class="rn ${falta?'warn':''}" ${nueva?'':`data-a="filaAbrir" data-v="${r.id}" title="${falta?'Falta que acepte las reglas. ':''}Salida, cuenta o anular"`}>${n}</th>
-  <td>${inp('ing',nueva?N.ing:h12(r.ing),nueva?`placeholder="${f===HOY?h12(ahora()):''}"`:'')}</td>
+ return `<tr class="${nueva?'nueva':''} ${!nueva&&r.sal?'fuera':''} ${xc}"><th class="rn ${falta?'warn':''}" ${nueva?'':`data-a="filaAbrir" data-v="${r.id}" title="${falta?'Falta que acepte las reglas. ':''}Salida, cuenta o anular"`}>${n}</th>
+  <td class="${tarde?'tarde':''}" ${tarde?`title="Sus ${horas} horas terminan a las ${h12(toHM(toMin(r.ing)+horas*60))}"`:''}>${inp('ing',nueva?N.ing:h12(r.ing),nueva?`placeholder="${f===HOY?h12(ahora()):''}"`:'')}</td>
   <td class="sal ${!nueva&&!r.sal&&f===HOY?'hasbtn':''}">${nueva?'':`${inp('sal',r.sal?h12(r.sal):'')}${!r.sal&&f===HOY?`<button class="xnow" data-a="filaSalida" data-v="${r.id}" title="Marcar la salida ahora">${ic('clock','sm')}</button>`:''}`}</td>
-  <td>${inp('nombre',v('nombre'),nueva?'placeholder="(sale con el DNI)"':'')}</td>
-  <td>${inp('dni',v('dni'),`inputmode="numeric" maxlength="12" ${nueva?'placeholder="DNI aquí"':''}`)}</td>
-  <td>${inp('cel',v('cel')||(cl?cl.cel:''),'inputmode="numeric" maxlength="9"')}</td>
+  <td class="${mal.nombre?'mal':''}">${inp('nombre',v('nombre'),nueva?'placeholder="(sale con el DNI)"':'')}</td>
+  <td class="${mal.dni?'mal':''}" ${mal.dni?'title="El DNI debe tener 8 números"':''}>${inp('dni',v('dni'),`inputmode="numeric" maxlength="12" ${nueva?'placeholder="DNI aquí"':''}`)}</td>
+  <td class="${mal.cel?'mal':''}" ${mal.cel?'title="El celular debe tener 9 números y empezar con 9"':''}>${inp('cel',celV,'inputmode="numeric" maxlength="9"')}</td>
   <td>${inp('bol',v('bol'))}</td>
   <td class="${v('cas')?'cas-on':''}">${xlCas(nueva?{cas:N.cas}:r,f)}</td>
   <td>${xlSel(k,'serv',v('serv'),XL_SERV,'Servicio')}</td>
@@ -2774,7 +2830,7 @@ function dFila(r,n,f){const nueva=!r.id;const k=nueva?'new':r.id;const N=U.nf;co
   <td>${xlSel(k,'ext',ext,xlExtras(),'Extra')}</td>
   ${nueva?'<td></td>':xlBar(r,f)}
   <td>${xlSel(k,'pago',v('pago'),XL_PAGO,'Método de pago')}</td>
-  <td class="num">${inp('total',nueva?N.total:r.total,`inputmode="decimal" ${nueva?`placeholder="${auto}"`:''}`)}</td></tr>`}
+  <td class="num ${debe?'pend':''}" ${debe?'title="Tiene saldo por cobrar"':''}>${inp('total',nueva?N.total:r.total,`inputmode="decimal" ${nueva?`placeholder="${auto}"`:''}`)}</td></tr>`}
 /* lo que pidió en el bar, en su fila del DIARIO: el resumen y la lista para cargarle otro */
 function barDe(r){return S.barRows.filter(b=>!b.anulado&&b.fecha===r.fecha&&(b.diarioId===r.id||(!b.diarioId&&r.cas&&b.cas===r.cas&&b.hora>=r.ing&&(!r.sal||b.hora<=r.sal))))}
 function xlBar(r,f){const B=barDe(r);const n=sum(B,b=>+b.cant||1),tot=sum(B,b=>+b.total||0),debe=B.some(b=>b.pago==='NO CANCELO');
@@ -2784,12 +2840,20 @@ function xlBar(r,f){const B=barDe(r);const n=sum(B,b=>+b.cant||1),tot=sum(B,b=>+
 function bloqueRep(P){return `<table class="xl lb-blk lb-rep"><colgroup><col><col style="width:96px"></colgroup><tr class="hdr"><th colspan="2">CASILLEROS POR REPONER</th></tr>${P.length?P.map(l=>`<tr><td class="l"><b>${l.id}</b> · salió ${h12(l.ult.sal)}</td><td class="num"><button class="xbtn" data-a="casListo" data-v="${l.id}">Listo</button></td></tr>`).join('')+(P.length>1?`<tr><td class="l" colspan="2"><button class="xbtn" data-a="casTodos">Todos listos (${P.length})</button></td></tr>`:''):'<tr><td class="l" colspan="2">Todos los casilleros están listos.</td></tr>'}</table>`}
 function hDiario(){const f=U.dd;const rows=[...filasDia(f)].sort((a,b)=>a.ing.localeCompare(b.ing)||a.id-b.id);const q=cuadreDia(f),C=S.cuadre[f]||(S.cuadre[f]={inicio:0,deposito:0}),pm=q.porMedio,d=dentro();
  const ed=campo=>`<input class="xc num" type="number" step="0.5" data-in="S.cuadre.${f}.${campo}" data-num data-live value="${C[campo]??''}" aria-label="${campo}">`;
- const L=[['INICIO EFECTIVO',ed('inicio'),'ed'],['EFECTIVO',n2(pm.EFECTIVO)],['TARJETA',n2(pm.TARJETA+pm['TARJETA CREDITO']+pm['TARJETA DEBITO'])],['YAPE',n2(pm.YAPE)],['PLIN',n2(pm.PLIN)],['QR',n2(pm.QR)],['TRANSFERENCIA',n2(pm.TRANSFERENCIA+pm['LINK DE PAGO']+pm.WESTERN)],['GASTO EFECTIVO',n2(q.gastoEfectivo)],...(q.barCob?[['EFECTIVO DEL BAR (POR ENTREGAR)',n2(q.barCob)]]:[]),['ENTRÓ A LA CAJA',ed('entro'),'ed'],['SALIÓ DE LA CAJA',ed('salio'),'ed'],['DEPÓSITO',ed('deposito'),'ed'],['CAJA CIERRA',n2(q.cierre),'tot'],['PAGADO EN LA WEB',n2(q.enLinea)],['TOTAL DEL DÍA',n2(q.totalDia),'tot'],null,
-  ['SAUNEROS',q.cont.SAUNA],['PISCINA (NIÑOS)',q.cont.PISCINA],['PAQUETES',q.cont['PAQUETE INDIVIDUAL']+q.cont['PAQUETE DUO']],['MASAJES',q.cont.MASAJE],['PROMO 2×100',q.promo],['MEMBRESÍA',q.pre.MEMBRESIA],['GIFT CARD (USO)',q.pre['GIFT CARD']],['GIFT CARD (VENTA)',q.gifts],['RESERVA',q.pre.RESERVA],null,
-  ...(f===HOY?[['DENTRO AHORA',`${d.a+d.n}${d.n?` (${d.n} niños)`:''}`],['CASILLEROS LIBRES',`${libresSec('D').length} D · ${libresSec('V').length} V`],['POR REPONER',porReponer().length]]:[]),['POR COBRAR',n2(q.porCobrar)]];
- return `<div class="lb-grid"><div>${tabla(D_COLS,rows.map((r,i)=>dFila(r,i+1,f)).join('')+dFila({},rows.length+1,f)+vacias(6,D_COLS,rows.length+2))}
- <p class="lb-help">Escribe el DNI en la fila amarilla: el nombre y el teléfono salen solos. Las columnas con flechita se eligen de la lista. Para la promo 2×100 (martes a jueves) escribe PROMO en COMENTARIOS. En la caja, ENTRÓ y SALIÓ son para el dinero que no es venta ni gasto: préstamos con el bar, vueltos por Yape. En BAR se elige lo que pidió y se carga a su cuenta. Para la salida, toca el reloj: el casillero queda por reponer hasta que toques «Listo».</p></div>
- <aside class="lb-side">${bloque('CAJA DEL DÍA',L)}${f===HOY?bloqueRep(porReponer()):''}</aside></div><datalist id="dl-com">${xlOpcionesCom(f).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`}
+ const L=[['INICIO EFECTIVO',ed('inicio'),'ed'],['EFECTIVO',n2(pm.EFECTIVO)],['TARJETA',n2(pm.TARJETA+pm['TARJETA CREDITO']+pm['TARJETA DEBITO'])],['YAPE',n2(pm.YAPE)],['PLIN',n2(pm.PLIN)],['QR',n2(pm.QR)],['TRANSFERENCIA',n2(pm.TRANSFERENCIA+pm['LINK DE PAGO']+pm.WESTERN)],['GASTO EFECTIVO',n2(q.gastoEfectivo)],...(q.barCob?[['EFECTIVO DEL BAR (POR ENTREGAR)',n2(q.barCob)]]:[]),['ENTRÓ A LA CAJA',ed('entro'),'ed'],['SALIÓ DE LA CAJA',ed('salio'),'ed'],['DEPÓSITO',ed('deposito'),'ed'],['CAJA CIERRA',n2(q.cierre),'tot'],['PAGADO EN LA WEB',n2(q.enLinea)],['TOTAL DEL DÍA',n2(q.totalDia),'tot']];
+ const GENTE=[['SAUNEROS',q.cont.SAUNA],['PISCINA (NIÑOS)',q.cont.PISCINA],['PAQUETES',q.cont['PAQUETE INDIVIDUAL']+q.cont['PAQUETE DUO']],['MASAJES',q.cont.MASAJE],['PROMO 2×100',q.promo],['MEMBRESÍA',q.pre.MEMBRESIA],['GIFT CARD (USO)',q.pre['GIFT CARD']],['GIFT CARD (VENTA)',q.gifts],['RESERVA',q.pre.RESERVA]];
+ const AHORA=[...(f===HOY?[['DENTRO AHORA',`${d.a+d.n}${d.n?` (${d.n} niños)`:''}`],['CASILLEROS LIBRES',`${libresSec('D').length} D · ${libresSec('V').length} V`],['POR REPONER',porReponer().length]]:[]),['POR COBRAR',n2(q.porCobrar)]];
+ /* filtro y búsqueda, como el filtro del Excel; los que vienen juntos llevan la misma franja de color */
+ const pendR=r=>(!r.pagado&&+r.total>0)||(r.cons||[]).some(c=>!c.pag);const Fl=U.dfil||'todos',Q=String(U.dq||'').trim().toUpperCase();
+ const cnt={todos:rows.length,dentro:rows.filter(r=>!r.sal).length,salieron:rows.filter(r=>r.sal).length,cobrar:rows.filter(pendR).length};
+ const vis=rows.map((r,i)=>[r,i+1]).filter(([r])=>(Fl==='todos'||(Fl==='dentro'&&!r.sal)||(Fl==='salieron'&&r.sal)||(Fl==='cobrar'&&pendR(r)))&&(!Q||[r.nombre,r.dni,r.cas,r.bol,r.cel].some(x=>String(x||'').toUpperCase().includes(Q))));
+ const tam={};rows.forEach(r=>tam[r.grp]=(tam[r.grp]||0)+1);const gc={};let gi=0;rows.forEach(r=>{if(tam[r.grp]>1&&!(r.grp in gc))gc[r.grp]=gi++%2});
+ const V=vis.map(x=>x[0]),cs=k=>V.filter(r=>r.serv===k).length;
+ const pie=`<tr class="xl-sum"><th class="rn">Σ</th><td colspan="3"><b>${V.length} persona${V.length===1?'':'s'}</b>${Fl==='todos'&&!Q&&f===HOY?` · ${cnt.dentro} dentro`:''}</td><td colspan="7">${[['SAUNA','sauna'],['PISCINA','piscina'],['PAQUETE DUO','paquete dúo'],['PAQUETE INDIVIDUAL','paquete individual'],['MASAJE','masaje'],['ACOMPAÑANTE','acompañante']].filter(([k])=>cs(k)).map(([k,t])=>`${cs(k)} ${t}`).join(' · ')}</td><td class="num">${n2(sum(V,r=>sum(barDe(r),b=>+b.total||0)))}</td><td></td><td class="num"><b>${n2(sum(V,r=>+r.total||0))}</b></td></tr>`;
+ const filtros=`<div class="lb-filtros"><div class="chips">${[['todos','Todos'],['dentro','Dentro'],['salieron','Salieron'],['cobrar','Por cobrar']].map(([k,t])=>`<button class="chip ${Fl===k?'on':''}" data-a="dfil" data-v="${k}" aria-pressed="${Fl===k}">${t} <b>${cnt[k]}</b></button>`).join('')}</div><input class="inp sm" data-in="U.dq" data-live value="${esc(U.dq||'')}" placeholder="Buscar nombre, DNI, casillero o boleta" aria-label="Buscar en el DIARIO"></div>`;
+ return `${filtros}<div class="lb-grid"><div>${tabla(D_COLS,vis.map(([r,n])=>dFila(r,n,f,r.grp in gc?'g'+gc[r.grp]:'')).join('')+dFila({},rows.length+1,f)+pie+vacias(4,D_COLS,rows.length+2),'lb-diario')}
+ <p class="lb-help">Escribe el DNI en la fila amarilla: el nombre y el teléfono salen solos. Las columnas con flechita se eligen de la lista. Para la promo 2×100 (martes a jueves) escribe PROMO en COMENTARIOS. En la caja, ENTRÓ y SALIÓ son para el dinero que no es venta ni gasto: préstamos con el bar, vueltos por Yape. En BAR se elige lo que pidió y se carga a su cuenta. Para la salida, toca el reloj: el casillero queda por reponer hasta que toques «Listo». En naranja: lo que hay que corregir (DNI o celular incompletos) y lo que falta cobrar; en amarillo, quien ya cumple sus horas. La franja de color al costado une a los que vienen juntos.</p></div>
+ <aside class="lb-side">${bloque('CAJA DEL DÍA',L)}${bloque('PERSONAS Y SERVICIOS',GENTE)}${bloque(f===HOY?'AHORA':'PENDIENTE',AHORA)}${f===HOY?bloqueRep(porReponer()):''}</aside></div><datalist id="dl-com">${xlOpcionesCom(f).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`}
 
 /* ---------- BAR (hoja BAR DIARIO) ---------- */
 const BR_COLS=[['HORA',80],['CASILLERO',150],['NOMBRE',170],['PRODUCTO',200],['CANT.',58],['MÉTODO DE PAGO',146],['TOTAL',78]];
@@ -2824,10 +2888,10 @@ function bFila(b,n,f){const nueva=!b.id;const k=nueva?'b:new':'b:'+b.id;const N=
   <td class="num">${kIn(`${k}|cant`,v('cant'),'inputmode="numeric"')}</td><td class="${v('pago')==='NO CANCELO'?'pend':''}">${kSel(`${k}|pago`,v('pago'),B_PAGO,'Método de pago')}</td><td class="num">${kIn(`${k}|total`,nueva?N.total:b.total,`inputmode="decimal" ${nueva?`placeholder="${precioBar(N)||''}"`:''}`)}</td></tr>`}
 function hBar(){const f=U.dd;const rows=[...S.barRows.filter(b=>b.fecha===f&&!b.anulado)].sort((a,b)=>a.hora.localeCompare(b.hora)||a.id-b.id);const q=cuadreBar(f);const C=S.cuadreBar[f]||(S.cuadreBar[f]={});
  const ed=(campo,ph)=>`<input class="xc num" type="number" step="0.1" data-in="S.cuadreBar.${f}.${campo}" data-num data-live value="${C[campo]??''}" placeholder="${ph??''}" aria-label="${campo}">`;
- const L=[['INICIO',ed('inicio',n2(q.inicio)),'ed'],['EFECTIVO',n2(q.pm.EFECTIVO)],['YAPE',n2(q.pm.YAPE)],['PLIN',n2(q.pm.PLIN)],['TARJETA',n2(q.pm.TARJETA)],['QR',n2(q.pm.QR)],['GASTO',n2(q.gEf)],...(q.rec?[['LO COBRÓ RECEPCIÓN (EFECTIVO)',n2(q.rec)]]:[]),['ENTRÓ A LA CAJA',ed('entro'),'ed'],['SALIÓ DE LA CAJA',ed('salio'),'ed'],['DEPÓSITO',ed('deposito'),'ed'],['QUEDA EN CAJA',n2(q.queda),'tot'],['TOTAL GENERADO EN EL DÍA',n2(q.tot),'tot'],null,['CORTESÍAS',n2(q.cort)],...(q.interno?[['CONSUMO DE LA CASA (a precio de carta)',n2(q.interno)]]:[]),['NO CANCELÓ (cobrar al salir)',n2(q.pend)],['PRODUCTOS VENDIDOS',sum(q.R.filter(b=>!b.aparte),b=>+b.cant||1)]];
- return `${hPedidos(f)}<div class="lb-grid"><div>${tabla(BR_COLS,rows.map((b,i)=>bFila(b,i+1,f)).join('')+bFila({},rows.length+1,f)+vacias(6,BR_COLS,rows.length+2))}
+ const L=[['INICIO',ed('inicio',n2(q.inicio)),'ed'],['EFECTIVO',n2(q.pm.EFECTIVO)],['YAPE',n2(q.pm.YAPE)],['PLIN',n2(q.pm.PLIN)],['TARJETA',n2(q.pm.TARJETA)],['QR',n2(q.pm.QR)],['GASTO',n2(q.gEf)],...(q.rec?[['LO COBRÓ RECEPCIÓN (EFECTIVO)',n2(q.rec)]]:[]),['ENTRÓ A LA CAJA',ed('entro'),'ed'],['SALIÓ DE LA CAJA',ed('salio'),'ed'],['DEPÓSITO',ed('deposito'),'ed'],['QUEDA EN CAJA',n2(q.queda),'tot'],['TOTAL GENERADO EN EL DÍA',n2(q.tot),'tot']];const L2=[['CORTESÍAS',n2(q.cort)],...(q.interno?[['CONSUMO DE LA CASA (a precio de carta)',n2(q.interno)]]:[]),['NO CANCELÓ (cobrar al salir)',n2(q.pend)],['PRODUCTOS VENDIDOS',sum(q.R.filter(b=>!b.aparte),b=>+b.cant||1)]];
+ return `<div class="lb-grid"><div>${tabla(BR_COLS,rows.map((b,i)=>bFila(b,i+1,f)).join('')+bFila({},rows.length+1,f)+vacias(6,BR_COLS,rows.length+2))}
  <p class="lb-help">Elige el casillero y el nombre sale solo. Si no paga en el momento, pon «NO CANCELO»: se carga a su cuenta y recepción se lo cobra al salir. Para el personal elige «PERSONAL» (paga el precio de personal) y para la familia «CASA» (consumo interno, sin cobro). En la caja, ENTRÓ y SALIÓ son para préstamos y devoluciones con Hammam. Cada venta descuenta del inventario.</p></div>
- <aside class="lb-side">${bloque('CAJA DEL BAR',L)}</aside></div>`}
+ <aside class="lb-side">${bloque('CAJA DEL BAR',L)}${bloque('EN EL DÍA',L2)}</aside></div>`}
 
 /* ---------- INVENTARIO BAR ---------- */
 function invDia(f){const res={};S.invItems.forEach(i=>res[i.id]={ini:+(S.inv.base[i.id]||0),ing:0,sal:0});const desde=S.inv.desde;
@@ -2852,14 +2916,16 @@ function insDia(f){asegIns();const I=S.invIns,res={};S.insumos.forEach(x=>res[x.
 const presW=x=>String(x.pres||'').split(' ')[0];
 const plural=(w,n)=>n===1||!/[aeiou]$/.test(w)?w:w+'s';
 function porComprar(f){const I=invDia(f),J=insDia(f);return [...S.invItems.filter(it=>I[it.id]&&I[it.id].fin<=it.min).map(it=>[it.nombre,`${I[it.id].fin}`]),...S.insumos.filter(x=>J[x.id].fin<=x.min).map(x=>[x.nombre,`${n2(J[x.id].fin)} ${x.u}`])]}
-function hInv(){const f=U.dd;const I=invDia(f);const cols=[['BEBIDAS',220],['INICIO',80],['INGRESO',84],['SALIDA',80],['FINALIZA',128],['MÍNIMO',76]];
+function nivel(fin,min,ref){const tope=Math.max(+ref||0,(+min||0)*3,+fin||0,1);const p=Math.max(0,Math.min(1,(+fin||0)/tope));const c=fin<=min?'bajo':fin<=min*2?'medio':'ok';return `<span class="nivel ${c}" title="${c==='bajo'?'Hay que comprar':c==='medio'?'Queda poco':'Hay suficiente'}"><i style="width:${Math.round(p*100)}%"></i></span>`}
+const cuentaNivel=L=>{const b=L.filter(([f,m])=>f<=m).length,m=L.filter(([f,mi])=>f>mi&&f<=mi*2).length;return `${b?` · <span class="t-bajo">${b} por comprar</span>`:''}${m?` · <span class="t-medio">${m} queda${m===1?'':'n'} poco</span>`:''}`};
+function hInv(){const f=U.dd;const I=invDia(f);const cols=[['BEBIDAS',220],['INICIO',80],['INGRESO',84],['SALIDA',80],['QUEDA',150],['MÍNIMO',76]];
  if(f<S.inv.desde)return `<p class="lb-help">El inventario empieza el ${fmtFL(S.inv.desde)}.</p>`;
  const J=insDia(f),man=S.invIns.ing[f]||{},C=porComprar(f);
  const tIns=tabla([['INSUMO',230],['MEDIDA',76],['INICIO',80],['LLEGÓ',96],['SALIDA',80],['QUEDA',220],['MÍNIMO',76]],S.insumos.map((x,i)=>{const y=J[x.id];const bajo=y.fin<=x.min;const w=presW(x);const eq=Math.round(y.fin/(+x.eq||1)*10)/10;
-  return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(x.nombre)}</b><small class="ih-tipo">1 ${esc(x.pres)} = ${n2(x.eq)} ${esc(x.u)}</small></td>${ro(esc(x.u))}${ro(n2(y.ini))}<td class="num">${kIn(`ins:${x.id}|ing`,man[x.id]??'',`inputmode="decimal" placeholder="${esc(plural(w,2))}" title="Cuántas ${esc(plural(w,2))} llegaron"`)}</td>${ro(n2(y.sal))}<td class="ro"><b>${n2(y.fin)}</b> <small>≈ ${n2(eq)} ${esc(plural(w,eq))}</small>${bajo?' <span class="comprar">comprar</span>':''}</td>${ro(n2(x.min))}</tr>`}).join(''));
- return `<div class="lb-grid"><div class="lb-main"><h4 class="lb-h4">Bebidas</h4>${tabla(cols,S.invItems.map((it,i)=>{const x=I[it.id];const bajo=x.fin<=it.min;return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(it.nombre)}</b></td>${ro(x.ini)}<td class="num">${kIn(`inv:${it.id}|ing`,x.ing||'','inputmode="numeric" placeholder="0"')}</td>${ro(x.sal)}<td class="ro"><b>${x.fin}</b>${bajo?' <span class="comprar">comprar</span>':''}</td>${ro(it.min)}</tr>`}).join(''))}
- <p class="lb-help">INICIO es lo que quedó ayer. En INGRESO anota lo que llegó. SALIDA se llena sola con las ventas de la hoja BAR. Las filas en naranja son lo que hay que comprar.</p>
- <h4 class="lb-h4">Insumos de los tragos</h4>${tIns}<p class="lb-help">Cada trago vendido descuenta su receta: un mojito baja 2 oz de ron, 2 ramitas de hierba buena, un limón… En LLEGÓ escribe cuántas botellas, atados o kilos llegaron y el sistema lo pasa a onzas o unidades. Las recetas se cambian en AJUSTES.</p></div>
+  return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(x.nombre)}</b><small class="ih-tipo">1 ${esc(x.pres)} = ${n2(x.eq)} ${esc(x.u)}</small></td>${ro(esc(x.u))}${ro(n2(y.ini))}<td class="num">${kIn(`ins:${x.id}|ing`,man[x.id]??'',`inputmode="decimal" placeholder="${esc(plural(w,2))}" title="Cuántas ${esc(plural(w,2))} llegaron"`)}</td>${ro(n2(y.sal))}<td class="ro niv"><b>${n2(y.fin)}</b> <small>≈ ${n2(eq)} ${esc(plural(w,eq))}</small>${bajo?' <span class="comprar">comprar</span>':''}${nivel(y.fin,x.min,y.ini+y.ing)}</td>${ro(n2(x.min))}</tr>`}).join(''));
+ return `<div class="lb-grid"><div class="lb-main"><h4 class="lb-h4">Bebidas${cuentaNivel(S.invItems.map(it=>[I[it.id].fin,it.min]))}</h4>${tabla(cols,S.invItems.map((it,i)=>{const x=I[it.id];const bajo=x.fin<=it.min;return `<tr class="${bajo?'bajo':''}"><th class="rn">${i+1}</th><td class="ro"><b>${esc(it.nombre)}</b></td>${ro(x.ini)}<td class="num">${kIn(`inv:${it.id}|ing`,x.ing||'','inputmode="numeric" placeholder="0"')}</td>${ro(x.sal)}<td class="ro niv"><b>${x.fin}</b>${bajo?' <span class="comprar">comprar</span>':''}${nivel(x.fin,it.min,x.ini+x.ing)}</td>${ro(it.min)}</tr>`}).join(''))}
+ <p class="lb-help">INICIO es lo que quedó ayer. En INGRESO anota lo que llegó. SALIDA se llena sola con las ventas de la hoja BAR. La línea de color muestra cuánto queda: verde, hay suficiente; amarilla, queda poco; roja, hay que comprar.</p>
+ <h4 class="lb-h4">Insumos de los tragos${cuentaNivel(S.insumos.map(x=>[J[x.id].fin,x.min]))}</h4>${tIns}<p class="lb-help">Cada trago vendido descuenta su receta: un mojito baja 2 oz de ron, 2 ramitas de hierba buena, un limón… En LLEGÓ escribe cuántas botellas, atados o kilos llegaron y el sistema lo pasa a onzas o unidades. Las recetas se cambian en AJUSTES.</p></div>
  <aside class="lb-side">${bloque('POR COMPRAR',C.length?C:[['Nada por ahora','']])}</aside></div>`}
 
 /* ---------- GASTOS ---------- */
@@ -2949,7 +3015,7 @@ function hAjustes(){const c=S.cfg;const num=(path,val)=>`<input class="xc num" t
  <h4>Inventario del bar: mínimos</h4>${tabla([['BEBIDA',220],['MÍNIMO',90]],S.invItems.map((it,i)=>`<tr><th class="rn">${i+1}</th><td>${kIn(`it:${it.id}|nombre`,it.nombre)}</td><td class="num">${kIn(`it:${it.id}|min`,it.min,'inputmode="numeric"')}</td></tr>`).join(''))}${hAjRec()}${hAjIns()}${hAjInvH()}</section>
  <section><h4>Opciones de las listas</h4>${['tragos','masaje','conocio','comentarios'].map(k=>`<div class="optbox mb"><b>${OPC_T[k]}</b><div class="chips mt">${c.opciones[k].map((o,i)=>`<span class="chip mini on optc">${esc(o)}<button data-a="opcDel" data-v="${k}|${i}" aria-label="Quitar ${esc(o)}">×</button></span>`).join('')}</div><div class="row mt"><input class="inp sm grow" data-in="U.opcNew.${k}" data-enter="opcAdd" data-k="${k}" value="${esc(U.opcNew[k]||'')}" placeholder="Nueva opción"><button class="btn xs" data-a="opcAdd" data-v="${k}">Agregar</button></div></div>`).join('')}
  <h4>Google Calendar y Google Drive</h4><div class="optbox mb"><p class="small m0">1. ID del calendario de masajes, para verlo en la hoja MASAJES (en Google Calendar: Configuración del calendario → «ID del calendario»).</p><input class="inp mt" data-in="S.cfg.gcal.id" data-live value="${esc((c.gcal||{}).id||'')}" placeholder="xxxx@group.calendar.google.com">
- <p class="small m0 mt">2. Para que los masajes se pasen solos al calendario y las copias vayan a Drive: enlace del Apps Script y su clave (ver el archivo «Hammam_Google_Calendar_Drive.gs»).</p><input class="inp mt" data-in="S.cfg.gcal.url" data-live value="${esc((c.gcal||{}).url||'')}" placeholder="https://script.google.com/macros/s/…/exec"><input class="inp mt" data-in="S.cfg.gcal.clave" value="${esc((c.gcal||{}).clave||'')}" placeholder="Clave" autocomplete="off">
+ <p class="small m0 mt">2. Para que los masajes se pasen solos al calendario y las copias vayan a Drive: enlace del Apps Script y su clave (ver el archivo «Hammam_Google_Calendar_Drive.gs»). Con ese enlace, la web también deja de ofrecer las horas ocupadas en Google Calendar.</p><input class="inp mt" data-in="S.cfg.gcal.url" data-live value="${esc((c.gcal||{}).url||'')}" placeholder="https://script.google.com/macros/s/…/exec"><input class="inp mt" data-in="S.cfg.gcal.clave" value="${esc((c.gcal||{}).clave||'')}" placeholder="Clave" autocomplete="off">
  <div class="row mt"><button class="btn sm" data-a="gcalProbar">Probar conexión</button><button class="btn sm ghost" data-a="gcalRespaldo">Guardar copia en Google Drive</button></div>${(c.gcal||{}).respaldo?`<p class="xs muted mt">Última copia: ${esc(c.gcal.respaldo)}.</p>`:''}</div>
  ${hAjPagos()}<h4>Importar los Excel</h4><div class="optbox"><p class="small m0">Elige el Excel de Hammam (diario, base de datos, gastos, gift cards y membresías), el de Hammam Bar (ventas, gastos e inventario) o los CSV que se descargan de Google Sheets (NUEVO HAMMAM DIARIO y BAR DIARIO). Se pueden elegir varios a la vez. Los datos se guardan solo en este navegador.</p><label class="check mt"><input type="checkbox" data-in="U.imp.reemplazar" ${I.reemplazar?'checked':''}> Reemplazar los datos de ejemplo</label><label class="btn mt filebtn">${ic('upload')} Elegir archivos (.xlsx o .csv)<input type="file" accept=".xlsx,.xls,.csv" multiple data-file="importar" hidden></label>${I.estado?`<div class="note ${I.error?'bad':I.listo?'ok':''} mt">${esc(I.estado)}</div>`:''}</div></section></div>`}
 
@@ -2968,10 +3034,10 @@ function calEmbed(txt){let id=String(txt||'').trim();if(!id)return '';const m=id
  return `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(id)}&ctz=America%2FLima&mode=WEEK&wkst=2&showPrint=0&showCalendars=0&showTz=0&showTitle=0`}
 const gcalOk=()=>{const G=S.cfg.gcal||{};return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(G.url||'')&&!!G.clave};
 function gcalLink(k){const s=S.agenda[k];const [f,cb,h]=k.split('|');const d=f.replace(/-/g,'');const fin=toHM(toMin(h)+(+s.dur||45));
- const p=new URLSearchParams({action:'TEMPLATE',text:`Masaje ${(MTIPOS[s.mtipo]||'').toLowerCase()} ${s.dur} min · ${s.cliente}`,dates:`${d}T${h.replace(':','')}00/${d}T${fin.replace(':','')}00`,ctz:'America/Lima',details:`${cb} · ${terapeutaDe(cb)}\nOrigen: ${s.origen}${s.codigo?'\nReserva: '+s.codigo:''}${s.notas?'\nNotas: '+s.notas:''}`,location:'Hammam Wellness Center, Palmas del Golf II, Trujillo'});
+ const p=new URLSearchParams({action:'TEMPLATE',text:`Masaje ${(MTIPOS[s.mtipo]||'').toLowerCase()} ${s.dur} min · ${s.cliente}`,dates:`${d}T${h.replace(':','')}00/${d}T${fin.replace(':','')}00`,ctz:'America/Lima',details:`${cb} · ${masajistaDe(f,cb,h)}\nOrigen: ${s.origen}${s.codigo?'\nReserva: '+s.codigo:''}${s.notas?'\nNotas: '+s.notas:''}`,location:'Hammam Wellness Center, Palmas del Golf II, Trujillo'});
  return 'https://calendar.google.com/calendar/render?'+p}
 function gcalEvento(k,s){const [f,cb,h]=k.split('|');const ini=new Date(`${f}T${h}:00-05:00`);const fin=new Date(ini.getTime()+(+s.dur||45)*60000);
- return {id:k,titulo:`Masaje ${(MTIPOS[s.mtipo]||'').toLowerCase()} ${s.dur} min · ${s.cliente}`,inicio:ini.toISOString(),fin:fin.toISOString(),descripcion:`${cb} · ${terapeutaDe(cb)}\nOrigen: ${s.origen}${s.codigo?'\nReserva: '+s.codigo:''}${s.notas?'\nNotas: '+s.notas:''}`}}
+ return {id:k,titulo:`Masaje ${(MTIPOS[s.mtipo]||'').toLowerCase()} ${s.dur} min · ${s.cliente} · ${titulo(masajistaDe(f,cb,h))}`,inicio:ini.toISOString(),fin:fin.toISOString(),descripcion:`${cb} · ${masajistaDe(f,cb,h)}\nOrigen: ${s.origen}${s.codigo?'\nReserva: '+s.codigo:''}${s.notas?'\nNotas: '+s.notas:''}`}}
 function gcalEnviar(accion,k,s){const G=S.cfg.gcal;try{fetch(G.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({clave:G.clave,accion,...gcalEvento(k,s)})})
  .then(()=>{const x=S.agenda[k];if(x&&accion==='crear'){x.gcal='ok';save();if(U&&U.hoja==='masajes')render()}}).catch(()=>{const x=S.agenda[k];if(x){x.gcal='error';save();if(U&&U.hoja==='masajes')render()}})}catch(e){}}
 /* cada vez que se guarda, lo nuevo de la agenda se manda al calendario y lo que se liberó se borra */
@@ -2999,14 +3065,18 @@ function hMasajes(){const f=U.dd;const G=S.cfg.gcal||{};const emb=calEmbed(G.id)
  const filas=[];CABINAS.forEach(cb=>HORAS_MAS.forEach(h=>{const k=sk(f,cb,h),s=S.agenda[k];if(s)filas.push([k,cb,h,s])}));filas.sort((a,b)=>a[2].localeCompare(b[2])||a[1].localeCompare(b[1]));
  const cols=[['HORA',72],['CABINA',86],['MASAJISTA',104],['CLIENTE',200],['MASAJE',150],['MIN.',62],['ORIGEN',124],['ESTADO',124],['GOOGLE CALENDAR',156]];
  const gc=(k,s)=>s.origen==='Google Calendar'?'<span class="ro">✓ viene del calendario</span>':gcalOk()?(s.gcal==='ok'?'<span class="ro">✓ en el calendario</span>':s.gcal==='error'?'<span class="ro" style="color:#A63D32">No se pudo enviar</span>':'<span class="ro">enviando…</span>'):`<a class="xbtn" href="${gcalLink(k)}" target="_blank" rel="noopener">Agregar al calendario ↗</a>`;
- const body=filas.map(([k,cb,h,s],i)=>{const key='ms:'+k.replace(/\|/g,'~');return `<tr class="${s.estado==='atendido'||s.estado==='no asistió'?'fuera':''}"><th class="rn">${i+1}</th>${ro(h12(h))}${ro(cb.replace('Cabina ','CABINA '))}${ro(esc(terapeutaDe(cb)))}${ro(`<b>${esc(s.cliente)}</b>${s.notas?` <span title="${esc(s.notas)}" style="color:#A0693F">●</span>`:''}`)}${ro(MTIPOS[s.mtipo]||'')}${ro(s.dur)}${ro(esc(s.origen||''))}<td class="${s.estado==='en curso'?'ok':''}">${kSel(`${key}|estado`,s.estado,M_EST,'Estado')}</td><td>${gc(k,s)}</td></tr>`}).join('');
+ const body=filas.map(([k,cb,h,s],i)=>{const key='ms:'+k.replace(/\|/g,'~');return `<tr class="${s.estado==='atendido'||s.estado==='no asistió'?'fuera':''}"><th class="rn">${i+1}</th>${ro(h12(h))}${ro(cb.replace('Cabina ','CABINA '))}${ro(esc(masajistaDe(f,cb,h)))}${ro(`<b>${esc(s.cliente)}</b>${s.notas?` <span title="${esc(s.notas)}" style="color:#A0693F">●</span>`:''}`)}${ro(MTIPOS[s.mtipo]||'')}${ro(s.dur)}${ro(esc(s.origen||''))}<td class="${s.estado==='en curso'?'ok':''}">${kSel(`${key}|estado`,s.estado,M_EST,'Estado')}</td><td>${gc(k,s)}</td></tr>`}).join('');
  const horas=HORAS_MAS.filter(h=>!pasada(f,h));const hSel=N.hora&&horas.includes(N.hora)?N.hora:'';const cabs=hSel?libresEn(f,hSel):[];
  const dentroHoy=f===HOY?abiertos().map(g=>titulo(g.titular.nombre)):[];
  const nueva=`<tr class="nueva"><th class="rn">${filas.length+1}</th><td>${kSel('ms:new|hora',hSel,horas.map(h=>[h,h12(h)]),'Hora')}</td><td>${kSel('ms:new|cab',cabs.includes(N.cab)?N.cab:'',cabs.map(c=>[c,c.replace('Cabina ','CABINA ')]),'Cabina')}</td>${ro('')}<td>${kIn('ms:new|cliente',N.cliente,'list="dl-dentro" placeholder="Nuevo masaje: cliente"')}</td><td>${kSel('ms:new|mt',N.mt,Object.keys(MTIPOS).map(t=>[t,MTIPOS[t]]),'Masaje')}</td><td>${kSel('ms:new|dur',N.dur,DURS,'Minutos')}</td><td></td><td></td><td></td></tr>`;
  const cal=emb?`<div class="lb-cal"><div class="row between"><b>Google Calendar de masajes</b><span class="row small">${gcalOk()?`<button class="btn xs ghost" data-a="gcalTraer">Traer del calendario</button>`:''}<a class="lnk" href="https://calendar.google.com/calendar/r" target="_blank" rel="noopener">Abrir en Google ↗</a></span></div><iframe src="${emb}" title="Google Calendar de masajes" loading="lazy"></iframe></div>`
   :`<div class="lb-cal vacio"><b>Aquí se verá el Google Calendar de masajes.</b><p class="small m0">Cuando Hammam tenga su calendario, pega su ID en <button class="lnk" data-a="hoja" data-v="ajustes">AJUSTES</button> y aparecerá en esta hoja. Mientras tanto, cada masaje tiene su botón «Agregar al calendario».</p></div>`;
  return `${cal}<h4 class="lb-h4">Masajes del ${f===HOY?'día':fDM2(f)}</h4>${tabla(cols,body+nueva)}<datalist id="dl-dentro">${dentroHoy.map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
- <p class="lb-help">Aquí aparecen solos los masajes de las reservas de la web, del DIARIO (por ejemplo «SALAM - 6:00 PM» en COMENTARIOS) y los que anotes en la fila amarilla. Si el cliente está dentro, el masaje se carga a su cuenta.${gcalOk()?' Con Google conectado, cada masaje nuevo pasa solo al calendario y lo que se anota allá entra aquí.':''}</p>`}
+ <p class="lb-help">Aquí aparecen solos los masajes de las reservas de la web, del DIARIO (por ejemplo «SALAM - 6:00 PM» en COMENTARIOS) y los que anotes en la fila amarilla. Si el cliente está dentro, el masaje se carga a su cuenta.${gcalOk()?' Con Google conectado, cada masaje nuevo pasa solo al calendario y lo que se anota allá entra aquí.':''}</p>${hHorarioMas()}`}
+function hHorarioMas(){const H=horarioMas(),M=S.cfg.masajistas;const ops=[...M,...M.flatMap((a,i)=>M.slice(i+1).map(b=>`${a} Y ${b}`))];
+ const body=HORAS_MAS.map((h,i)=>`<tr><th class="rn">${i+1}</th>${ro(h12(h))}${DIAS_MAS.map(d=>{const v=(H[d]||{})[h]||'';return `<td class="${v?'hm-si':'hm-no'}">${kSel(`hm:${d}~${h}|m`,v,ops,'Masajista')}</td>`}).join('')}</tr>`).join('');
+ return `<h4 class="lb-h4">Horario de masajes</h4><div class="row mb small">Masajistas: ${kIn('hmz:lista|n',M.join(', '),'style="width:260px" aria-label="Masajistas"')}</div>${tabla([['HORA',80],...DIAS_MAS.map(d=>[DIA_LARGO[d],132])],body)}
+ <p class="lb-help">Cada casilla dice quién atiende a esa hora; vacía, no hay masajes. La web y recepción solo ofrecen las horas con una masajista libre. Lo que se anote en Google Calendar también ocupa la hora (por ejemplo, «Judith no viene»), así que el calendario y este horario van juntos. Si la semana cambia, se cambia aquí.</p>`}
 function celdaMasaje(id,k,v){const f=U.dd;
  if(id==='new'){const N=U.nms;N[k]=k==='dur'?+v:v;if(k==='hora')N.cab='';if(k==='cliente'&&String(v).trim().length>=2){const h=N.hora;if(!h){toast('Elige primero la hora.');return}const cb=N.cab||libresEn(f,h)[0];if(!cb){toast(`No hay cabinas libres a las ${h12(h)}.`);return}
    const nom=titulo(String(v).trim());const g=f===HOY?abiertos().find(x=>titulo(x.titular.nombre)===nom):null;const dur=+N.dur||45;
@@ -3019,6 +3089,8 @@ function celdaMasaje(id,k,v){const f=U.dd;
 /* ---------- celdas de las demás hojas ---------- */
 function celdaLibro(tipo,id,k,v){
  if(tipo==='ms'){celdaMasaje(id,k,v);return}
+ if(tipo==='hm'){const [d,h]=id.split('~');const H=horarioMas();(H[d]=H[d]||{})[h]=v||'';return}
+ if(tipo==='hmz'){const M=String(v).toUpperCase().split(/[,;\/]|\s+Y\s+/).map(x=>x.trim()).filter(Boolean);if(M.length)S.cfg.masajistas=[...new Set(M)];return}
  if(tipo==='ih'||tipo==='ihc'){celdaInvH(tipo,id,k,v);return}
  if(tipo==='b'){if(id==='new'){U.nb[k]=v;if((k==='prod'&&v)||(k==='total'&&v!=='')){const b=crearBar(U.dd,U.nb);U.nb=newNb();U.focus=`[data-cell="b:${b.id}|pago"]`}return}const b=S.barRows.find(x=>x.id===+id);if(b)barSet(b,k,v);return}
  if(tipo==='gs'){if(id==='new'){U.ng2[k]=v;if(k==='total'&&String(v).trim()!==''&&!(+String(v).replace(',','.')>0)){U.ng2.total='';toast('El monto del gasto debe ser mayor a 0.');return}const N=U.ng2,tot=+String(N.total||'').replace(',','.');if(tot>0&&(String(N.desc||'').trim().length>=2||N.cat)){const g={id:S.seq.gasto++,fecha:U.dd,caja:N.caja||'HAMMAM',cat:N.cat||'',desc:String(N.desc).trim().toUpperCase(),medio:N.medio||'EFECTIVO',total:+String(N.total).replace(',','.')||0,por:quien()};S.gastos.push(g);U.ng2=newNg2();U.focus=`[data-cell="gs:${g.id}|${k==='desc'?'total':'desc'}"]`;log(`Registró un gasto: ${g.desc||g.cat} (${sol(g.total)}).`)}return}
@@ -3061,13 +3133,9 @@ function filaBorrar(v){const [t,id]=v.split(':');
 function initLibro(){const rnd=rng('libro-'+HOY);const pick=a=>a[Math.floor(rnd()*a.length)];
  S.invItems=[['asg','AGUA SIN GAS',6],['acg','AGUA CON GAS',4],['alim','AGUA DE LIMÓN',4],['aman','AGUA DE MANZANA',4],['aton','AGUA TÓNICA',6],['mock','MOCKTAIL',4],['stel','STELLA',8],['coro','CORONA',8],['corz','CORONA ZERO',4],['coca','COCA COLA',4],['inca','INCA KOLA',4],['gato','GATORADE',6],['spor','SPORADE',6],['atonr','AGUA TÓNICA ROSADA',4]].map(([id,nombre,min])=>({id,nombre,min}));
  const P=(id,nombre,cat,precio,usa,desc)=>({id,nombre,cat,precio,usa:usa?{[usa]:1}:{},...(desc?{desc}:{})});
- /* platos y especiales: carta del restobar (CARTA PDF del Drive) */
- S.carta=[P('alitas','LAS ALITAS HAMMAM','PLATOS',28,'','10 alitas picantes, a la barbacoa o al ajo, con papas fritas y cremas.'),P('chuleta','LA CHULETA CRIOLLA','PLATOS',30,'','Chuleta de cerdo con papas fritas.'),P('chaufa','CHAUFA EN SU PUNTO','PLATOS',25,'','Clásico o vegetariano: verduras salteadas, huevo y pollo.'),
-  P('saltado','SALTADO A LA PERUANITA','PLATOS',30,'','Fideos al wok con salsa oriental, verduras y lomo fino o pollo.'),P('plancha','PLANCHA DEL CHEF','PLATOS',25,'','Pollo a la plancha con papas fritas y arroz.'),P('lomito','LOMITO AL FUEGO','PLATOS',35,'','Lomo fino saltado con papas amarillas y arroz.'),P('churrasco','CHURRASQUITO','PLATOS',30,'','Corte de carne con papas fritas.'),
-  P('caldo','CALDO DE LA ABUELA','ESPECIALES',25,'','Solo los martes: caldo de gallina con verduras y papas.'),P('sancocho','SANCOCHO DE LA CASA','ESPECIALES',25,'','Solo los miércoles.'),
-  P('tinto','TINTO DE VERANO','CÓCTELES',35),P('mojito','MOJITO','CÓCTELES',35),P('chilcano','CHILCANO','CÓCTELES',35),P('gintonic','GIN TONIC','CÓCTELES',35),P('gintfr','GIN TONIC DE FRUTOS ROJOS','CÓCTELES',35),P('aperol','APEROL SPRITZ','CÓCTELES',35),P('cuba','CUBA LIBRE','CÓCTELES',35),
+ S.carta=[P('tinto','TINTO DE VERANO','CÓCTELES',35),P('mojito','MOJITO','CÓCTELES',35),P('chilcano','CHILCANO','CÓCTELES',35),P('gintonic','GIN TONIC','CÓCTELES',35),P('gintfr','GIN TONIC DE FRUTOS ROJOS','CÓCTELES',35),P('aperol','APEROL SPRITZ','CÓCTELES',35),P('cuba','CUBA LIBRE','CÓCTELES',35),
   P('stella','STELLA','CERVEZAS',14,'stel'),P('corona','CORONA','CERVEZAS',14,'coro'),P('coronaz','CORONA ZERO','CERVEZAS',10,'corz'),P('mocktail','MOCKTAIL','SIN ALCOHOL',20,'mock'),
-  P('asg','AGUA SIN GAS','BEBIDAS',5,'asg'),P('acg','AGUA CON GAS','BEBIDAS',5,'acg'),P('alim','AGUA DE LIMÓN','BEBIDAS',5,'alim'),P('aman','AGUA DE MANZANA','BEBIDAS',5,'aman'),P('aton','AGUA TÓNICA','BEBIDAS',8,'aton'),P('sporade','SPORADE','BEBIDAS',8,'spor'),P('gatorade','GATORADE','BEBIDAS',8,'gato'),P('coca','COCA COLA','BEBIDAS',8,'coca'),P('inca','INCA KOLA','BEBIDAS',8,'inca'),P('jugo','JUGO DE LA CASA','BEBIDAS',10,'','Piña, papaya, naranja, mixto o limonada.'),{...P('limon','LIMÓN','BEBIDAS',1),soloBar:1},{...P('onza','ONZA EXTRA DE LICOR','CÓCTELES',5),soloBar:1}];
+  P('asg','AGUA SIN GAS','BEBIDAS',5,'asg'),P('acg','AGUA CON GAS','BEBIDAS',5,'acg'),P('alim','AGUA DE LIMÓN','BEBIDAS',5,'alim'),P('aman','AGUA DE MANZANA','BEBIDAS',5,'aman'),P('sporade','SPORADE','BEBIDAS',8,'spor'),P('gatorade','GATORADE','BEBIDAS',8,'gato'),P('coca','COCA COLA','BEBIDAS',8,'coca'),P('inca','INCA KOLA','BEBIDAS',8,'inca'),{...P('limon','LIMÓN','BEBIDAS',1),soloBar:1},{...P('onza','ONZA EXTRA DE LICOR','CÓCTELES',5),soloBar:1}];
  [['asg',2.5],['acg',2.5],['alim',2.5],['aman',2.5],['coca',3],['inca',3],['sporade',3],['gatorade',3]].forEach(([id,v])=>{const p=S.carta.find(x=>x.id===id);if(p)p.precioPer=v});
  S.barRows=[];S.cuadreBar={};S.seq.barRow=1;S.cfg.gcal={id:'',url:'',clave:''};initInvH();
  const desde=addDays(HOY,-15);S.inv={desde,base:{asg:30,acg:18,alim:12,aman:12,aton:20,mock:14,stel:30,coro:24,corz:10,coca:12,inca:20,gato:22,spor:18,atonr:12},ing:{}};
@@ -3085,13 +3153,12 @@ function initLibro(){const rnd=rng('libro-'+HOY);const pick=a=>a[Math.floor(rnd(
  filasDia(HOY).forEach(r=>{const bar=(r.cons||[]).filter(c=>c.t==='bar');r.cons=(r.cons||[]).filter(c=>c.t!=='bar');bar.forEach(c=>{const g=grupoDe(r.grp);const casR=g?g.rows.find(x=>x.cas)||r:r;const b={id:S.seq.barRow++,fecha:HOY,hora:toHM(Math.min(toMin(r.ing)+50,ahoraMin()-5)),cas:casR.cas,nombre:casR.nombre,prod:MAP[c.pid]||'asg',cant:c.q||1,pago:c.pag?'YAPE':'NO CANCELO',total:0,por:'Iván'};recalcBar(b);S.barRows.push(b);syncBar(b)})});
  [['asg',1,'EFECTIVO'],['sporade',1,'PLIN']].forEach(([p,c,pg])=>{const b={id:S.seq.barRow++,fecha:HOY,hora:'16:20',cas:'',nombre:'PERSONAL',prod:p,cant:c,pago:pg,total:0,por:'Iván'};recalcBar(b);S.barRows.push(b)});
  S.cuadreBar[HOY]={deposito:0};
- const abiertasHoy=filasDia(HOY).filter(r=>!r.sal&&r.cas);if(abiertasHoy.length){const r=abiertasHoy[abiertasHoy.length-1];const b={id:S.seq.barRow++,fecha:HOY,hora:'17:36',cas:r.cas,nombre:r.nombre,prod:'tinto',cant:2,pago:'NO CANCELO',total:0,por:'Celular',web:true};recalcBar(b);S.barRows.push(b);syncBar(b)}
 }
 
 /* ---------- importar el Excel de Hammam Bar ---------- */
 function importarBar(hojas,opt={}){const norm=s=>String(s??'').trim().toUpperCase().replace(/\s+/g,' ');const hoja=n=>{const k=Object.keys(hojas).find(x=>norm(x)===n);return k?hojas[k]:null};
  const fecha=v=>{if(typeof v==='number'&&v>20000&&v<80000){const d=new Date(Date.UTC(1899,11,30)+Math.floor(v)*86400000);return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`}const m=String(v??'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[0]:null};
- const ALIAS={'GIN TONIC DE FRUTOS ROJOS':'gintfr','GIN TONIC DE FRUTOS R.':'gintfr','GIN TONIC DE FRUTOS R':'gintfr','GIN FRUTOS ROJOS':'gintfr','ONZA EXTRA':'onza','ZUMO DE LIMON':'limon','LIMON + HIELO':'limon','LIMON HIELO':'limon','AGUA TONICA':'aton','AGUA TON PERKINS':'aton','AGUA PERKIN':'aton','AGUA TONICA PERKINS':'aton','POWER':'sporade','POWERADE':'sporade','REHIDRATANTE':'sporade','SPORADE AZUL':'sporade','MOJTO':'mojito','MOJITO CLASICO':'mojito','APPERO':'aperol','GIN TON':'gintonic','AGUA C GAS':'acg','GUA S G':'asg','GUA SIN GAS':'asg','CORONAS ZERO':'coronaz','AGUA DE MANZA':'aman','AGUA MANZANA':'aman','AGUA S G':'asg','AGUA SIN GAS':'asg','AGUA SIN G':'asg','AGUA SG':'asg','AGUA':'asg','AGUA C G':'acg','AGUA CON GAS':'acg','AGUA CG':'acg','TINTO DE VERANO':'tinto','TINTOS DE VERANO':'tinto','TINTO':'tinto','SPORADE':'sporade','STELLA':'stella','STELLAS':'stella','STELA':'stella','COCA COLA':'coca','CORONA':'corona','CORONAS':'corona','CORONITAS':'corona','INCA COLA':'inca','INCA KOLA':'inca','CHILCANO':'chilcano','CHILCANOS':'chilcano','MOCTEL':'mocktail','MOCTAIL':'mocktail','MOCKTAIL':'mocktail','MOCTELES':'mocktail','MOJITO':'mojito','MOJITOS':'mojito','GATORADE':'gatorade','GIN TONIC':'gintonic','APPEROL':'aperol','APEROL':'aperol','APEROL SPRITZ':'aperol','CUBA LIBRE':'cuba','LIMONES':'limon','LIMON':'limon','CORONA ZERO':'coronaz','CORONA CERO':'coronaz','AGUA DE LIMON':'alim','AGUA D LIMON':'alim','AGUA DE MANZANA':'aman','AGUA D MANZANA':'aman'};
+ const ALIAS={'GIN TONIC DE FRUTOS ROJOS':'gintfr','GIN TONIC DE FRUTOS R.':'gintfr','GIN TONIC DE FRUTOS R':'gintfr','GIN FRUTOS ROJOS':'gintfr','ONZA EXTRA':'onza','ZUMO DE LIMON':'limon','LIMON + HIELO':'limon','LIMON HIELO':'limon','POWER':'sporade','POWERADE':'sporade','REHIDRATANTE':'sporade','SPORADE AZUL':'sporade','MOJTO':'mojito','MOJITO CLASICO':'mojito','APPERO':'aperol','GIN TON':'gintonic','AGUA C GAS':'acg','GUA S G':'asg','GUA SIN GAS':'asg','CORONAS ZERO':'coronaz','AGUA DE MANZA':'aman','AGUA MANZANA':'aman','AGUA S G':'asg','AGUA SIN GAS':'asg','AGUA SIN G':'asg','AGUA SG':'asg','AGUA':'asg','AGUA C G':'acg','AGUA CON GAS':'acg','AGUA CG':'acg','TINTO DE VERANO':'tinto','TINTOS DE VERANO':'tinto','TINTO':'tinto','SPORADE':'sporade','STELLA':'stella','STELLAS':'stella','STELA':'stella','COCA COLA':'coca','CORONA':'corona','CORONAS':'corona','CORONITAS':'corona','INCA COLA':'inca','INCA KOLA':'inca','CHILCANO':'chilcano','CHILCANOS':'chilcano','MOCTEL':'mocktail','MOCTAIL':'mocktail','MOCKTAIL':'mocktail','MOCTELES':'mocktail','MOJITO':'mojito','MOJITOS':'mojito','GATORADE':'gatorade','GIN TONIC':'gintonic','APPEROL':'aperol','APEROL':'aperol','APEROL SPRITZ':'aperol','CUBA LIBRE':'cuba','LIMONES':'limon','LIMON':'limon','CORONA ZERO':'coronaz','CORONA CERO':'coronaz','AGUA DE LIMON':'alim','AGUA D LIMON':'alim','AGUA DE MANZANA':'aman','AGUA D MANZANA':'aman'};
  const res={ventas:0,dias:0,gastos:0,desde:null,hasta:null};
  if(opt.reemplazar){S.barRows=S.barRows.filter(b=>b.fecha===HOY);S.gastos=S.gastos.filter(g=>g.caja!=='BAR'||g.fecha===HOY);Object.keys(S.cuadreBar).forEach(f=>{if(f!==HOY)delete S.cuadreBar[f]})}
  const numX=v=>{if(typeof v==='number')return v;const m=String(v??'').replace(/\s/g,'').match(/^-?\d+(?:[.,]\d+)?$/);return m?+m[0].replace(',','.'):NaN};
@@ -3117,11 +3184,9 @@ function importarBar(hojas,opt={}){const norm=s=>String(s??'').trim().toUpperCas
   inv.slice(last+2,last+20).forEach(r=>{if(!r)return;const id=NM[norm(r[1])];const fin=typeof r[5]==='number'?r[5]:null;if(id&&fin!=null)base[id]=(base[id]||0)+fin});S.inv={desde:addDays(lf,1),base:{...S.inv.base,...base},ing:{}}}}
  const L=[...fs].sort();res.dias=L.length;res.desde=L[0]||null;res.hasta=L[L.length-1]||null;S.importadoBar={archivo:opt.archivo||'Excel del bar',cuando:`${fmtF(HOY)} ${ahora()}`,...res};return res}
 
-/* ---------- la carta del bar en la web y pedidos desde el casillero ---------- */
-function cBar(){const B=U.bp;const g0=B.ticket?grupoDe(B.ticket):null;const cta=g0&&!g0.salida?g0:null;if(B.ticket&&!cta)B.ticket=null;const hint=abiertos().find(g=>g.lockers.length);
- return `<div class="pagehead" style="${bgi('bar',1600)}"><div><p class="eyebrow" style="color:#D9E2C4">Hammam Restobar</p><h2>Algo rico después del circuito</h2><p>Pide desde tu celular sin salir de la piscina. Se carga a tu locker y pagas todo al salir.</p></div></div>
- <div class="split wide mt"><div class="card pad-lg carta-resto">${CARTA_CATS.map(ct=>{const L=S.carta.filter(p=>p.cat===ct&&!p.soloBar&&p.precio>0);return L.length?`<div class="menu-cat"><h4 style="margin-top:0">${titulo(ct)}</h4>${L.map(p=>`<div class="menu-item"><div><b class="menu-nom">${esc(p.nombre)}</b>${p.desc?`<small class="menu-desc">${esc(p.desc)}</small>`:''}</div><div class="row"><span class="nowrap">${sol(p.precio)}</span>${dispWeb(p)?`<span class="agotado">${dispWeb(p)}</span>`:cta?ctr('bpq',B.cart[p.id]||0,p.id+'|',0,Math.min(9,stockProd(p,HOY))):''}</div></div>`).join('')}</div>`:''}).join('')}<p class="xs muted">No se venden bebidas alcohólicas a menores de 18 años.</p></div>
- <aside class="card sticky">${cta?bpCart(cta):bpLogin(hint)}</aside></div>`}
+/* ---------- la carta del bar en la web ---------- */
+function cBar(){return `<div class="pagehead" style="${bgi('bar',1600)}"><div><p class="eyebrow" style="color:#D9E2C4">Hammam Bar</p><h2>Tragos y bebidas</h2><p>Cócteles, cervezas y bebidas frías para después del circuito. Se piden en el bar.</p></div></div>
+ <div class="mt"><div class="card pad-lg carta-resto carta-sola">${CARTA_CATS.map(ct=>{const L=S.carta.filter(p=>p.cat===ct&&!p.soloBar&&p.precio>0);return L.length?`<div class="menu-cat"><h4 style="margin-top:0">${titulo(ct)}</h4>${L.map(p=>`<div class="menu-item"><div><b class="menu-nom">${esc(p.nombre)}</b>${p.desc?`<small class="menu-desc">${esc(p.desc)}</small>`:''}</div><div class="row"><span class="nowrap">${sol(p.precio)}</span>${dispWeb(p)?`<span class="agotado">${dispWeb(p)}</span>`:''}</div></div>`).join('')}</div>`:''}).join('')}<p class="xs muted">No se venden bebidas alcohólicas a menores de 18 años.</p></div></div>`}
 function bpCart(c){const B=U.bp;const lines=Object.entries(B.cart).filter(([k,q])=>q>0);const tot=sum(lines,([k,q])=>cartaDe(k).precio*q);
  const items=c.rows.flatMap(r=>[{d:`${SERV_CORTO[r.serv]||r.serv} · ${titulo(r.nombre).split(' ')[0]}`,m:r.total,pag:r.pagado},...(r.cons||[]).map(x=>({d:x.d,m:x.m,pag:x.pag}))]);
  return `<div class="detail-h"><div><h3 class="m0">Hola, ${esc(titulo(c.titular.nombre).split(' ')[0])}</h3><p class="small muted m0">Locker ${c.lockers.join(', ')}</p></div><button class="btn xs ghost" data-a="bpSalir">Salir</button></div>
@@ -3141,8 +3206,15 @@ function dispWeb(p){const d=diasProd(p);if(d&&!d.includes(diaSem(HOY)))return 'S
 const PAGO_DEF={servidor:'',qr:'',numero:'984 587 616',titular:'Hammam Wellness Center',link:'',claveStaff:''};
 const cfgP=()=>{const c=S.cfg.pagos=S.cfg.pagos||{};Object.keys(PAGO_DEF).forEach(k=>{if(c[k]===undefined)c[k]=PAGO_DEF[k]});return c};
 /* lo que ve el público: va dentro de la web publicada (AJUSTES solo lo reemplaza en esa computadora) */
-const PAGOS_WEB={servidor:'',qr:'',numero:'984 587 616',titular:'Hammam Wellness Center',link:''};
+const PAGOS_WEB={servidor:'',qr:'',numero:'984 587 616',titular:'Hammam Wellness Center',link:'',calendario:''};
 const cfgW=()=>{const c=cfgP(),o={...PAGOS_WEB};Object.keys(PAGOS_WEB).forEach(k=>{if(c[k])o[k]=c[k]});return o};
+/* la web pregunta al Apps Script qué horas están ocupadas en Google Calendar (solo horas, sin nombres) */
+let CAL_OCC=null,CAL_T=0;
+const calUrl=()=>String(cfgW().calendario||'').trim()||String((S.cfg.gcal||{}).url||'').trim();
+function calOcupado(){const u=calUrl();if(!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u)||typeof fetch!=='function')return null;
+ if(Date.now()-CAL_T>120000){CAL_T=Date.now();fetch(u+'?accion=ocupado').then(r=>r.json()).then(j=>{if(j&&j.ok){CAL_OCC=j.ocupado||[];render()}}).catch(()=>{})}return CAL_OCC}
+function ocupGoogle(f,h){if(typeof U==='undefined'||!U||U.view!=='cliente')return 0;const L=calOcupado();if(!L)return 0;const ini=new Date(`${f}T${h}:00-05:00`).getTime(),fin=ini+50*60000;
+ return L.filter(e=>!(e.hammam&&S.agenda[e.hammam])&&new Date(e.inicio).getTime()<fin&&new Date(e.fin).getTime()>ini).length}
 const urlServ=()=>String(cfgW().servidor||'').trim().replace(/\/+$/,'');
 const servOk=()=>/^https:\/\/[\w.-]+(\/[\w./-]*)?$/.test(urlServ())||/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(urlServ());
 const MEDIO_TXT={izipay:'Izipay',qr:'QR billetera',link:'Link Izipay',local:'En el local',yape:'Yape',tarjeta:'Tarjeta'};
@@ -3383,7 +3455,12 @@ const A={
  irDiario:v=>{U.hoja='diario';U.dd=v},
  masToggle:()=>{U.mas=!(U.mas||ROLES[U.rol].mods.filter(m=>!ROLES[U.rol].main.includes(m)).includes(U.mod));if(!U.mas&&!ROLES[U.rol].main.includes(U.mod))U.mod=ROLES[U.rol].main[0]},
  dview:v=>{U.dview=v;top0()},
- salir:()=>{U.rol=null;U.drawer=null},
+ salir:()=>{U.rol=null;U.drawer=null;U.login={usuario:'administracion',clave:'',error:''}},
+ /* una sola cuenta de administración; con servidor, la contraseña es la CLAVE_PERSONAL del servidor */
+ entrar:async()=>{const L=U.login||(U.login={usuario:'administracion',clave:'',error:''});const clave=String(L.clave||'');if(!clave){L.error='Escribe la contraseña.';return}
+  if(servOk()){try{const r=await fetch(urlServ()+'/personal/novedades?desde=0',{headers:{'X-Clave':clave}});if(!r.ok){L.error='Usuario o contraseña incorrectos.';L.clave='';render();return}cfgP().claveStaff=clave}catch(e){L.error='No se pudo conectar con el servidor de Hammam.';render();return}}
+  L.clave='';L.error='';U.rol='admin';U.hoja='guia';U.nb=newNb();U.ng2=newNg2();save();render()},
+ dfil:v=>{U.dfil=v},
  mod:v=>{U.mod=v;U.drawer=null;top0()},
  sub:v=>{const [m,k]=v.split('|');U.sub[m]=k},
  qaIngreso:()=>{U.mod='diario';U.dview='simple';U.focus='[data-in="U.q.dni"]'},
@@ -3605,7 +3682,7 @@ function morph(a,b){
 function morphHijos(a,b){const ac=[...a.childNodes],bc=[...b.childNodes];for(let i=0;i<bc.length;i++){if(i<ac.length)morph(ac[i],bc[i]);else a.appendChild(bc[i])}for(let i=bc.length;i<ac.length;i++)ac[i].remove()}
 function render(){const ae=document.activeElement;const key=ae&&ae.dataset?(ae.dataset.in||ae.dataset.merma||ae.dataset.cell):null;
  document.querySelectorAll('.demobar [data-a="view"]').forEach(b=>b.classList.toggle('on',b.dataset.v===U.view));
- const html=(U.view==='cliente'?vCliente():vPersonal())+(U.cons?consentModal():'');syncUrl();{const n=U.view==='personal'&&U.rol?pedidosGrupos(HOY).length:0;if(n)setTimeout(()=>{document.title=`(${n}) Pedido del bar · `+document.title.replace(/^\(\d+\) Pedido del bar · /,'')},0)}
+ const html=(U.view==='cliente'?vCliente():vPersonal())+(U.cons?consentModal():'');syncUrl();
  const tmp=document.createElement('div');
  if(tmp.childNodes===undefined||!app.childNodes){app.innerHTML=html}else{tmp.innerHTML=html;morphHijos(app,tmp)}
  const dk=U.drawer?JSON.stringify(U.drawer):'';if(dk!==render.dk){const b=document.querySelector('.drawer .db');if(b)b.scrollTop=0;render.dk=dk}
