@@ -1109,6 +1109,12 @@ h4{font-family:'Montserrat',sans-serif}
 .login-1 .inp{width:100%}
 .login-btn{width:100%}
 
+.clave-ojo{position:relative}
+.clave-ojo .inp{padding-right:48px}
+.clave-ojo .ojo{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:38px;height:38px;display:grid;place-items:center;border:0;background:none;border-radius:50%;color:#6b7262;cursor:pointer}
+.clave-ojo .ojo:hover{background:rgba(75,93,67,.08);color:#2f3a29}
+.clave-ojo .ojo .ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
 /* ===== v10: web de clientes editorial — esquinas rectas, líneas finas, fotos grandes ===== */
 .web{--w-paper:#F4EFE6;--w-paper2:#FBF8F2;--w-sand:#EAE3D6;--w-ink:#1B1915;--w-ink2:#5A544C;--w-line:rgba(27,25,21,.15);--w-dark:#14120E;--w-cream:#EDE6D8;--w-gold:#C3A446;--w-gold2:#D9C27C;--w-brown:#2A1A0F;
  --bg:var(--w-paper);--surface:var(--w-paper2);--surface2:var(--w-sand);--line:var(--w-line);--ink:var(--w-ink);--muted:var(--w-ink2);--brand:var(--w-ink);--brand-soft:var(--w-sand);--on-brand:var(--w-paper);
@@ -1481,6 +1487,8 @@ const FERIADOS=['2026-01-01','2026-04-02','2026-04-03','2026-05-01','2026-06-07'
 
 /* =================== íconos =================== */
 const IC={
+ ojo:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z',
+ ojoNo:'M3 3l18 18 M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2 M6.6 6.6C3.8 8.5 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6 M9.9 9.9a3 3 0 0 0 4.2 4.2',
  home:'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
  door:'M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17M3 21h18M14 12h1',
  users:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M16 3.5a4 4 0 0 1 0 7M22 21v-1a6 6 0 0 0-4-5.6',
@@ -2750,7 +2758,7 @@ const n2=x=>(Math.round((+x||0)*100)/100).toLocaleString('es-PE',{maximumFractio
 function vLoginLibro(){const L=U.login||(U.login={usuario:'administracion',clave:'',error:''});
  return `<div class="wrap"><div class="login login-1"><div class="center mb"><span class="lb-logo big" role="img" aria-label="Hammam Wellness Center"></span><h2 class="mt">Sistema de Hammam</h2><p class="muted">Entra con la cuenta de administración.</p></div>
  <label class="fld">Usuario<input class="inp" data-in="U.login.usuario" value="${esc(L.usuario)}" autocomplete="username"></label>
- <label class="fld mt">Contraseña<input class="inp" type="password" data-in="U.login.clave" data-enter="entrar" value="" autocomplete="current-password"></label>
+ <label class="fld mt" for="login-clave">Contraseña</label><div class="clave-ojo"><input class="inp" id="login-clave" type="${L.ver?'text':'password'}" data-in="U.login.clave" data-enter="entrar" value="${esc(L.clave||'')}" autocomplete="current-password" autocapitalize="off" spellcheck="false"><button type="button" class="ojo" data-a="verClave" aria-label="${L.ver?'Ocultar la contraseña':'Mostrar la contraseña'}" aria-pressed="${!!L.ver}" title="${L.ver?'Ocultar':'Mostrar'}">${ic(L.ver?'ojoNo':'ojo')}</button></div>
  ${L.error?`<p class="note bad mt">${esc(L.error)}</p>`:''}<button class="btn mt login-btn" data-a="entrar">Entrar</button>
  <p class="xs muted center mt">${servOk()?'La contraseña se revisa en el servidor de Hammam.':'Versión de prueba: todavía no hay servidor, así que entra con cualquier contraseña.'}</p></div></div>`}
 const HOJA_IC={guia:'book',diario:'sheet',bar:'glass',masajes:'leaf',reservas:'cal',gastos:'card',bd:'users',gift:'gift',memb:'repeat',invh:'towel',inventario:'box',resumen:'chart',ajustes:'gear'};
@@ -3464,6 +3472,7 @@ const A={
   if(servOk()){try{const r=await fetch(urlServ()+'/personal/novedades?desde=0',{headers:{'X-Clave':clave}});if(!r.ok){L.error='Usuario o contraseña incorrectos.';L.clave='';render();return}cfgP().claveStaff=clave}catch(e){L.error='No se pudo conectar con el servidor de Hammam.';render();return}}
   L.clave='';L.error='';U.rol='admin';U.hoja='guia';U.nb=newNb();U.ng2=newNg2();save();render()},
  dfil:v=>{U.dfil=v},
+ verClave:()=>{const L=U.login||(U.login={usuario:'administracion',clave:'',error:''});const i=document.getElementById('login-clave');if(i)L.clave=i.value;L.ver=!L.ver;setTimeout(()=>{const j=document.getElementById('login-clave');if(j){j.focus();const n=j.value.length;try{j.setSelectionRange(n,n)}catch(e){}}},0)},
  mod:v=>{U.mod=v;U.drawer=null;top0()},
  sub:v=>{const [m,k]=v.split('|');U.sub[m]=k},
  qaIngreso:()=>{U.mod='diario';U.dview='simple';U.focus='[data-in="U.q.dni"]'},
