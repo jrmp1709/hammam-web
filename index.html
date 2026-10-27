@@ -3206,7 +3206,7 @@ function dispWeb(p){const d=diasProd(p);if(d&&!d.includes(diaSem(HOY)))return 'S
 const PAGO_DEF={servidor:'',qr:'',numero:'984 587 616',titular:'Hammam Wellness Center',link:'',claveStaff:''};
 const cfgP=()=>{const c=S.cfg.pagos=S.cfg.pagos||{};Object.keys(PAGO_DEF).forEach(k=>{if(c[k]===undefined)c[k]=PAGO_DEF[k]});return c};
 /* lo que ve el público: va dentro de la web publicada (AJUSTES solo lo reemplaza en esa computadora) */
-const PAGOS_WEB={servidor:'',qr:'',numero:'984 587 616',titular:'Hammam Wellness Center',link:'',calendario:''};
+const PAGOS_WEB={servidor:'https://hammam-pagos.ammam-servidor-pagos.workers.dev',qr:'',numero:'984 587 616',titular:'Hammam Wellness Center',link:'',calendario:''};
 const cfgW=()=>{const c=cfgP(),o={...PAGOS_WEB};Object.keys(PAGOS_WEB).forEach(k=>{if(c[k])o[k]=c[k]});return o};
 /* la web pregunta al Apps Script qué horas están ocupadas en Google Calendar (solo horas, sin nombres) */
 let CAL_OCC=null,CAL_T=0;
@@ -3220,7 +3220,10 @@ const servOk=()=>/^https:\/\/[\w.-]+(\/[\w./-]*)?$/.test(urlServ())||/^http:\/\/
 const MEDIO_TXT={izipay:'Izipay',qr:'QR billetera',link:'Link Izipay',local:'En el local',yape:'Yape',tarjeta:'Tarjeta'};
 const codAzar=pre=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';for(let i=0;i<20;i++){const v=new Uint32Array(6);if(window.crypto&&window.crypto.getRandomValues)window.crypto.getRandomValues(v);else v.forEach((_,j)=>v[j]=Math.floor(Math.random()*4e9));let s='';v.forEach(n=>s+=a[n%a.length]);const c=pre+s;if(!S.gifts.some(g=>g.codigo===c)&&!S.reservas.some(r=>r.codigo===c))return c}return pre+Date.now().toString(36).toUpperCase()};
 /* medios que ve el cliente */
-function mediosPago(){const L=[['izipay','Tarjeta o Yape','Formulario seguro de Izipay'],['qr','Yape, Plin u otra billetera','Escaneas nuestro QR']];if(cfgW().link)L.push(['link','Link de pago','Se abre la página de Izipay']);return L}
+/* el pago con tarjeta va al servidor solo cuando ya tiene las claves de Izipay; antes, sigue simulado */
+let IZI_LISTO=null;
+function izipayEstado(){if(IZI_LISTO!==null||!servOk()||typeof fetch!=='function')return;IZI_LISTO=false;fetch(urlServ()+'/estado').then(r=>r.json()).then(d=>{IZI_LISTO=!!(d&&d.izipay)}).catch(()=>{})}
+function mediosPago(){izipayEstado();const L=[['izipay','Tarjeta o Yape','Formulario seguro de Izipay'],['qr','Yape, Plin u otra billetera','Escaneas nuestro QR']];if(cfgW().link)L.push(['link','Link de pago','Se abre la página de Izipay']);return L}
 
 /* ---- ventana de cobro (QR, link o pago simulado mientras no hay servidor) ---- */
 function montoCobro(pg){return pg.ctx==='gift'?valorGiftSel():cotizar(U.R).total}
@@ -3245,7 +3248,7 @@ function modalCobro(){const pg=U.pg;if(!pg)return '';setTimeout(()=>{const m=doc
 function cobrar(ctx){const R=U.R,G=U.gift;const medio=ctx==='gift'?G.pago:R.pago;
  if(ctx==='reserva'&&!R.codigoPre)R.codigoPre=servOk()?codAzar('HM-'):null;
  if(ctx==='gift'&&!G.codigoPre)G.codigoPre=null;
- if(medio==='izipay'&&servOk()){izipayPagar(ctx);return}
+ if(medio==='izipay'&&servOk()&&IZI_LISTO===true){izipayPagar(ctx);return}
  U.pg={ctx,medio,oper:''}}
 function pagoAprobado(ctx,info){U.pg=null;
  if(ctx==='reserva'){U.R.pagoInfo=info;confirmarReserva();top0()}
@@ -3455,7 +3458,7 @@ const A={
  irDiario:v=>{U.hoja='diario';U.dd=v},
  masToggle:()=>{U.mas=!(U.mas||ROLES[U.rol].mods.filter(m=>!ROLES[U.rol].main.includes(m)).includes(U.mod));if(!U.mas&&!ROLES[U.rol].main.includes(U.mod))U.mod=ROLES[U.rol].main[0]},
  dview:v=>{U.dview=v;top0()},
- salir:()=>{U.rol=null;U.drawer=null;U.login={usuario:'administracion',clave:'',error:''}},
+ salir:()=>{U.rol=null;U.drawer=null;U.login={usuario:'administracion',clave:'',error:''};if(servOk())cfgP().claveStaff=''},
  /* una sola cuenta de administración; con servidor, la contraseña es la CLAVE_PERSONAL del servidor */
  entrar:async()=>{const L=U.login||(U.login={usuario:'administracion',clave:'',error:''});const clave=String(L.clave||'');if(!clave){L.error='Escribe la contraseña.';return}
   if(servOk()){try{const r=await fetch(urlServ()+'/personal/novedades?desde=0',{headers:{'X-Clave':clave}});if(!r.ok){L.error='Usuario o contraseña incorrectos.';L.clave='';render();return}cfgP().claveStaff=clave}catch(e){L.error='No se pudo conectar con el servidor de Hammam.';render();return}}
