@@ -1179,7 +1179,7 @@ h4{font-family:'Montserrat',sans-serif}
 }
 
 /* portada */
-.web .hero-lux{min-height:min(calc(100svh - 34px),1000px);align-items:flex-end}
+.web .hero-lux{min-height:min(100svh,1000px);align-items:flex-end}
 .web .hero-lux::before{background:linear-gradient(180deg,rgba(10,9,7,.55) 0%,rgba(10,9,7,.08) 28%,rgba(10,9,7,.18) 58%,rgba(10,9,7,.82) 100%)}
 .web .hero-lux .in{width:100%;max-width:1240px;padding:170px 28px 52px}
 .web .hero-lux .eyebrow{color:rgba(255,255,255,.82)}
@@ -1455,7 +1455,7 @@ h4{font-family:'Montserrat',sans-serif}
 </style>
 </head>
 <body>
-<div class="demobar"><span><b>Versión de prueba</b> · las reservas y los pagos todavía no son reales<span class="dm-x">; para reservar, escríbenos por <a href="https://wa.me/51984587616" target="_blank" rel="noopener" style="color:inherit">WhatsApp</a></span></span><div class="seg" role="tablist" aria-label="Lado"><button data-a="view" data-v="cliente" class="on">Web de clientes</button><button data-a="view" data-v="personal">Panel del personal</button></div><button class="lnk" data-a="ventana">Abrir el otro lado en otra ventana</button><button class="lnk" data-a="reset">Reiniciar demo</button></div>
+
 <div id="app"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -2035,7 +2035,7 @@ function cRegalos(){const G=U.gift,opts=GOPTS(),sel=opts.find(o=>o[0]===G.tipo)|
  <div class="split wide"><div class="card pad-lg"><h4 style="margin-top:0">1. Elige el regalo</h4><div class="opts cols">${opts.map(([k,t,p])=>`<button class="opt ${G.tipo===k?'on':''}" data-a="giftTipo" data-v="${k}"><span>${t}</span><span class="pr">${p?sol(p):''}</span></button>`).join('')}</div>
  ${G.tipo==='monto'?`<div class="chips mt">${[50,100,150,200,300].map(m=>`<button class="chip ${G.monto===m?'on':''}" data-a="giftMonto" data-v="${m}">${sol(m)}</button>`).join('')}</div>`:''}
  <h4>2. Personaliza</h4><div class="form cols"><label class="fld">De<input data-in="U.gift.de" value="${esc(G.de)}" placeholder="Tu nombre"></label><label class="fld">Para<input data-in="U.gift.para" value="${esc(G.para)}" placeholder="Quién lo recibe"></label></div><div class="form mt"><label class="fld">Mensaje (opcional)<textarea data-in="U.gift.msg" data-live maxlength="140" placeholder="¡Feliz cumpleaños! Te mereces una pausa.">${esc(G.msg)}</textarea></label><label class="fld">Celular de quien lo recibe, para enviárselo (opcional)<input data-in="U.gift.cel" data-cel value="${esc(G.cel)}" inputmode="numeric" maxlength="9"></label></div>
- <h4>3. Paga</h4><div class="opts cols">${mediosPago().map(([k,tt,d])=>`<button class="opt ${G.pago===k?'on':''}" data-a="giftPago" data-v="${k}"><span>${tt}<small class="xs muted" style="display:block">${d}</small></span></button>`).join('')}</div>
+ <h4>3. Paga</h4><div class="opts cols">${mediosAjusta(G).map(([k,tt,d])=>`<button class="opt ${G.pago===k?'on':''}" data-a="giftPago" data-v="${k}"><span>${tt}<small class="xs muted" style="display:block">${d}</small></span></button>`).join('')}</div>
  <button class="btn lg block mt" data-a="giftPagar" data-valid="gift" ${validGift()?'':'disabled'}>Pagar ${sol(valor)}</button></div>
  <aside class="sticky"><p class="small muted">Así se verá:</p>${giftCard(G.para||'Nombre',G.de||'Tú',G.tipo==='monto'?'Monto libre':sel[1],valor,'REG-····',G.msg)}<p class="xs muted mt">Vigencia de ${S.cfg.giftDias} días. Se usa al reservar en línea o en recepción.</p></aside></div>`}
 
@@ -2098,7 +2098,7 @@ function cFooter(){return `<footer class="site-foot"><div class="in"><div><div c
  <div><h4>Visítanos</h4><p class="small m0">Palmas del Golf II, Mz. F Lt. 24<br>Víctor Larco Herrera, Trujillo</p><p class="small mt">Martes a domingo<br>${h12(S.cfg.horario.abre)} a ${h12(S.cfg.horario.cierra)}</p></div>
  <div><h4>Explora</h4>${[['experiencias','Experiencias y precios'],['masajes','Horario de masajes'],['bar','Carta del bar'],['regalos','Tarjetas de regalo'],['cuenta','Mi reserva']].map(([k,t])=>`<button class="lb" data-a="ctab" data-v="${k}">${t}</button>`).join('')}</div>
  <div><h4>Contacto</h4><a class="lb" href="tel:+51984587616">${ic('phone','sm')} Llamar al 984 587 616</a><a class="lb" href="${WA}" target="_blank" rel="noopener">${ic('wa','sm')} WhatsApp</a><a class="lb" href="mailto:hammamsaunayspa@gmail.com">${ic('mail','sm')} Correo</a><a class="lb" href="https://www.instagram.com/sauna.hammamgolf/" target="_blank" rel="noopener">${ic('ig','sm')} @sauna.hammamgolf</a><button class="librobtn" data-a="infoTab" data-v="reclamos">${ic('book')} <b class="small" style="font-weight:500">Libro de Reclamaciones</b></button></div></div>
- <div class="legal"><span>© 2026 Hammam Wellness Center · Titular: INDIVILSA (razón social y RUC por confirmar)</span><span>Fotos: Hammam Wellness Center, Trujillo.</span><span><button class="lnk" data-a="infoTab" data-v="legal">Términos</button> · <button class="lnk" data-a="infoTab" data-v="legal">Privacidad</button></span></div></footer>`}
+ <div class="legal"><span>© 2026 Hammam Wellness Center · Titular: INDIVILSA (razón social y RUC por confirmar)</span><span>Fotos: Hammam Wellness Center, Trujillo.</span><span><button class="lnk" data-a="infoTab" data-v="legal">Términos</button> · <button class="lnk" data-a="infoTab" data-v="legal">Privacidad</button> · <button class="lnk" data-a="view" data-v="personal">Acceso del personal</button></span></div></footer>`}
 
 /* ---------- reserva: 3 pasos ---------- */
 function newR(){return {paso:1,tipo:null,paq:null,modal:'ind',mtipo:'relajante',mdur:45,mpers:1,adultos:1,ninos:0,fecha:null,hora:null,mhora:null,verMas:false,nombre:'',cel:'',correo:'',dni:'',notas:'',acepto:false,promos:false,comp:'boleta',ruc:'',pago:'izipay',codigoIn:'',promo:null,gift:null,codigo:null,dlg:null,verReglas:false,yapeCel:'',yapeCod:''}}
@@ -2143,7 +2143,7 @@ function paso3(R){const q=cotizar(R),localOk=R.tipo==='circuito';const need=pers
   <div class="row mt"><div class="seg2" style="width:220px"><button class="${R.comp==='boleta'?'on':''}" data-a="rcomp" data-v="boleta">Boleta</button><button class="${R.comp==='factura'?'on':''}" data-a="rcomp" data-v="factura">Factura</button></div>${R.comp==='factura'?`<input class="inp" style="max-width:200px" data-in="U.R.ruc" inputmode="numeric" maxlength="11" value="${esc(R.ruc)}" placeholder="RUC">`:''}</div>
   <div class="row mt mb"><input class="inp" data-in="U.R.codigoIn" value="${esc(R.codigoIn)}" placeholder="Código de descuento o de regalo" style="max-width:260px;text-transform:uppercase"><button class="btn ghost sm" data-a="rcodigo">Aplicar</button><span class="xs muted">Prueba BIENVENIDA10 o REG-4F7K</span></div></details>
  ${R.promo?`<p class="small" style="color:var(--ok);margin:10px 0 0">${ic('check','sm')} Código ${R.promo} aplicado.</p>`:''}${R.gift?`<p class="small" style="color:var(--ok);margin:10px 0 0">${ic('gift','sm')} Tarjeta de regalo ${R.gift} aplicada.</p>`:''}
- <h2 class="mt2">Pago</h2>${q.total>0?`<div class="paytiles mt">${(R.pago==='local'?(R.pago='izipay',mediosPago()):mediosPago()).map(([k,t,d])=>`<button class="${R.pago===k?'on':''}" data-a="rpago" data-v="${k}" ${k==='local'&&!localOk?'disabled':''}><b style="font-weight:500">${t}</b><small class="muted" style="display:block">${d}</small></button>`).join('')}</div>`:'<p class="note ok">Tu tarjeta de regalo cubre todo el monto.</p>'}
+ <h2 class="mt2">Pago</h2>${q.total>0?`<div class="paytiles mt">${mediosAjusta(R).map(([k,t,d])=>`<button class="${R.pago===k?'on':''}" data-a="rpago" data-v="${k}" ${k==='local'&&!localOk?'disabled':''}><b style="font-weight:500">${t}</b><small class="muted" style="display:block">${d}</small></button>`).join('')}</div>`:'<p class="note ok">Tu tarjeta de regalo cubre todo el monto.</p>'}
  ${R.acepto?`<div class="consok">${ic('check')}<span>Aceptaste las reglas, la vestimenta y el uso de tus datos${R.promos?'; recibirás promociones por WhatsApp':''}. <button class="lnk" data-a="consAbrir" data-v="ver">Volver a leer</button></span></div>`:`<div class="note">${ic('shield','sm')} Antes de confirmar, lee y acepta las reglas de Hammam (convivencia, vestimenta, niños y salud) y el uso de tus datos. Son pasos cortos.</div><button class="btn ghost mt" data-a="consAbrir" data-v="reserva">${ic('book','sm')} Leer y aceptar las reglas</button>`}`}
 function resumenR(){const R=U.R;
  if(!R.tipo)return `<aside class="card sum sumph"><div class="ph" style="${bgi('vapor',700,400)}"></div><h3>Tu reserva</h3><p class="small muted">Elige una experiencia para ver el precio.</p><div class="note">${ic('clock','sm')} Martes a domingo, de ${h12(S.cfg.horario.abre)} a ${h12(S.cfg.horario.cierra)}.</div></aside>`;
@@ -2808,7 +2808,7 @@ const bloque=(titulo,L)=>`<table class="xl lb-blk"><colgroup><col><col style="wi
 const n2=x=>(Math.round((+x||0)*100)/100).toLocaleString('es-PE',{maximumFractionDigits:2});
 
 function vLoginLibro(){const L=U.login||(U.login={usuario:'administracion',clave:'',error:''});
- return `<div class="wrap"><div class="login login-1"><div class="center mb"><span class="lb-logo big" role="img" aria-label="Hammam Wellness Center"></span><h2 class="mt">Sistema de Hammam</h2><p class="muted">Entra con la cuenta de administración.</p></div>
+ return `<div class="wrap"><div class="login login-1"><div class="center mb"><span class="lb-logo big" role="img" aria-label="Hammam Wellness Center"></span><h2 class="mt">Sistema de Hammam</h2><p class="muted">Entra con la cuenta de administración.</p><button class="lnk small" data-a="view" data-v="cliente">← Volver a la web</button></div>
  <label class="fld">Usuario<input class="inp" data-in="U.login.usuario" value="${esc(L.usuario)}" autocomplete="username"></label>
  <label class="fld mt" for="login-clave">Contraseña</label><div class="clave-ojo"><input class="inp" id="login-clave" type="${L.ver?'text':'password'}" data-in="U.login.clave" data-enter="entrar" value="${esc(L.clave||'')}" autocomplete="current-password" autocapitalize="off" spellcheck="false"><button type="button" class="ojo" data-a="verClave" aria-label="${L.ver?'Ocultar la contraseña':'Mostrar la contraseña'}" aria-pressed="${!!L.ver}" title="${L.ver?'Ocultar':'Mostrar'}">${ic(L.ver?'ojoNo':'ojo')}</button></div>
  ${L.error?`<p class="note bad mt">${esc(L.error)}</p>`:''}<button class="btn mt login-btn" data-a="entrar">Entrar</button>
@@ -2817,7 +2817,7 @@ const HOJA_IC={guia:'book',diario:'sheet',bar:'glass',masajes:'leaf',reservas:'c
 function vPersonal(){if(!U.rol||!LROL[U.rol])return vLoginLibro();const R=LROL[U.rol];if(!R.hojas.includes(U.hoja))U.hoja=R.hojas[0];
  const V={guia:hGuia,diario:hDiario,bar:hBar,masajes:hMasajes,inventario:hInv,invh:hInvH,gastos:hGastos,bd:()=>(U.alta?`<div class="note mt">Cliente nuevo para el DIARIO: DNI <b>${esc(U.alta.dni)}</b>. Escribe su nombre y su celular en la fila amarilla; al terminar vuelves solo al DIARIO. <button class="lnk" data-a="altaSinCel">No tiene celular</button> · <button class="lnk" data-a="altaCancelar">Cancelar</button></div>`:'')+hBD(),reservas:hReservas,gift:hGift,memb:hMemb,resumen:hResumen,ajustes:hAjustes};
  const tot=U.hoja==='diario'?`Total del día ${sol(cuadreDia(U.dd).totalDia)}`:U.hoja==='bar'?`Total del bar ${sol(cuadreBar(U.dd).tot)}`:'';
- if(servOk()&&cfgP().claveStaff)servIniciar();return `<div class="libro" data-tema="${TEMAS[S.cfg.tema]?S.cfg.tema:'verde'}"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${R.nombre} <button class="lnk" data-a="salir">Salir</button></div></header>
+ if(servOk()&&cfgP().claveStaff)servIniciar();return `<div class="libro" data-tema="${TEMAS[S.cfg.tema]?S.cfg.tema:'verde'}"><header class="lb-top"><span class="lb-logo" role="img" aria-label="Hammam Wellness Center"></span>${HOJA_DIA.includes(U.hoja)?`<div class="lb-dia">${dateNav('ddSet',U.dd,'U.dd')}<span>${fmtFL(U.dd)}</span></div>`:''}${tot?`<span class="lb-tot">${tot}</span>`:''}<div class="lb-who">${R.nombre} · <button class="lnk" data-a="view" data-v="cliente">Ver la web</button> · <button class="lnk" data-a="salir">Salir</button></div></header>
  <nav class="lb-tabs" aria-label="Hojas">${R.hojas.map(h=>`<button class="${U.hoja===h?'on':''}" data-a="hoja" data-v="${h}" title="${HOJAS[h]}">${ic(HOJA_IC[h],'sm')}<span>${HOJA_TAB[h]||HOJAS[h]}</span>${h==='reservas'&&S.reservas.some(r=>r.porConfirmar&&r.estado!=='cancelada')?`<b class="lb-badge" aria-label="pagos por confirmar">${S.reservas.filter(r=>r.porConfirmar&&r.estado!=='cancelada').length}</b>`:''}${h==='gift'&&S.gifts.some(g=>g.estado==='POR CONFIRMAR')?`<b class="lb-badge" aria-label="pagos por confirmar">${S.gifts.filter(g=>g.estado==='POR CONFIRMAR').length}</b>`:''}</button>`).join('')}</nav>
  <main class="lb-hoja">${V[U.hoja]()}</main></div>${U.drawer?drawer():''}`}
 
@@ -3293,8 +3293,12 @@ const codAzar=pre=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';for(let i=0;i<20;
 /* medios que ve el cliente */
 /* el pago con tarjeta va al servidor solo cuando ya tiene las claves de Izipay; antes, sigue simulado */
 let IZI_LISTO=null;
-function izipayEstado(){if(IZI_LISTO!==null||!servOk()||typeof fetch!=='function')return;IZI_LISTO=false;fetch(urlServ()+'/estado').then(r=>r.json()).then(d=>{IZI_LISTO=!!(d&&d.izipay)}).catch(()=>{})}
-function mediosPago(){izipayEstado();const L=[['izipay','Tarjeta de crédito o débito','Formulario seguro de Izipay'],['qr','Yape, Plin u otra billetera','Escaneas nuestro QR']];if(cfgW().link)L.push(['link','Link de pago','Se abre la página de Izipay']);return L}
+let IZI_MODO='';
+function izipayEstado(){if(IZI_LISTO!==null||!servOk()||typeof fetch!=='function')return;IZI_LISTO=false;fetch(urlServ()+'/estado').then(r=>r.json()).then(d=>{IZI_LISTO=!!(d&&d.izipay);IZI_MODO=(d&&d.modo)||'';if(typeof render==='function')render()}).catch(()=>{})}
+const tarjetaWeb=()=>!servOk()||(IZI_LISTO===true&&IZI_MODO==='produccion');
+/* si el medio elegido no se ofrece (por ejemplo, la tarjeta mientras Izipay está en prueba), se pasa al primero disponible */
+function mediosAjusta(X){const L=mediosPago();if(!L.some(x=>x[0]===X.pago))X.pago=L[0][0];return L}
+function mediosPago(){izipayEstado();const L=[...(tarjetaWeb()?[['izipay','Tarjeta de crédito o débito','Formulario seguro de Izipay']]:[]),['qr','Yape, Plin u otra billetera','Escaneas nuestro QR']];if(cfgW().link)L.push(['link','Link de pago','Se abre la página de Izipay']);return L}
 
 /* ---- ventana de cobro (QR, link o pago simulado mientras no hay servidor) ---- */
 function montoCobro(pg){return pg.ctx==='gift'?valorGiftSel():cotizar(U.R).total}
@@ -3320,6 +3324,8 @@ function cobrar(ctx){const R=U.R,G=U.gift;const medio=ctx==='gift'?G.pago:R.pago
  if(ctx==='reserva'&&!R.codigoPre)R.codigoPre=servOk()?codAzar('HM-'):null;
  if(ctx==='gift'&&!G.codigoPre)G.codigoPre=null;
  if(medio==='izipay'&&servOk()&&IZI_LISTO===true){izipayPagar(ctx);return}
+ /* con servidor, nunca un pago con tarjeta simulado: si Izipay no está listo, se paga con QR */
+ if(medio==='izipay'&&servOk()){if(ctx==='gift')G.pago='qr';else R.pago='qr';U.pg={ctx,medio:'qr',oper:''};return}
  U.pg={ctx,medio,oper:''}}
 function pagoAprobado(ctx,info){U.pg=null;
  if(ctx==='reserva'){U.R.pagoInfo=info;confirmarReserva();top0()}
