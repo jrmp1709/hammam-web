@@ -3238,7 +3238,7 @@ const codAzar=pre=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';for(let i=0;i<20;
 /* el pago con tarjeta va al servidor solo cuando ya tiene las claves de Izipay; antes, sigue simulado */
 let IZI_LISTO=null;
 function izipayEstado(){if(IZI_LISTO!==null||!servOk()||typeof fetch!=='function')return;IZI_LISTO=false;fetch(urlServ()+'/estado').then(r=>r.json()).then(d=>{IZI_LISTO=!!(d&&d.izipay)}).catch(()=>{})}
-function mediosPago(){izipayEstado();const L=[['izipay','Tarjeta o Yape','Formulario seguro de Izipay'],['qr','Yape, Plin u otra billetera','Escaneas nuestro QR']];if(cfgW().link)L.push(['link','Link de pago','Se abre la página de Izipay']);return L}
+function mediosPago(){izipayEstado();const L=[['izipay','Tarjeta de crédito o débito','Formulario seguro de Izipay'],['qr','Yape, Plin u otra billetera','Escaneas nuestro QR']];if(cfgW().link)L.push(['link','Link de pago','Se abre la página de Izipay']);return L}
 
 /* ---- ventana de cobro (QR, link o pago simulado mientras no hay servidor) ---- */
 function montoCobro(pg){return pg.ctx==='gift'?valorGiftSel():cotizar(U.R).total}
@@ -3679,7 +3679,7 @@ function confirmarReserva(){const R=U.R,q=cotizar(R);const code=R.codigoPre||('H
  if(R.promo){const p=S.promos.find(x=>x.codigo===R.promo);if(p)p.usos++}
  if(R.gift){const g=S.gifts.find(x=>x.codigo===R.gift);g.saldo=r1(g.saldo-q.gift);if(g.saldo<=0){g.estado='USADO';g.uso=HOY}r.giftCod=R.gift;r.giftUso=q.gift;r.bruto=r1(q.total+q.gift+(q.desc||0))}
  log(`Nueva reserva ${code} desde la web: ${r.nombre}, ${descReserva(r)}, ${fmtF(r.fecha)} ${h12(r.hora)}.`,'Web');servEnviar('reserva',r);
- R.codigo=code;R.paso=4;U.pc=null;toast(R.pago==='local'?'Reserva registrada.':'Pago aprobado (simulado).')}
+ R.codigo=code;R.paso=4;U.pc=null;{const pi=R.pagoInfo||{};toast(R.pago==='local'?'Reserva registrada.':pi.sim?'Pago aprobado (simulado).':(pi.medio==='qr'||pi.medio==='link')?'Reserva registrada: confirmaremos tu pago en unos minutos.':'Pago aprobado.')}}
 
 /* =================== render y eventos =================== */
 /* el redibujo solo cambia lo que cambió: no cierra listas abiertas, no pierde el foco ni recarga el calendario */
