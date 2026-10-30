@@ -2780,11 +2780,12 @@ function importarLibro(hojas,opt={}){if(Object.keys(hojas).some(n=>/^BAR DIARIO/
  const numX=v=>{if(typeof v==='number')return v;const m=String(v??'').replace(/\s/g,'').match(/^-?\d+(?:[.,]\d+)?$/);return m?+m[0].replace(',','.'):NaN};
  const conGastos=!!(hoja('GASTO ACTUAL')||hoja('GASTO DIARIO'));const bloqueDia={};
  if(opt.reemplazar){S.diario=S.diario.filter(r=>r.fecha===HOY);S.gastos=S.gastos.filter(g=>g.fecha===HOY);const vivos=new Set([...S.diario.map(r=>r.dni),...S.reservas.map(r=>r.dni)]);S.clientes=S.clientes.filter(c=>vivos.has(c.dni));S.gifts=[];S.membresias=[];Object.keys(S.cuadre).forEach(f=>{if(f!==HOY)delete S.cuadre[f]})}
- const idx=new Map(S.clientes.map(c=>[c.dni,c]));
+ const hoyYa=S.diario.some(r=>r.fecha===HOY); // si hoy ya se anota en el sistema, lo de hoy del Excel no se duplica
+  const idx=new Map(S.clientes.map(c=>[c.dni,c]));
  const bd=hoja('BASE DE DATOS');if(bd)bd.slice(1).forEach(r=>{if(!r)return;const d=dni(r[1]),n=txt(r[0]);if(!d&&!n)return;const cel=dni(r[2]).slice(-9);if(d&&idx.has(d)){const c=idx.get(d);if(!c.cel&&/^9\d{8}$/.test(cel))c.cel=cel;return}const c={dni:d,nombre:n.toUpperCase(),cel:/^9\d{8}$/.test(cel)?cel:''};S.clientes.push(c);if(d)idx.set(d,c);res.clientes++});
  const filasHoja=(rows,map)=>{if(!rows)return;let f=null,prevIng=null,prevF=null,g=null,prev=null;rows.slice(1).forEach(r=>{if(!r)return;const ff=fecha(r[0]);if(ff)f=ff;const nombre=txt(r[map.nom]),d=dni(r[map.dni]),serv=norm(r[map.serv]),total=r[map.tot],ing=hora(r[1]);
    for(let k=map.res;k<Math.min(r.length,map.res+3);k++){const lab=norm(r[k]);const val=numX(r[k+1]);if(f&&lab&&!isNaN(val)&&!/^-?[\d.,]+$/.test(lab))(bloqueDia[f]=bloqueDia[f]||{})[lab]=val;if(f&&!isNaN(val)){if(lab==='SAUNA INICIO EFECTIVO')(S.cuadre[f]=S.cuadre[f]||{inicio:0,deposito:0,cerrado:true}).inicio=val;if(lab==='DEPOSITO')(S.cuadre[f]=S.cuadre[f]||{inicio:0,deposito:0,cerrado:true}).deposito=val}}
-   const tot=numX(total);if(!f||f>=HOY||(!nombre&&!d&&!serv&&isNaN(tot)))return;
+   const tot=numX(total);if(!f||f>HOY||(f===HOY&&hoyYa)||(!nombre&&!d&&!serv&&isNaN(tot)))return;
    if(!nombre&&!d&&!serv&&!ing&&prev&&prev.fecha===f){const p0=norm(r[map.pago]);(prev.cons=prev.cons||[]).push({d:txt(r[map.ext])||txt(r[map.com])||'Pago aparte',m:tot,t:'extra',pag:true,medio:PAGO[p0]||p0||'EFECTIVO'});res.aparte=(res.aparte||0)+1;return}
    if(!(serv in SERV)&&isNaN(tot))return;
    if(!(f===prevF&&ing&&ing===prevIng))g=++S.seq.grp;prevF=f;prevIng=ing;
@@ -2799,7 +2800,7 @@ function importarLibro(hojas,opt={}){if(Object.keys(hojas).some(n=>/^BAR DIARIO/
  /* sin hoja de gastos (el CSV del DIARIO), el gasto y los pagos del bloque de caja entran como gastos del día,
     y lo que entró o salió de la caja por otros motivos (vueltos, préstamos con el bar) se toma del cierre del Excel */
  const bloqueGastos=()=>{const GD='GASTO DEL DÍA';const MOV=/VUELTO|INGRESO|DEVOLUCION|DEVOUCION|BAR|PRESTA|PRESTO/;
-  Object.entries(bloqueDia).forEach(([f,B])=>{if(f>=HOY)return;const gas=(B['GASTO EFECTIVO']||0)+(B['GASTO']||0);let pagos=0;
+  Object.entries(bloqueDia).forEach(([f,B])=>{if(f>HOY||(f===HOY&&hoyYa))return;const gas=(B['GASTO EFECTIVO']||0)+(B['GASTO']||0);let pagos=0;
    if(gas>0){if(!S.cfg.gastoCats.includes(GD))S.cfg.gastoCats.push(GD);S.gastos.push({id:S.seq.gasto++,fecha:f,caja:'HAMMAM',cat:GD,desc:'GASTOS DEL DÍA (SEGÚN EL EXCEL)',medio:'EFECTIVO',total:gas,por:'Excel'});res.gastos++}
    Object.entries(B).forEach(([lab,v])=>{if(/^PAGO\s/.test(lab)&&v>0){pagos+=v;S.gastos.push({id:S.seq.gasto++,fecha:f,caja:'HAMMAM',cat:'SUELDOS',desc:lab,medio:'EFECTIVO',total:v,por:'Excel'});res.gastos++}});
    if('CAJA CIERRA' in B&&Object.keys(B).some(l=>MOV.test(l)&&!/^TOTAL|^TARJETA/.test(l))){const dif=Math.round((B['CAJA CIERRA']-((B['SAUNA INICIO EFECTIVO']||0)+(B['EFECTIVO']||0)-gas-pagos-(B['DEPOSITO']||0)))*10)/10;const C=S.cuadre[f]=S.cuadre[f]||{inicio:0,deposito:0,cerrado:true};if(dif>0)C.entro=dif;else if(dif<0)C.salio=-dif}})};
