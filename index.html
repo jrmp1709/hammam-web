@@ -1841,8 +1841,16 @@ function initState(){
  S.reclamos=[{num:'2026-0002',fecha:addDays(HOY,-4),nombre:'Cliente (ejemplo)',doc:'DNI ••••5521',tipo:'Queja',bien:'Servicio',detalle:'Esperé casi 20 minutos para que me asignen un casillero un sábado por la noche.',pedido:'Que haya más personal en recepción los fines de semana.',estado:'Pendiente',resp:''},{num:'2026-0001',fecha:addDays(HOY,-21),nombre:'Cliente (ejemplo)',doc:'DNI ••••0938',tipo:'Reclamo',bien:'Servicio',detalle:'Pagué un paquete y el masaje empezó 15 minutos tarde.',pedido:'Compensación.',estado:'Respondido',resp:'Se ofreció un circuito de cortesía.'}];
  S.log=[{hora:'17:34',quien:'Celular',que:'Pedido #41 al bar desde el casillero de Carla Vega.'},{hora:'17:18',quien:'Luis',que:'Registró el ingreso de Kevin Alva (4 personas).'},{hora:'17:10',quien:'Pedro',que:'Medición de piscina: cloro 1,1 ppm, pH 7,7.'},{hora:'17:02',quien:'Luis',que:'Registró el ingreso de Rosa Cárdenas (3 personas).'},{hora:'16:32',quien:'Luis',que:'Reportó incidencia en duchas de varones.'}];
  initLibro();
+ if(!DEMO)vaciarDatos();
  return S;
 }
+/* sistema real: se conservan los ajustes, la carta, las recetas y el inventario base; los registros empiezan vacíos.
+   Los ajustes que ya se hicieron en este equipo (Google, pagos, horario, boletas) se rescatan de la versión anterior. */
+function vaciarDatos(){
+ Object.assign(S,{dia:HOY,importado:null,clientes:[],diario:[],cuadre:{},gastos:[],barVentas:[],gifts:[],membresias:[],reservas:[],agenda:{},casMant:{},personal:[],promos:[],reclamos:[],log:[],barRows:[],cuadreBar:{}});
+ S.bar.ventas={};S.bar.pedidos=[];S.bar.compras=[];S.bar.conteo={};S.mant={piscina:[],temps:[],limpieza:{},incid:[]};
+ S.toallas.lav=0;Object.keys(S.zonas||{}).forEach(z=>S.zonas[z]={a:0,n:0});[S.inv,S.invH,S.invIns].forEach(x=>{if(x){x.desde=HOY;x.ing={}}});
+ try{const o=JSON.parse(localStorage.getItem('hammam-demo')||'null');if(o&&o.cfg)S.cfg={...S.cfg,...o.cfg}}catch(e){}}
 const AREAS=['Vestidores de damas','Vestidores de varones','Duchas','Sauna seco','Cámara de vapor','Borde de piscina','Baños','Zona de masajes','Bar y lounge'];
 const RONDAS=['15:00','17:00','19:00','21:00','Cierre'];
 
@@ -1915,13 +1923,16 @@ const membActiva=dni=>S.membresias.filter(m=>m.dni===normDni(dni)&&m.usos.length
 const giftDe=dni=>S.gifts.find(g=>g.dni&&g.dni===normDni(dni)&&estadoGift(g)==='VIGENTE')||null;
 
 /* =================== persistencia =================== */
-const KEY='hammam-demo';
+/* sistema real (página oficial): los datos se guardan sin vencer y empiezan vacíos.
+   La demostración con datos de ejemplo solo se abre con «?demo» y se guarda aparte. */
+const DEMO=(typeof MODO_DEMO!=='undefined'&&!!MODO_DEMO)||(typeof location!=='undefined'&&/[?&]demo\b/.test(location.search||''));
+const KEY=DEMO?'hammam-demo':'hammam-datos';
 /* lo que se configura una sola vez (Google, pagos) no se pierde cuando el panel de ejemplo se renueva cada día */
 const KEY_FIJA=KEY+'-ajustes';
 function guardarFija(){try{localStorage.setItem(KEY_FIJA,JSON.stringify({gcal:S.cfg.gcal||null,pagos:S.cfg.pagos||null}))}catch(e){}}
-function cfgFija(){try{const viejo=()=>{const o=JSON.parse(localStorage.getItem(KEY)||'null');return o&&o.cfg?{gcal:o.cfg.gcal,pagos:o.cfg.pagos}:null};const f=JSON.parse(localStorage.getItem(KEY_FIJA)||'null')||viejo();if(!f)return;['gcal','pagos'].forEach(k=>{const v=f[k];if(v&&typeof v==='object'&&!Object.values(S.cfg[k]||{}).some(Boolean))S.cfg[k]=v})}catch(e){}}
+function cfgFija(){try{const viejo=()=>{const o=JSON.parse(localStorage.getItem(KEY)||'null');return o&&o.cfg?{gcal:o.cfg.gcal,pagos:o.cfg.pagos}:null};const f=JSON.parse(localStorage.getItem(KEY_FIJA)||localStorage.getItem('hammam-demo-ajustes')||'null')||viejo();if(!f)return;['gcal','pagos'].forEach(k=>{const v=f[k];if(v&&typeof v==='object'&&!Object.values(S.cfg[k]||{}).some(Boolean))S.cfg[k]=v})}catch(e){}}
 function save(){if(typeof gcalSync==='function')gcalSync();guardarFija();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('El navegador no tiene espacio para guardar todo. Exporta y reinicia la demo.')}}
-function load(){try{const t=localStorage.getItem(KEY);if(t){const o=JSON.parse(t);if(o&&o.v===VERSION&&(o.dia===HOY||o.importado))return o}}catch(e){}return null}
+function load(){try{const t=localStorage.getItem(KEY);if(t){const o=JSON.parse(t);if(o&&(DEMO?o.v===VERSION&&(o.dia===HOY||o.importado):!!o.v)){o.v=VERSION;return o}}}catch(e){}return null}
 
 /* =================== componentes comunes =================== */
 const ECLS={'reservado':'','en curso':'encurso','atendido':'atendido','no asistió':'noasistio'};
@@ -2061,11 +2072,16 @@ function cRegalos(){const G=U.gift,opts=GOPTS(),sel=opts.find(o=>o[0]===G.tipo)|
  <aside class="sticky"><p class="small muted">Así se verá:</p>${giftCard(G.para||'Nombre',G.de||'Tú',G.tipo==='monto'?'Monto libre':sel[1],valor,'REG-····',G.msg)}<p class="xs muted mt">Vigencia de ${S.cfg.giftDias} días. Se usa al reservar en línea o en recepción.</p></aside></div>`}
 
 /* ---------- mi reserva ---------- */
-function cCuenta(){const A=U.auth;if(A.ok&&clientePorCel(A.cel))return cCuentaDash();
+function cCuenta(){const A=U.auth;if(A.ok&&clientePorCel(A.cel))return cCuentaDash();if(!DEMO)return cBuscarReserva();
  const q=U.mis;let res='';if(q.res==='none')res='<p class="note bad">No encontramos una reserva con esos datos.</p>';else if(q.res){const r=S.reservas.find(x=>x.codigo===q.res);if(r)res=resCard(r,true)}
  return `<div class="center-narrow"><div class="card pad-lg"><p class="eyebrow">Mi reserva</p><h2>Encuentra tu reserva</h2><p class="muted">Escribe tu celular y te mandamos un código. Sin contraseñas.</p>
  ${A.paso==='cel'?`<div class="form mt"><label class="fld">Tu celular<input class="bigin" data-in="U.auth.cel" data-cel inputmode="numeric" maxlength="9" value="${esc(A.cel)}" placeholder="9xxxxxxxx" autocomplete="tel"></label><button class="btn lg" data-a="authEnviar" data-valid="authCel" ${/^9\d{8}$/.test(A.cel)?'':'disabled'}>Enviarme el código</button></div><p class="xs muted mt">Para probar: 987654321.</p>`:`<p class="mt">Te enviamos un código de 4 dígitos al ${maskCel(A.cel)}.</p><div class="form"><label class="fld">Código<input class="bigin" data-in="U.auth.code" inputmode="numeric" maxlength="4" value="${esc(A.code)}" autocomplete="one-time-code"></label><button class="btn lg" data-a="authVerificar">Entrar</button><button class="lnk muted" data-a="authCambiar">Usar otro número</button></div><p class="xs muted mt">En la demo el código es <b>4821</b>.</p>`}
  <details class="more mt"><summary>¿Prefieres usar tu código de reserva?</summary><div class="form"><label class="fld">Código de reserva<input data-in="U.mis.codigo" value="${esc(q.codigo)}" placeholder="HM-3115"></label><label class="fld">Celular<input data-in="U.mis.cel" data-cel inputmode="numeric" maxlength="9" value="${esc(q.cel)}"></label><button class="btn ghost" data-a="misBuscar">Buscar</button><p class="xs muted m0">Para probar: HM-3115 y 912340009.</p></div></details>${res}</div></div>`}
+/* sin contraseñas ni códigos por SMS: la reserva se encuentra con su código y el celular con que se hizo */
+function cBuscarReserva(){const q=U.mis;
+ let res='';if(q.res==='buscando')res='<p class="note mt">Buscando tu reserva…</p>';else if(q.res==='none')res='<p class="note bad mt">No encontramos una reserva con ese código y ese celular. Revisa los datos o escríbenos por WhatsApp.</p>';else if(q.res){const r=S.reservas.find(x=>x.codigo===q.res);if(r)res=resCard(r,true)}
+ return `<div class="center-narrow"><div class="card pad-lg"><p class="eyebrow">Mi reserva</p><h2>Encuentra tu reserva</h2><p class="muted">Escribe el código que recibiste al reservar (empieza con HM-) y el celular con que reservaste.</p>
+ <div class="form mt"><label class="fld">Código de reserva<input class="bigin" data-in="U.mis.codigo" value="${esc(q.codigo)}" placeholder="HM-…" autocapitalize="characters"></label><label class="fld">Celular<input class="bigin" data-in="U.mis.cel" data-cel inputmode="numeric" maxlength="9" value="${esc(q.cel)}" placeholder="9xxxxxxxx" autocomplete="tel"></label><button class="btn lg" data-a="misBuscar">Buscar mi reserva</button></div>${res}</div></div>`}
 function resCard(r,acc){const pc=U.pc&&U.pc.codigo===r.codigo;const rp=U.rep&&U.rep.codigo===r.codigo;const activa=r.estado==='por llegar';
  return `<div class="rescard"><div class="rc-top"><div><p class="eyebrow m0">${r.fecha===HOY?'Hoy':fmtFL(r.fecha)}</p><h3 class="m0">${h12(r.hora)} · ${descReserva(r)}</h3><p class="small muted m0">${r.mhora&&r.tipo==='paquete'?`Masaje a las ${h12(r.mhora)} · `:''}${sol(r.total)} · ${r.porConfirmar?'pago por confirmar':r.pagado?'pagado':'pagas al llegar'} · <span class="code">${r.codigo}</span></p></div>${r.pre&&activa?pill(`${ic('check','sm')} Check-in hecho`,'ok'):pillEstado(r.estado,r)}</div>
  ${acc&&activa?`${pc?precheckForm(r):rp?repForm(r):`<div class="rc-acts">${!r.pre?`<button class="btn sm" data-a="pcAbrir" data-v="${r.codigo}">${ic('bolt','sm')} Check-in exprés</button>`:''}<a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=Hammam%20Wellness%20Center%20Palmas%20del%20Golf%20Trujillo" target="_blank" rel="noopener">${ic('pin','sm')} Cómo llegar</a>${r.tipo!=='masaje'?`<button class="btn sm ghost" data-a="repAbrir" data-v="${r.codigo}">Cambiar día u hora</button>`:''}<button class="btn sm danger" data-a="misCancelar" data-v="${r.codigo}">Cancelar</button></div>`}`:''}</div>`}
@@ -2588,7 +2604,7 @@ function aImport(){const I=U.imp;const im=S.importado;
  <label class="btn lg mt filebtn">${ic('upload')} Elegir archivo .xlsx<input type="file" accept=".xlsx,.xls" data-file="importar" hidden></label>
  ${I.estado?`<div class="note ${I.error?'bad':I.listo?'ok':''} mt">${esc(I.estado)}</div>`:''}
  <div class="note mt">${ic('shield','sm')} Los datos se leen y se guardan solo en este navegador. No se suben a ningún servidor ni quedan dentro del archivo de la web.</div></div>
- <div class="card pad-lg"><h3>${im?'Datos importados':'Todavía no hay datos importados'}</h3>${im?`<dl class="kv"><dt>Archivo</dt><dd>${esc(im.archivo)}</dd><dt>Importado</dt><dd>${esc(im.cuando)}</dd><dt>Clientes</dt><dd>${im.clientes.toLocaleString('es-PE')}</dd><dt>Filas del registro diario</dt><dd>${im.filas.toLocaleString('es-PE')}</dd><dt>Días</dt><dd>${im.dias}${im.desde?` (${fmtF(im.desde)} a ${fmtF(im.hasta)})`:''}</dd><dt>Gastos</dt><dd>${im.gastos.toLocaleString('es-PE')}</dd><dt>Gift cards</dt><dd>${im.gifts}</dd><dt>Membresías</dt><dd>${im.membresias}</dd></dl><div class="row"><button class="btn ghost" data-a="mod" data-v="registro">Ver el registro de días</button><button class="btn danger" data-a="reset">Borrar lo importado</button></div>`:'<p class="small muted">Mientras tanto, el panel muestra datos de ejemplo con la misma estructura del Excel.</p>'}
+ <div class="card pad-lg"><h3>${im?'Datos importados':'Todavía no hay datos importados'}</h3>${im?`<dl class="kv"><dt>Archivo</dt><dd>${esc(im.archivo)}</dd><dt>Importado</dt><dd>${esc(im.cuando)}</dd><dt>Clientes</dt><dd>${im.clientes.toLocaleString('es-PE')}</dd><dt>Filas del registro diario</dt><dd>${im.filas.toLocaleString('es-PE')}</dd><dt>Días</dt><dd>${im.dias}${im.desde?` (${fmtF(im.desde)} a ${fmtF(im.hasta)})`:''}</dd><dt>Gastos</dt><dd>${im.gastos.toLocaleString('es-PE')}</dd><dt>Gift cards</dt><dd>${im.gifts}</dd><dt>Membresías</dt><dd>${im.membresias}</dd></dl><div class="row"><button class="btn ghost" data-a="mod" data-v="registro">Ver el registro de días</button>${DEMO?'<button class="btn danger" data-a="reset">Borrar lo importado</button>':''}</div>`:(DEMO?'<p class="small muted">Mientras tanto, el panel muestra datos de ejemplo con la misma estructura del Excel.</p>':'<p class="small muted">Todavía no hay datos. Importa aquí el Excel de Hammam: en Google Sheets, Archivo → Descargar → Microsoft Excel (.xlsx).</p>')}
  <h4>Qué se corrige al importar</h4><ul class="insight small"><li>Las horas escritas como «3:10» se leen como 3:10 p. m.</li><li>Los nombres y celulares que el Excel buscaba con fórmulas (BUSCARX) se guardan como datos.</li><li>Las personas que entraron juntas, a la misma hora, quedan como un grupo.</li><li>Los métodos de pago y servicios escritos con espacios o variantes («TARJETA », «NO CANCELO», «CONVENIOS») se unifican.</li><li>Los DNI repetidos se señalan para unificarlos.</li></ul></div></div>`}
 
 /* ---------- reservas ---------- */
@@ -3465,7 +3481,7 @@ const A={
  /* general */
  view:v=>{U.view=v;U.cons=null;top0()},
  ventana:()=>{const url=location.href.split('#')[0]+(U.view==='cliente'?'#personal':'#cliente');window.open(url,'_blank','width=1280,height=860');toast('Abre una ventana al lado de la otra: lo que hagas en una aparece en la otra.')},
- reset:()=>{try{localStorage.removeItem(KEY)}catch(e){}initState();cfgFija();gcalBase();const v=U.view,rol=U.rol;U=freshU();U.view=v;U.rol=rol;toast('Demo reiniciada con los datos de ejemplo.')},
+ reset:()=>{if(!DEMO)return;try{localStorage.removeItem(KEY)}catch(e){}initState();cfgFija();gcalBase();const v=U.view,rol=U.rol;U=freshU();U.view=v;U.rol=rol;toast('Demo reiniciada con los datos de ejemplo.')},
  /* términos y tratamiento de datos */
  consAbrir:v=>{const [ctx,dni]=String(v).split('|');U.cons={ctx,dni:dni||'',paso:0,visto:{},a1:false,a2:false,mkt:ctx==='reserva'?U.R.promos:false}},
  consNext:()=>{const C=U.cons;const n=termsSecciones().length;if(C.ctx!=='ver'&&!C.visto[C.paso])return;C.paso=Math.min(C.ctx==='ver'?n-1:n,C.paso+1)},
@@ -3563,7 +3579,9 @@ const A={
  authCambiar:()=>{U.auth.paso='cel'},
  authVerificar:()=>{const A2=U.auth;if(A2.code.trim()!=='4821'){toast('Código incorrecto.');return}if(!clientePorCel(A2.cel))nuevoCliente('','Cliente nuevo',A2.cel);A2.ok=true},
  authSalir:()=>{U.auth={paso:'cel',cel:'',code:'',ok:false}},
- misBuscar:()=>{const q=U.mis;const r=S.reservas.find(x=>x.codigo.toUpperCase()===q.codigo.trim().toUpperCase()&&x.cel===q.cel.trim());q.res=r?r.codigo:'none'},
+ misBuscar:()=>{const q=U.mis;const cod=q.codigo.trim().toUpperCase(),cel=String(q.cel).replace(/\D/g,'').slice(-9);const mismo=x=>String(x.codigo||'').toUpperCase()===cod&&String(x.cel||'').replace(/\D/g,'').slice(-9)===cel;
+  const r=S.reservas.find(mismo);if(r||DEMO||!servOk()||!cod||!/^9\d{8}$/.test(cel)){q.res=r?r.codigo:'none';return}q.res='buscando';
+  fetch(urlServ()+'/web/consulta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({codigo:cod,cel})}).then(x=>x.json()).then(j=>{if(j&&j.ok&&j.reserva){const o={slots:[],origen:'Web',...j.reserva};if(!S.reservas.some(x=>x.codigo===o.codigo))S.reservas.push(o);q.res=o.codigo}else q.res='none';save();render()}).catch(()=>{q.res='none';render()})},
  misCancelar:v=>{const r=S.reservas.find(x=>x.codigo===v);if(!r)return;const res=cancelarReserva(r,'Web');toast('Reserva cancelada.'+(res.gift?` Se devolvieron ${sol(res.gift)} a tu gift card.`:'')+(res.devolver?` Recepción gestiona la devolución de ${sol(res.devolver)} según la política.`:' El cupo quedó libre.'))},
  prefT:v=>{const [k,campo,o]=v.split('|');const c=cliente(k);if(!c)return;c.pref=c.pref||{};const L=c.pref[campo]=c.pref[campo]||[];const i=L.indexOf(o);if(i>=0)L.splice(i,1);else L.push(o)},
  /* información */
