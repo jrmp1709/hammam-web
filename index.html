@@ -3031,7 +3031,8 @@ function asegIns(){if(!S.insumos||!S.invIns)initInsumos();
  /* una vez: pasa a las recetas e insumos del PDF; lo ya contado se conserva */
  if(S.cfg.recetasV!==RECETAS_V){const prev=Object.fromEntries((S.insumos||[]).map(x=>[x.id,x]));
   S.insumos=INS_DEF.map(([id,nombre,u,pres,eq,min,base])=>{const o=prev[id];return {id,nombre,u,pres,eq,min,base:o&&o.u===u?o.base:(DEMO?base:null)}});
-  (S.carta||[]).forEach(p=>{if(REC_DEF[p.id])p.rec={...REC_DEF[p.id]};if(p.id==='gintonic'&&p.nombre==='GIN TONIC')p.nombre='GIN TONIC DE NARANJA'});S.cfg.recetasV=RECETAS_V}}
+  (S.carta||[]).forEach(p=>{if(REC_DEF[p.id])p.rec={...REC_DEF[p.id]};if(p.id==='gintonic'&&p.nombre==='GIN TONIC')p.nombre='GIN TONIC DE NARANJA'});S.cfg.recetasV=RECETAS_V}
+ if(!S.cfg.tonicasV){const T={aton:'AGUA TÓNICA BRITT (AMARILLA)',atonr:'AGUA TÓNICA PERKINS (ROSADA)'};(S.invItems||[]).forEach(i=>{if(T[i.id])i.nombre=T[i.id]});S.cfg.tonicasV=1}}
 const insDe=id=>S.insumos.find(x=>x.id===id);
 function insDia(f){asegIns();const I=S.invIns,res={};S.insumos.forEach(x=>res[x.id]={ini:+x.base||0,ing:0,sal:0,sin:x.base==null||x.base===''});
  Object.entries(I.ing).forEach(([d,m])=>{if(d<I.desde||d>f)return;Object.entries(m).forEach(([id,n])=>{const x=insDe(id);if(!x)return;const u=(+n||0)*(+x.eq||1);res[id].sin=false;if(d<f)res[id].ini+=u;else res[id].ing=u})});
@@ -3264,7 +3265,7 @@ function filaBorrar(v){const [t,id]=v.split(':');
 
 /* ---------- datos de ejemplo del bar (con la carta y los precios reales del Excel) ---------- */
 function initLibro(){const rnd=rng('libro-'+HOY);const pick=a=>a[Math.floor(rnd()*a.length)];
- S.invItems=[['asg','AGUA SIN GAS',6],['acg','AGUA CON GAS',4],['alim','AGUA DE LIMÓN',4],['aman','AGUA DE MANZANA',4],['aton','AGUA TÓNICA',6],['mock','MOCKTAIL',4],['stel','STELLA',8],['coro','CORONA',8],['corz','CORONA ZERO',4],['coca','COCA COLA',4],['inca','INCA KOLA',4],['gato','GATORADE',6],['spor','SPORADE',6],['atonr','AGUA TÓNICA ROSADA',4]].map(([id,nombre,min])=>({id,nombre,min}));
+ S.invItems=[['asg','AGUA SIN GAS',6],['acg','AGUA CON GAS',4],['alim','AGUA DE LIMÓN',4],['aman','AGUA DE MANZANA',4],['aton','AGUA TÓNICA BRITT (AMARILLA)',6],['mock','MOCKTAIL',4],['stel','STELLA',8],['coro','CORONA',8],['corz','CORONA ZERO',4],['coca','COCA COLA',4],['inca','INCA KOLA',4],['gato','GATORADE',6],['spor','SPORADE',6],['atonr','AGUA TÓNICA PERKINS (ROSADA)',4]].map(([id,nombre,min])=>({id,nombre,min}));
  const P=(id,nombre,cat,precio,usa,desc)=>({id,nombre,cat,precio,usa:usa?{[usa]:1}:{},...(desc?{desc}:{})});
  S.carta=[P('tinto','TINTO DE VERANO','CÓCTELES',35),P('mojito','MOJITO','CÓCTELES',35),P('chilcano','CHILCANO','CÓCTELES',35),P('gintonic','GIN TONIC DE NARANJA','CÓCTELES',35),P('gintfr','GIN TONIC DE FRUTOS ROJOS','CÓCTELES',35),P('aperol','APEROL SPRITZ','CÓCTELES',35),P('cuba','CUBA LIBRE','CÓCTELES',35),
   P('stella','STELLA','CERVEZAS',14,'stel'),P('corona','CORONA','CERVEZAS',14,'coro'),P('coronaz','CORONA ZERO','CERVEZAS',10,'corz'),P('mocktail','MOCKTAIL','SIN ALCOHOL',20,'mock'),
