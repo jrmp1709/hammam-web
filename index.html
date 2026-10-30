@@ -3299,7 +3299,7 @@ function dispWeb(p){const d=diasProd(p);if(d&&!d.includes(diaSem(HOY)))return 'S
 const PAGO_DEF={servidor:'',qr:'',numero:'',titular:'',link:'',claveStaff:''};
 const cfgP=()=>{const c=S.cfg.pagos=S.cfg.pagos||{};Object.keys(PAGO_DEF).forEach(k=>{if(c[k]===undefined)c[k]=PAGO_DEF[k]});return c};
 /* lo que ve el público: va dentro de la web publicada (AJUSTES solo lo reemplaza en esa computadora) */
-const PAGOS_WEB={servidor:'https://hammam-pagos.ammam-servidor-pagos.workers.dev',qr:'',numero:'',titular:'Paola Mercedes Pajares Becerril',link:'',calendario:''};
+const PAGOS_WEB={servidor:'https://hammam-pagos.ammam-servidor-pagos.workers.dev',qr:'',numero:'',titular:'Paola Mercedes Pajares Becerril',link:'',calendario:'https://script.google.com/macros/s/AKfycbxEweAKUsJcCw0XtLzcnSKuJ7XEApIGG6w-FRyO30R2e7Y1DEyrPgvPUO96SwBHEPA/exec'};
 /* WhatsApp de Hammam: ahí el cliente manda la captura del pago por QR */
 const WA_HAMMAM='51984587616';
 const cfgW=()=>{const c=cfgP(),o={...PAGOS_WEB};Object.keys(PAGOS_WEB).forEach(k=>{if(c[k])o[k]=c[k]});return o};
