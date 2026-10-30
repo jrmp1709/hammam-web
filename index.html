@@ -1920,7 +1920,7 @@ const KEY='hammam-demo';
 /* lo que se configura una sola vez (Google, pagos) no se pierde cuando el panel de ejemplo se renueva cada día */
 const KEY_FIJA=KEY+'-ajustes';
 function guardarFija(){try{localStorage.setItem(KEY_FIJA,JSON.stringify({gcal:S.cfg.gcal||null,pagos:S.cfg.pagos||null}))}catch(e){}}
-function cfgFija(){try{const f=JSON.parse(localStorage.getItem(KEY_FIJA)||'null');if(!f)return;['gcal','pagos'].forEach(k=>{const v=f[k];if(v&&typeof v==='object'&&!Object.values(S.cfg[k]||{}).some(Boolean))S.cfg[k]=v})}catch(e){}}
+function cfgFija(){try{const viejo=()=>{const o=JSON.parse(localStorage.getItem(KEY)||'null');return o&&o.cfg?{gcal:o.cfg.gcal,pagos:o.cfg.pagos}:null};const f=JSON.parse(localStorage.getItem(KEY_FIJA)||'null')||viejo();if(!f)return;['gcal','pagos'].forEach(k=>{const v=f[k];if(v&&typeof v==='object'&&!Object.values(S.cfg[k]||{}).some(Boolean))S.cfg[k]=v})}catch(e){}}
 function save(){if(typeof gcalSync==='function')gcalSync();guardarFija();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('El navegador no tiene espacio para guardar todo. Exporta y reinicia la demo.')}}
 function load(){try{const t=localStorage.getItem(KEY);if(t){const o=JSON.parse(t);if(o&&o.v===VERSION&&(o.dia===HOY||o.importado))return o}}catch(e){}return null}
 
