@@ -1411,6 +1411,10 @@ h4{font-family:'Montserrat',sans-serif}
 /* ===== pagos ===== */
 .modal.cobro{max-width:460px}
 .qrpago{display:grid;grid-template-columns:210px 1fr;gap:16px;align-items:center;margin-top:6px}
+.qr-col{display:grid;gap:8px;justify-items:center}
+.qr-num{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;font-size:14px}
+.qr-num span{color:var(--muted,#777);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.qr-num b{font-size:17px;letter-spacing:.04em}
 .qrpago img{width:210px;height:210px;object-fit:contain;background:#fff;border:1px solid var(--line);padding:4px}
 .qr-vacio{width:150px;height:150px;display:grid;place-items:center;align-content:center;gap:6px;text-align:center;font-size:12px;color:var(--muted);border:1px dashed var(--line);background:var(--surface2)}
 @media (max-width:480px){.qrpago{grid-template-columns:1fr;justify-items:center;text-align:center}}
@@ -1561,7 +1565,7 @@ const IC={
  scan:'M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10',
  print:'M7 8V3h10v5M6 17H4v-7h16v7h-2M7 14h10v7H7z',
  bolt:'M13 3L5 13h6l-1 8 8-10h-6z',
- qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2',
+ copy:'M9 9h11v11H9zM5 15H4V4h11v1',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2',
  sheet:'M4 4h16v16H4zM4 9h16M4 14h16M9 4v16',
  card:'M3 6h18v12H3zM3 10h18M7 15h4',
  upload:'M12 16V4M7 9l5-5 5 5M4 16v4h16v-4',
@@ -1618,11 +1622,17 @@ const sk=(f,c,h)=>`${f}|${c}|${h}`;
 const terapeutaDe=c=>(S.personal.find(p=>p.cabina===c)||{}).nombre||'—';
 /* horario de masajes: quién atiende cada día y hora (semana tipo); vacío = no hay masajes a esa hora */
 const DIAS_MAS=[2,3,4,5,6,0],DIA_LARGO=['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
-function horarioMas(){const c=S.cfg;if(!c.masajistas)c.masajistas=['JUDITH','GABY'];if(!c.horarioMas){c.horarioMas={};DIAS_MAS.forEach(d=>{c.horarioMas[d]={};HORAS_MAS.forEach(h=>c.horarioMas[d][h]=d===6||d===0?'JUDITH Y GABY':'JUDITH')})}return c.horarioMas}
+/* horario de masajistas (29/10/2026): Judith el martes desde las 4 pm y de miércoles a domingo desde las 3 pm;
+   Yamile de martes a viernes desde las 3 pm; el domingo, Gueidy o Yamile (se turnan); el sábado, solo una masajista */
+const HORARIO_V=2;
+function horarioBase(){const H={};DIAS_MAS.forEach(d=>{H[d]={};HORAS_MAS.forEach(h=>{const L=[];if(d!==2||toMin(h)>=16*60)L.push('JUDITH');if(d>=2&&d<=5)L.push('YAMILE');if(d===0)L.push('GUEIDY');H[d][h]=L.join(' Y ')})});return H}
+function horarioMas(){const c=S.cfg;if(c.horarioV!==HORARIO_V){c.masajistas=['JUDITH','YAMILE','GUEIDY'];c.horarioMas=horarioBase();c.horarioV=HORARIO_V}return c.horarioMas}
 const masDe=(f,h)=>{const v=((horarioMas()[fromK(f).getDay()])||{})[h]||'';return v?v.split(' Y ').map(x=>x.trim()).filter(Boolean):[]};
 const capMas=(f,h)=>masDe(f,h).length;
 /* libres = masajistas de turno menos los masajes ya agendados (y, en la web, lo ocupado en Google Calendar) */
-const libresEn=(f,h)=>{const occ=CABINAS.filter(c=>S.agenda[sk(f,c,h)]).length+(typeof ocupGoogle==='function'?ocupGoogle(f,h):0);return CABINAS.filter(c=>!S.agenda[sk(f,c,h)]).slice(0,Math.max(0,capMas(f,h)-occ))};
+const enWeb=()=>typeof U!=='undefined'&&!!U&&U.view==='cliente';
+const tomada=(f,c,h)=>{const s=S.agenda[sk(f,c,h)];return !!s&&!(s.demo&&enWeb())};
+const libresEn=(f,h)=>{const occ=CABINAS.filter(c=>tomada(f,c,h)).length+(typeof ocupGoogle==='function'?ocupGoogle(f,h):0);return CABINAS.filter(c=>!tomada(f,c,h)).slice(0,Math.max(0,capMas(f,h)-occ))};
 function masajistaDe(f,cb,h){const L=masDe(f,h);const i=CABINAS.filter(c=>S.agenda[sk(f,c,h)]).indexOf(cb);return L[i]||L[0]||'—'}
 const normDni=d=>String(d??'').replace(/\D/g,'');
 const clienteDni=dni=>dni?S.clientes.find(c=>c.dni===normDni(dni)):null;
@@ -1748,10 +1758,10 @@ function initState(){
   {f:fut[2],h:'19:00',n:'Andrea Ruiz',tipo:'paquete',paq:'najah',modal:'ind',mh:'20:10',cab:['Cabina 3'],pago:'Yape',pag:true,est:'por llegar',o:'Web'});
  /* agenda de masajes: 12 días */
  const NOM=S.clientes.slice(0,18).map(c=>c.nombre.replace(/^Familia /,''));
- proximas(12).forEach(f=>{CABINAS.forEach(c=>HORAS_MAS.forEach(h=>{if(CABINAS.indexOf(c)>=capMas(f,h))return;const r=rnd();if(r<(f===HOY?0.16:0.33)){const t=pick(Object.keys(MTIPOS)),d=pick(DURS);S.agenda[sk(f,c,h)]={cliente:pick(NOM),mtipo:t,dur:d,estado:f===HOY&&toMin(h)+60<=BASE?'atendido':'reservado',origen:pick(['Web','Web','WhatsApp','Teléfono'])}}}))});
+ proximas(12).forEach(f=>{CABINAS.forEach(c=>HORAS_MAS.forEach(h=>{if(CABINAS.indexOf(c)>=capMas(f,h))return;const r=rnd();if(r<(f===HOY?0.16:0.33)){const t=pick(Object.keys(MTIPOS)),d=pick(DURS);S.agenda[sk(f,c,h)]={cliente:pick(NOM),mtipo:t,dur:d,estado:f===HOY&&toMin(h)+60<=BASE?'atendido':'reservado',origen:pick(['Web','Web','WhatsApp','Teléfono']),demo:true}}}))});
  RES.forEach(x=>{const c=cn(x.n);const R={tipo:x.tipo,paq:x.paq,modal:x.modal,adultos:x.tipo==='paquete'?(x.modal==='dos'?2:1):x.tipo==='masaje'?(x.mpers||1):(x.ad||0),ninos:x.ni||0,mtipo:x.mtipo,mdur:x.mdur,mpers:x.mpers||1};const q=cotizar(R);
   const r={codigo:'HM-'+(S.seq.res++),fecha:x.f||HOY,hora:x.h,mhora:x.mh||null,dni:c.dni,nombre:c.nombre,cel:c.cel,tipo:x.tipo,paq:x.paq,modal:x.modal,mtipo:x.mtipo,mdur:x.mdur,mpers:x.mpers,adultos:R.adultos,ninos:R.ninos,total:q.total,pago:x.pago,pagado:x.pag,web:x.pag,pagadoEl:x.pag?addDays(HOY,-(1+Math.floor(rnd()*6))):null,estado:x.est,origen:x.o,slots:[],notas:c.notas||''};
-  if(x.cab){const mt=x.tipo==='paquete'?paqueteDe(x.paq).masaje:x.mtipo,md=x.tipo==='paquete'?45:x.mdur;x.cab.forEach(cb=>{const k=sk(r.fecha,cb,x.mh);const done=r.fecha===HOY&&toMin(x.mh)+60<=BASE;const cur=r.fecha===HOY&&!done&&toMin(x.mh)<=BASE;S.agenda[k]={cliente:c.nombre.replace(/^Familia /,''),mtipo:mt,dur:md,estado:done?'atendido':cur?'en curso':'reservado',origen:x.o,codigo:r.codigo,notas:c.notas||''};r.slots.push(k)})}
+  if(x.cab){const mt=x.tipo==='paquete'?paqueteDe(x.paq).masaje:x.mtipo,md=x.tipo==='paquete'?45:x.mdur;x.cab.forEach(cb=>{const k=sk(r.fecha,cb,x.mh);const done=r.fecha===HOY&&toMin(x.mh)+60<=BASE;const cur=r.fecha===HOY&&!done&&toMin(x.mh)<=BASE;S.agenda[k]={demo:true,cliente:c.nombre.replace(/^Familia /,''),mtipo:mt,dur:md,estado:done?'atendido':cur?'en curso':'reservado',origen:x.o,codigo:r.codigo,notas:c.notas||''};r.slots.push(k)})}
   S.reservas.push(r)});
  [['Paula León',{m:1,v:0,n:0,hora:'16:52'}],['Elena Benites',{m:1,v:1,n:0,hora:'17:21'}]].forEach(([n,pre])=>{const r=S.reservas.find(x=>x.nombre===n&&x.fecha===HOY);if(r)r.pre=pre});
  /* bar */
@@ -1810,7 +1820,7 @@ function initState(){
   g.p.forEach((s,k)=>{const nino=s==='N';const comp=k>0&&!nino?compania():null;const row={id:S.seq.row++,fecha:HOY,ing:g.h,sal:g.sal||null,dni:k===0?c.dni:(comp?comp.dni:''),nombre:k===0?c.nombre.toUpperCase():(nino?'NIÑO':comp.nombre.toUpperCase()),cel:k===0?c.cel:(comp?comp.cel||'':''),...(nino?{cod:codSinDni('N')}:{}),bol:PREPAGO.includes(g.pago)?'':'B001-'+String(S.seq.bol++).padStart(6,'0'),cas:nino?'':tomar(s),serv:nino?'PISCINA':g.serv,paq:g.paq||null,mt:null,md:null,com:g.paq&&k<2?`${paqueteDe(g.paq).nombre.split(' ')[0].toUpperCase()}${r&&r.mhora?' - '+h12(r.mhora):''}`:'',ext:(g.ext&&g.ext[k])||[],pago:g.pago,total:0,pagado:g.pago!=='POR CANCELAR',cons:[],grp:t,res:r?r.codigo:null,por:'Luis'};
    row.valor=precioServicio(row);row.total=PREPAGO.includes(row.pago)?0:row.valor;S.diario.push(row)});
   const first=S.diario.find(x=>x.grp===t);(g.cons||[]).forEach(([p,q])=>first.cons.push({d:`${prod(p).nombre} × ${q}`,m:prod(p).precio*q,t:'bar',pag:!!g.sal,pid:p,q}));
-  if(g.masaje){const [mt,md,mh,cb]=g.masaje;first.cons.push({d:`Masaje ${MTIPOS[mt].toLowerCase()} ${md} min (${h12(mh)})`,m:precioMasaje(mt,md),t:'masaje',pag:false});S.agenda[sk(HOY,cb,mh)]={cliente:c.nombre,mtipo:mt,dur:md,estado:'reservado',origen:'Local',ticket:t,notas:c.notas||''}}
+  if(g.masaje){const [mt,md,mh,cb]=g.masaje;first.cons.push({d:`Masaje ${MTIPOS[mt].toLowerCase()} ${md} min (${h12(mh)})`,m:precioMasaje(mt,md),t:'masaje',pag:false});S.agenda[sk(HOY,cb,mh)]={demo:true,cliente:c.nombre,mtipo:mt,dur:md,estado:'reservado',origen:'Local',ticket:t,notas:c.notas||''}}
  });
  S.cuadre[HOY]={inicio:200,deposito:0,cerrado:false};
  S.bar.pedidos=[];
@@ -1907,7 +1917,11 @@ const giftDe=dni=>S.gifts.find(g=>g.dni&&g.dni===normDni(dni)&&estadoGift(g)==='
 
 /* =================== persistencia =================== */
 const KEY='hammam-demo';
-function save(){if(typeof gcalSync==='function')gcalSync();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('El navegador no tiene espacio para guardar todo. Exporta y reinicia la demo.')}}
+/* lo que se configura una sola vez (Google, pagos) no se pierde cuando el panel de ejemplo se renueva cada día */
+const KEY_FIJA=KEY+'-ajustes';
+function guardarFija(){try{localStorage.setItem(KEY_FIJA,JSON.stringify({gcal:S.cfg.gcal||null,pagos:S.cfg.pagos||null}))}catch(e){}}
+function cfgFija(){try{const f=JSON.parse(localStorage.getItem(KEY_FIJA)||'null');if(!f)return;['gcal','pagos'].forEach(k=>{const v=f[k];if(v&&typeof v==='object'&&!Object.values(S.cfg[k]||{}).some(Boolean))S.cfg[k]=v})}catch(e){}}
+function save(){if(typeof gcalSync==='function')gcalSync();guardarFija();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('El navegador no tiene espacio para guardar todo. Exporta y reinicia la demo.')}}
 function load(){try{const t=localStorage.getItem(KEY);if(t){const o=JSON.parse(t);if(o&&o.v===VERSION&&(o.dia===HOY||o.importado))return o}}catch(e){}return null}
 
 /* =================== componentes comunes =================== */
@@ -3330,8 +3344,8 @@ function valorGiftSel(){const G=U.gift,sel=GOPTS().find(o=>o[0]===G.tipo);return
 function modalCobro(){const pg=U.pg;if(!pg)return '';setTimeout(()=>{const m=document.querySelector('.modal.cobro');if(m&&!m.contains(document.activeElement)){const f=m.querySelector('input,a.btn,button.btn:not([data-a="pgCerrar"])');if(f)f.focus()}},0);const P=cfgW(),t=montoCobro(pg);
  const cab=tt=>`<div class="backdrop" data-a="pgCerrar"></div><div class="modal cobro" role="dialog" aria-modal="true" aria-label="${tt}"><div class="mh"><b>${tt}</b><button class="btn xs ghost" data-a="pgCerrar" aria-label="Cerrar">${ic('x','sm')}</button></div>`;
  if(pg.medio==='qr')return `${cab(`Paga ${sol(t)} con tu billetera`)}
-  <div class="qrpago">${P.qr?`<img src="${esc(P.qr)}" alt="Código QR de Hammam para pagar">`:`<div class="qr-vacio">${ic('qr','lg')}<span>Aquí va el QR de Hammam</span></div>`}
-  <div><ol class="qr-pasos"><li>Escanea el QR con <b>Yape o Plin</b>${P.numero?` (o yapea al <b>${esc(P.numero)}</b>)`:''} y paga <b>${sol(t)}</b>.${P.titular?` Sale a nombre de <b>${esc(P.titular)}</b>, de Hammam.`:''}</li><li>Toma una <b>captura de pantalla</b> del pago.</li><li>Toca <b>«Ya realicé el pago»</b>: se abre el WhatsApp de Hammam con el mensaje listo. Adjunta ahí la captura.</li></ol></div></div>
+  <div class="qrpago"><div class="qr-col">${P.qr?`<img src="${esc(P.qr)}" alt="Código QR de Hammam para pagar">`:`<div class="qr-vacio">${ic('qr','lg')}<span>Aquí va el QR de Hammam</span></div>`}${P.numero?`<div class="qr-num"><span>Yape</span><b>${esc(P.numero)}</b><button class="btn xs ghost" data-a="copiarNum" data-v="${esc(String(P.numero).replace(/\D/g,''))}">${ic('copy','sm')} Copiar</button></div>`:''}</div>
+  <div><ol class="qr-pasos"><li>Escanea el QR con <b>Yape o Plin</b>${P.numero?`, o yapea al número de abajo (con «Copiar» lo pegas en tu app),`:''} y paga <b>${sol(t)}</b>.${P.titular?` Sale a nombre de <b>${esc(P.titular)}</b>, de Hammam.`:''}</li><li>Toma una <b>captura de pantalla</b> del pago.</li><li>Toca <b>«Ya realicé el pago»</b>: se abre el WhatsApp de Hammam con el mensaje listo. Adjunta ahí la captura.</li></ol></div></div>
   <div class="form mt"><label class="fld">N.° de operación (opcional)<input class="bigin" data-in="U.pg.oper" inputmode="numeric" maxlength="20" value="${esc(pg.oper||'')}" placeholder="Lo ves en tu app al terminar el pago"></label></div>
   <button class="btn lg block mt" data-a="pgListo" data-valid="pg">${ic('wa','sm')} Ya realicé el pago</button>
   <p class="xs muted mt center">Recepción revisa tu pago con la captura y te confirma por WhatsApp. ${pg.ctx==='gift'?'La tarjeta se envía apenas se confirme.':'Tu cupo queda separado mientras tanto.'}</p></div>`;
@@ -3443,6 +3457,7 @@ function nuevoCliente(dni,nombre,cel,extra={}){const c={id:cliId(),dni:normDni(d
 function consentimiento(canal,mkt){return {fecha:HOY,hora:ahora(),canal,v:TERMS_V,mkt:!!mkt}}
 function horaMasajeLibre(f,desde,need=1){return HORAS_MAS.find(h=>toMin(h)>=desde&&libresEn(f,h).length>=need&&!pasada(f,h))||null}
 function agendarMasaje(f,h,need,datos){const cabs=libresEn(f,h).slice(0,need);cabs.forEach(cb=>{S.agenda[sk(f,cb,h)]={estado:'reservado',origen:'Local',...datos}});return cabs}
+function copiarViejo(v){try{const t=document.createElement('textarea');t.value=v;t.setAttribute('readonly','');t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();const ok=document.execCommand('copy');t.remove();if(!ok)toast(`Copia el número: ${v}`);return ok}catch(e){toast(`Copia el número: ${v}`);return false}}
 function descargar(nombre,filas){const csv='﻿'+filas.map(r=>r.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(';')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=nombre;document.body.appendChild(a);a.click();a.remove()}
 
 /* =================== acciones =================== */
@@ -3450,7 +3465,7 @@ const A={
  /* general */
  view:v=>{U.view=v;U.cons=null;top0()},
  ventana:()=>{const url=location.href.split('#')[0]+(U.view==='cliente'?'#personal':'#cliente');window.open(url,'_blank','width=1280,height=860');toast('Abre una ventana al lado de la otra: lo que hagas en una aparece en la otra.')},
- reset:()=>{try{localStorage.removeItem(KEY)}catch(e){}initState();gcalBase();const v=U.view,rol=U.rol;U=freshU();U.view=v;U.rol=rol;toast('Demo reiniciada con los datos de ejemplo.')},
+ reset:()=>{try{localStorage.removeItem(KEY)}catch(e){}initState();cfgFija();gcalBase();const v=U.view,rol=U.rol;U=freshU();U.view=v;U.rol=rol;toast('Demo reiniciada con los datos de ejemplo.')},
  /* términos y tratamiento de datos */
  consAbrir:v=>{const [ctx,dni]=String(v).split('|');U.cons={ctx,dni:dni||'',paso:0,visto:{},a1:false,a2:false,mkt:ctx==='reserva'?U.R.promos:false}},
  consNext:()=>{const C=U.cons;const n=termsSecciones().length;if(C.ctx!=='ver'&&!C.visto[C.paso])return;C.paso=Math.min(C.ctx==='ver'?n-1:n,C.paso+1)},
@@ -3560,7 +3575,8 @@ const A={
  hoja:v=>{U.hoja=v;U.drawer=null;U.arriba=true},
  bdMas:()=>{U.bdN+=100},
  bdLetra:v=>{U.bdL=v;U.bdN=80},
- gcalProbar:()=>gcalProbar(),gcalRespaldo:()=>gcalRespaldo(),gcalTraer:()=>gcalTraer(false),
+ gcalProbar:()=>gcalProbar(),
+ copiarNum:v=>{const ok=()=>toast(`Número copiado: ${v}. Pégalo en Yape o Plin.`);try{navigator.clipboard.writeText(v).then(ok,()=>copiarViejo(v)&&ok())}catch(e){if(copiarViejo(v))ok()}},gcalRespaldo:()=>gcalRespaldo(),gcalTraer:()=>gcalTraer(false),
  filaBorrar:v=>filaBorrar(v),
  irDiario:v=>{U.hoja='diario';U.dd=v},
  masToggle:()=>{U.mas=!(U.mas||ROLES[U.rol].mods.filter(m=>!ROLES[U.rol].main.includes(m)).includes(U.mod));if(!U.mas&&!ROLES[U.rol].main.includes(U.mod))U.mod=ROLES[U.rol].main[0]},
@@ -3860,7 +3876,7 @@ window.addEventListener('storage',e=>{if(e.key!==KEY||!e.newValue)return;try{con
 setInterval(()=>{document.querySelectorAll('[data-clock]').forEach(el=>el.textContent=h12(ahora()))},20000);
 
 /* =================== inicio =================== */
-S=load()||initState();S.clientes.forEach(c=>{if(!c.id)c.id=cliId()});gcalBase();save();U=freshU();
+S=load()||initState();cfgFija();S.clientes.forEach(c=>{if(!c.id)c.id=cliId()});gcalBase();save();U=freshU();
 {const h=location.hash.slice(1);if(h==='personal')U.view='personal';else if(TIT_PAG[h]){U.view='cliente';U.ctab=h}}
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h==='personal'&&U.view!=='personal'){U.view='personal';render()}else if(TIT_PAG[h]&&(U.view!=='cliente'||U.ctab!==h)){U.view='cliente';U.ctab=h;U.mmenu=false;render();window.scrollTo(0,0)}});
 render();
