@@ -3523,10 +3523,10 @@ async function respaldoLista(){const r=await fetch(urlServ()+'/personal/respaldo
 async function respaldoCargar(eq){const P=cfgP(),clave=P.claveStaff;const r=await fetch(urlServ()+'/personal/respaldo?equipo='+encodeURIComponent(eq),{headers:{'X-Clave':clave}});if(!r.ok)throw new Error('No se encontró la copia.');
  const o=JSON.parse(await ungz(await r.arrayBuffer()));if(!o||!o.cfg||!Array.isArray(o.diario)||!Array.isArray(o.clientes))throw new Error('La copia está incompleta.');
  const g0=S.cfg&&S.cfg.gcal;if(g0&&g0.clave&&!(o.cfg.gcal&&o.cfg.gcal.clave))o.cfg.gcal={...(o.cfg.gcal||{}),...g0};
- S=o;S.v=VERSION;cfgP().claveStaff=clave;gcalBase();RESP_HASH='';if(SY.snap)SY.snap=aplanar();save();return o}
+ S=o;S.v=VERSION;cfgP().claveStaff=clave;gcalBase();RESP_HASH='';if(SY.snap)SY.snap=aplanar();SY.propios=true;/* lo que este equipo ya había anotado vuelve desde la sincronización */save();return o}
 /* al entrar en un equipo sin datos, se carga sola la copia más reciente del servidor */
 let RESP_AUTO=false;
-async function respaldoAuto(){if(RESP_AUTO||!respOk()||S.diario.length||S.clientes.length)return;RESP_AUTO=true;
+async function respaldoAuto(){if(RESP_AUTO||!respOk()||S.importado)return;RESP_AUTO=true;/* sin la base del Excel: se carga sola */
  try{const L=await respaldoLista();const x=L.find(y=>y.equipo!==EQUIPO)||L[0];if(!x)return;const o=await respaldoCargar(x.equipo);
   toast(`Se cargaron los datos de Hammam: ${o.clientes.length.toLocaleString('es-PE')} clientes y ${o.diario.length.toLocaleString('es-PE')} filas del registro.`);render()}catch(e){RESP_AUTO=false}}
 const hace=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?'hace un momento':m<60?`hace ${m} min`:m<1440?`hace ${Math.round(m/60)} h`:`hace ${Math.round(m/1440)} días`};
@@ -3565,8 +3565,8 @@ async function syncSubir(){if(!syncOk()||!SY.snap)return;if(SY.ocupado){SY.otra=
   SY.err=false;if(c.length)SY.ult=Date.now()}catch(e){SY.err=true}finally{SY.ocupado=false;if(SY.otra){SY.otra=false;syncProgramar()}}}
 async function syncBajar(){if(!syncOk()||!SY.snap||SY.ocupado)return 0;SY.ocupado=true;let n=0;
  try{S.sync=S.sync||{ver:0};const C=new Map();let mas=true;while(mas){const d=await syncPedir('/sync/bajar?desde='+(+S.sync.ver||0));
-   (d.lotes||[]).forEach(L=>{if(L.eq!==EQUIPO)(L.c||[]).forEach(([p,j])=>{const cur=syncValor(p,C),sn=SY.snap.has(p)?SY.snap.get(p):null;if(cur!==sn)return;/* hay un cambio local sin subir: gana el local */
-     syncAplicar(p,j,C);if(j==null)SY.snap.delete(p);else SY.snap.set(p,j);n++});S.sync.ver=Math.max(+S.sync.ver||0,+L.ver||0)});mas=!!d.mas&&(d.lotes||[]).length>0}
+   (d.lotes||[]).forEach(L=>{if(L.eq!==EQUIPO||SY.propios)(L.c||[]).forEach(([p,j])=>{const cur=syncValor(p,C),sn=SY.snap.has(p)?SY.snap.get(p):null;if(cur!==sn)return;/* hay un cambio local sin subir: gana el local */
+     syncAplicar(p,j,C);if(j==null)SY.snap.delete(p);else SY.snap.set(p,j);n++});S.sync.ver=Math.max(+S.sync.ver||0,+L.ver||0)});mas=!!d.mas&&(d.lotes||[]).length>0}SY.propios=false;
   SY.err=false}catch(e){SY.err=true}finally{SY.ocupado=false}
  if(n){SY.recibidos+=n;if(typeof gcalBase==='function')gcalBase();save();render()}return n}
 function syncIniciar(){if(!syncOk()||SY.ciclo)return;S.sync=S.sync||{ver:0};SY.snap=aplanar();SY.ciclo=setInterval(()=>{syncSubir().then(syncBajar)},15000);setTimeout(()=>syncBajar(),1500)}
