@@ -3443,13 +3443,19 @@ async function respaldoSubir(forzar){if(!respOk())return false;const P=cfgP();co
 async function respaldoLista(){const r=await fetch(urlServ()+'/personal/respaldos',{headers:{'X-Clave':cfgP().claveStaff}});if(!r.ok)throw new Error('clave');return ((await r.json()).lista||[])}
 async function respaldoCargar(eq){const P=cfgP(),clave=P.claveStaff;const r=await fetch(urlServ()+'/personal/respaldo?equipo='+encodeURIComponent(eq),{headers:{'X-Clave':clave}});if(!r.ok)throw new Error('No se encontró la copia.');
  const o=JSON.parse(await ungz(await r.arrayBuffer()));if(!o||!o.cfg||!Array.isArray(o.diario)||!Array.isArray(o.clientes))throw new Error('La copia está incompleta.');
+ const g0=S.cfg&&S.cfg.gcal;if(g0&&g0.clave&&!(o.cfg.gcal&&o.cfg.gcal.clave))o.cfg.gcal={...(o.cfg.gcal||{}),...g0};
  S=o;S.v=VERSION;cfgP().claveStaff=clave;gcalBase();RESP_HASH='';save();return o}
+/* al entrar en un equipo sin datos, se carga sola la copia más reciente del servidor */
+let RESP_AUTO=false;
+async function respaldoAuto(){if(RESP_AUTO||!respOk()||S.diario.length||S.clientes.length)return;RESP_AUTO=true;
+ try{const L=await respaldoLista();const x=L.find(y=>y.equipo!==EQUIPO)||L[0];if(!x)return;const o=await respaldoCargar(x.equipo);
+  toast(`Se cargaron los datos de Hammam: ${o.clientes.length.toLocaleString('es-PE')} clientes y ${o.diario.length.toLocaleString('es-PE')} filas del registro.`);render()}catch(e){RESP_AUTO=false}}
 const hace=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?'hace un momento':m<60?`hace ${m} min`:m<1440?`hace ${Math.round(m/60)} h`:`hace ${Math.round(m/1440)} días`};
 function hRespaldos(){const L=U.respLista;if(!L)return '';if(L==='cargando')return '<p class="small mt">Buscando copias en el servidor…</p>';if(L.error)return `<p class="note bad mt">${esc(L.error)}</p>`;
  if(!L.length)return '<p class="small mt">Todavía no hay copias en el servidor.</p>';
  return `<table class="xl mt"><tr class="hdr"><th>EQUIPO</th><th>DATOS</th><th>ÚLTIMA COPIA</th><th></th></tr>${L.map(x=>`<tr><td class="l">${x.equipo===EQUIPO?'Este equipo':esc(x.equipo)}</td><td class="l">${esc(x.resumen||'')}</td><td class="l">${hace(x.t)}</td><td>${x.equipo===EQUIPO?'':`<button class="btn xs" data-a="respCargar" data-v="${esc(x.equipo)}">Cargar en este equipo</button>`}</td></tr>`).join('')}</table>`}
 function bannerSinDatos(){return `<div class="note mt">${ic('info','sm')} <b>Este equipo todavía no tiene los datos de Hammam.</b> ${respOk()?`<button class="btn sm" data-a="respVer">Cargar del servidor</button> o `:''}<button class="btn sm ghost" data-a="hoja" data-v="ajustes">importar el Excel en AJUSTES</button>${hRespaldos()}</div>`}
-function servIniciar(){if(SERV_TIMER)return;SERV_TIMER=setInterval(servTraer,20000);setTimeout(servTraer,1500)}
+function servIniciar(){if(SERV_TIMER)return;SERV_TIMER=setInterval(servTraer,20000);setTimeout(servTraer,1500);setTimeout(respaldoAuto,600)}
 function servProbar(){if(!servOk()){toast('Escribe la dirección del servidor (empieza con https://).');return}
  fetch(urlServ()+'/estado').then(r=>r.json()).then(d=>{const P=cfgP();P.servPrueba=`${fmtF(HOY)} ${ahora()}: ${d.ok?'conectado':'responde con error'}${d.modo?' · Izipay en modo '+d.modo:''}${d.izipay===false?' · faltan las claves de Izipay':''}`;save();render();toast(d.ok?'Servidor conectado.':'El servidor respondió con un error.')}).catch(()=>{const P=cfgP();P.servPrueba=`${fmtF(HOY)} ${ahora()}: no responde`;save();render();toast('No se pudo conectar con el servidor.')})}
 
