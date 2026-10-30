@@ -1573,7 +1573,7 @@ const IC={
 };
 /* fotos reales de Hammam (carpeta img/ junto a la página) */
 const FOTO='img/';
-const FOTO_W={"bar-estantes": 1440, "bar": 1800, "bar2": 1800, "descanso": 1600, "familia": 922, "hero-movil": 900, "lockers": 1350, "lounge": 1800, "lounge2": 1800, "masaje-espalda": 1800, "masaje-manos": 1800, "masaje-piedras": 1800, "masaje-pistola": 1800, "piscina-bar": 1800, "piscina": 1800, "portada-bar-movil": 760, "portada-bar": 1920, "portada-fachada-movil": 760, "portada-fachada": 1920, "portada-masaje-movil": 760, "portada-masaje": 1920, "portada-piscina-movil": 760, "portada-piscina": 1920, "portada-sauna-movil": 760, "portada-sauna": 1920, "portada-vapor-movil": 760, "portada-vapor": 1920, "recepcion": 1800, "regalo": 1200, "sauna-relax": 1800, "sauna": 1800, "sauna2": 1350, "vapor-eucalipto": 1508, "vapor-relax": 1800, "vapor": 1800, "vapor2": 1800};
+const FOTO_W={"bar-estantes": 1440, "bar": 1800, "bar2": 1800, "descanso": 1600, "familia": 922, "hero-movil": 900, "lockers": 1350, "lounge": 1800, "lounge2": 1800, "masaje-espalda": 1800, "masaje-manos": 1800, "masaje-piedras": 1800, "masaje-pistola": 1800, "piscina-bar": 1800, "piscina": 1800, "portada-bar-movil": 760, "portada-bar": 1920, "portada-fachada-movil": 760, "portada-fachada": 1920, "portada-masaje-movil": 760, "portada-masaje": 1920, "portada-piscina-movil": 760, "portada-piscina": 1920, "portada-sauna-movil": 760, "portada-sauna": 1920, "portada-vapor-movil": 760, "portada-vapor": 1920, "qr-yape": 869, "recepcion": 1800, "regalo": 1200, "sauna-relax": 1800, "sauna": 1800, "sauna2": 1350, "vapor-eucalipto": 1508, "vapor-relax": 1800, "vapor": 1800, "vapor2": 1800};
 const IMG={hero:'piscina-bar',heroMovil:'hero-movil',pool:'descanso',vapor:'vapor-eucalipto',marmol:'vapor-relax',seco:'sauna-relax',vaporPiedras:'sauna2',cupula:'lounge2',piedras:'masaje-piedras',piedras2:'masaje-pistola',aceite:'masaje-espalda',bar:'bar',bar2:'bar2',barluz:'bar-estantes',lounge:'lounge',lockers:'lockers',recepcion:'recepcion',relax:'sauna-relax',sauna:'sauna',piscina:'piscina',fachada:'portada-fachada',regalo:'regalo'};
 const fotoUrl=(k,w=900)=>`${FOTO}${w>900?'':'sm/'}${IMG[k]||k}.jpg`;
 const bgi=(k,w=900)=>`background-image:url('${fotoUrl(k,w)}')`;
@@ -3299,7 +3299,7 @@ function dispWeb(p){const d=diasProd(p);if(d&&!d.includes(diaSem(HOY)))return 'S
 const PAGO_DEF={servidor:'',qr:'',numero:'',titular:'',link:'',claveStaff:''};
 const cfgP=()=>{const c=S.cfg.pagos=S.cfg.pagos||{};Object.keys(PAGO_DEF).forEach(k=>{if(c[k]===undefined)c[k]=PAGO_DEF[k]});return c};
 /* lo que ve el público: va dentro de la web publicada (AJUSTES solo lo reemplaza en esa computadora) */
-const PAGOS_WEB={servidor:'https://hammam-pagos.ammam-servidor-pagos.workers.dev',qr:'',numero:'',titular:'Paola Mercedes Pajares Becerril',link:'',calendario:'https://script.google.com/macros/s/AKfycbxEweAKUsJcCw0XtLzcnSKuJ7XEApIGG6w-FRyO30R2e7Y1DEyrPgvPUO96SwBHEPA/exec'};
+const PAGOS_WEB={servidor:'https://hammam-pagos.ammam-servidor-pagos.workers.dev',qr:'img/qr-yape.jpg',numero:'950 339 421',titular:'Paola Mercedes Pajares Becerril',link:'',calendario:'https://script.google.com/macros/s/AKfycbxEweAKUsJcCw0XtLzcnSKuJ7XEApIGG6w-FRyO30R2e7Y1DEyrPgvPUO96SwBHEPA/exec'};
 /* WhatsApp de Hammam: ahí el cliente manda la captura del pago por QR */
 const WA_HAMMAM='51984587616';
 const cfgW=()=>{const c=cfgP(),o={...PAGOS_WEB};Object.keys(PAGOS_WEB).forEach(k=>{if(c[k])o[k]=c[k]});return o};
