@@ -3,8 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hammam · Web y sistema</title>
-<meta name="description" content="Prototipo de la web de reservas y del sistema interno de Hammam Wellness Center.">
+<title>HAMMAM WELLNESS CENTER</title>
+<meta name="description" content="Sauna seco, cámara de vapor, piscina térmica y masajes en Palmas del Golf, Trujillo. Reserva en línea tu circuito o tu masaje y paga con tarjeta, Yape o Plin.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hammam Wellness Center">
+<meta property="og:locale" content="es_PE">
+<meta property="og:url" content="https://hammam.pe/">
+<meta property="og:title" content="HAMMAM WELLNESS CENTER">
+<meta property="og:description" content="Sauna seco, cámara de vapor, piscina térmica y masajes en Palmas del Golf, Trujillo. Reserva en línea tu circuito o tu masaje y paga con tarjeta, Yape o Plin.">
+<meta property="og:image" content="https://hammam.pe/img/portada-fachada.jpg">
+<link rel="canonical" href="https://hammam.pe/">
 <link rel="icon" href="data:image/jpeg;base64,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">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Italiana&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
@@ -4066,7 +4074,7 @@ function cancelarReserva(r,por){const res={gift:0,devolver:0};if(!r||r.estado===
 function pcCuadra(){const P=U.pc;if(!P)return false;const r=S.reservas.find(x=>x.codigo===P.codigo);return !!r&&P.m+P.v===r.adultos&&(P.n||0)===(r.ninos||0)}
 
 /* la sección abierta queda en la dirección de la página (se puede compartir y usar Atrás) */
-function syncUrl(){try{const h=U.view==='personal'?'personal':U.ctab;if(location.hash.slice(1)!==h)history.pushState(null,'','#'+h);document.title=U.view==='personal'?'Sistema · Hammam':(U.ctab==='inicio'?'Hammam Wellness Center · Sauna, vapor y masajes en Trujillo':`${TIT_PAG[U.ctab]||'Hammam'} · Hammam Wellness Center`)}catch(e){}}
+function syncUrl(){try{const h=U.view==='personal'?'personal':U.ctab;if(location.hash.slice(1)!==h)history.pushState(null,'','#'+h);document.title=U.view==='personal'?'Sistema · Hammam':(U.ctab==='inicio'?'HAMMAM WELLNESS CENTER':`${TIT_PAG[U.ctab]||'Hammam'} · Hammam Wellness Center`)}catch(e){}}
 
 </script>
 </body>
