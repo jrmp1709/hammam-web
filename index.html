@@ -1963,7 +1963,8 @@ function countLockers(){const c={libre:0,ocupado:0,mant:0,reponer:0,total:0};cas
 /* lo cobrado por una reserva: todo, o el adelanto si pagó una parte */
 const montoRes=r=>!r.pagado&&r.adelanto!=null?+r.adelanto||0:+r.total||0;
 /* reservas anotadas en recepción y cobradas ese día por Yape, Plin, etc. (las de la web van aparte) */
-const resCobradas=f=>S.reservas.filter(r=>r.web&&r.origen!=='Web'&&r.pagadoEl===f&&(r.pagado||+r.adelanto>0)&&MEDIOS_CAJA.includes(r.pago));
+const deRecepcion=r=>r.origen!=='Web'&&MEDIOS_CAJA.includes(r.pago);
+const resCobradas=f=>S.reservas.filter(r=>r.web&&r.estado!=='cancelada'&&deRecepcion(r)&&r.pagadoEl===f&&(r.pagado||+r.adelanto>0));
 function cuadreDia(f){const porMedio={};MEDIOS_CAJA.forEach(m=>porMedio[m]=0);const add=(m,v)=>{if(m in porMedio)porMedio[m]+=v};
  const filas=filasDia(f);const cont={};SERVICIOS.forEach(s=>cont[s]=0);const pre={RESERVA:0,MEMBRESIA:0,'GIFT CARD':0,CONVENIO:0};let porCobrar=0;
  filas.forEach(r=>{cont[r.serv]=(cont[r.serv]||0)+1;if(PREPAGO.includes(r.pago))pre[r.pago]++;else if(r.pagado){if(r.pago==='MIXTO'&&r.mix){const a=Math.min(+r.mix.va||0,+r.total||0);add(r.mix.a,a);add(r.mix.b,(+r.total||0)-a)}else add(r.pago,r.total)}else porCobrar+=saldoFila(r);(r.cons||[]).forEach(c=>{if(c.barId)return;if(c.pag&&c.medio)add(c.medio,c.m);else if(!c.pag)porCobrar+=c.m})});
@@ -1971,7 +1972,7 @@ function cuadreDia(f){const porMedio={};MEDIOS_CAJA.forEach(m=>porMedio[m]=0);co
  const membV=S.membresias.filter(m=>m.inicio===f&&MEDIOS_CAJA.includes(m.pago));membV.forEach(m=>add(m.pago,m.precio||0));
  /* lo cobrado por reservas entra el día en que se cobró, aunque la reserva sea para otro día */
  const resC=resCobradas(f);resC.forEach(r=>add(r.pago,montoRes(r)));const resCaja=sum(resC,montoRes);
- const webRes=sum(S.reservas.filter(r=>r.web&&(r.pagado||+r.adelanto>0)&&r.pagadoEl===f&&!resC.includes(r)),montoRes);
+ const webRes=sum(S.reservas.filter(r=>r.web&&(r.pagado||+r.adelanto>0)&&r.pagadoEl===f&&!deRecepcion(r)),montoRes);
  const giftWeb=sum(S.gifts.filter(g=>g.web?g.pagadoEl===f&&g.estado!=='POR CONFIRMAR':(g.fecha===f&&g.pago==='WEB')),g=>g.monto);
  const G=S.gastos.filter(g=>g.fecha===f&&g.caja!=='BAR');const gastoEfectivo=sum(G.filter(g=>g.medio==='EFECTIVO'),g=>g.total);const gastoOper=sum(G.filter(g=>!S.cfg.noOper.includes(g.cat)),g=>g.total);const retiros=sum(G.filter(g=>S.cfg.noOper.includes(g.cat)),g=>g.total);
  const q=S.cuadre[f]||{inicio:0,deposito:0};const total=sum(Object.values(porMedio));
@@ -3035,7 +3036,7 @@ function hDiario(){const f=U.dd;const rows=[...filasDia(f)].sort((a,b)=>a.ing.lo
 
 /* reservas del día en el DIARIO: quién viene, qué promoción tiene, qué pagó y cuánto falta cobrar */
 function bloqueResCobradas(f){const L=resCobradas(f);if(!L.length)return '';const hoy=f===HOY;
- return `<div class="res-dia"><h4 class="lb-h4">Cobrado ${hoy?'hoy':'el '+fDM2(f)} por reservas (${L.length}) · S/ ${n2(sum(L,montoRes))}</h4>${tabla([['PARA EL',96],['HORA',80],['NOMBRE',200],['RESERVA',210],['PAGÓ',90],['MEDIO',130],['MONTO',90]],L.map((r,i)=>`<tr><th class="rn">${i+1}</th>${ro(r.fecha===f?(hoy?'HOY':fDM2(r.fecha)):fDM2(r.fecha))}${ro(h12(r.hora))}${ro(`<b>${esc(r.nombre)}</b>`)}${ro(descReserva(r))}${ro(r.pagado?'TODO':r.pagoTipo==='mitad'?'50 %':'ADELANTO')}${ro(esc(r.pago))}${ro(n2(montoRes(r)))}</tr>`).join(''))}<p class="lb-help">Lo que se cobra por una reserva entra a la CAJA del día en que se cobró, en su medio (YAPE, PLIN, etc.), aunque la reserva sea para otro día. Cuando el cliente llega, su fila dice RESERVA y no se vuelve a sumar.</p></div>`}
+ return `<div class="res-dia"><h4 class="lb-h4">Cobrado ${hoy?'hoy':'el '+fDM2(f)} por reservas (${L.length}) · S/ ${n2(sum(L,montoRes))}</h4>${tabla([['PARA EL',96],['HORA',80],['NOMBRE',200],['RESERVA',210],['PAGÓ',90],['MEDIO',130],['MONTO',90]],L.map((r,i)=>`<tr><th class="rn">${i+1}</th>${ro(r.fecha===f?(hoy?'HOY':fDM2(r.fecha)):fDM2(r.fecha))}${ro(h12(r.hora))}${ro(`<b>${esc(r.nombre)}</b>`)}${ro(descReserva(r))}${ro(r.pagado?'TODO':r.pagoTipo==='mitad'?'50 %':'ADELANTO')}${ro(esc(r.pago))}${ro(n2(montoRes(r)))}</tr>`).join(''))}<p class="lb-help">Lo que se cobra por una reserva entra a la CAJA del día en que se cobró, en su medio (YAPE, PLIN, etc.), aunque la reserva sea para otro día. Cuando el cliente llega, su fila dice RESERVA y no se vuelve a sumar. Si se anula la reserva (basurita en RESERVAS), sale de aquí y de la CAJA.</p></div>`}
 function bloqueReservasDia(f){const L=S.reservas.filter(r=>r.fecha===f&&r.estado==='por llegar').sort((a,b)=>String(a.hora).localeCompare(String(b.hora)));if(!L.length)return '';
  return `<div class="res-dia"><h4 class="lb-h4">Reservas de este día (${L.length})</h4>${tabla([['HORA',80],['NOMBRE',200],['DNI',96],['RESERVA',210],['PERS.',54],['PROMOCIÓN',170],['PAGÓ',200],['',100]],L.map((r,i)=>`<tr><th class="rn">${i+1}</th>${ro(h12(r.hora))}${ro(`<b>${esc(r.nombre)}</b>`)}${ro(esc(r.dni||'—'))}${ro(descReserva(r))}${ro((+r.adultos||0)+(+r.ninos||0))}${ro(promoDeRes(r))}<td class="ro${r.pagado||r.porConfirmar?'':' pend'}">${pagoDeRes(r)}</td><td>${f===HOY?`<button class="btn xs" data-a="resLlego" data-v="${r.codigo}">${ic('check','sm')} Llegó</button>`:''}</td></tr>`).join(''))}<p class="lb-help">Al llegar el cliente, pulsa «Llegó»: pasa al DIARIO con su promoción, y lo que falte cobrar queda por cobrar.</p></div>`}
 
