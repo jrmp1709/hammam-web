@@ -1722,7 +1722,10 @@ function horarioBase(){const H={};DIAS_MAS.forEach(d=>{H[d]={};HORAS_MAS.forEach
 function horarioMas(){const c=S.cfg;if(c.horarioV!==HORARIO_V){c.masajistas=['JUDITH','YAMILE','GUEIDY'];c.horarioMas=horarioBase();c.horarioV=HORARIO_V}return c.horarioMas}
 /* el turno del horario (de una hora, a los :10) en que cae una hora exacta: 8:15 cae en el de 8:10 y 4:00 en el de 4:10 */
 const slotDe=h=>{if(HORAS_MAS.includes(h))return h;const m=toMin(h);let s=null;HORAS_MAS.forEach(x=>{if(toMin(x)<=m+10)s=x});return s&&m<toMin(s)+60?s:null};
-const masDe=(f,h)=>{const v=((horarioMas()[fromK(f).getDay()])||{})[slotDe(h)]||'';return v?v.split(' Y ').map(x=>x.trim()).filter(Boolean):[]};
+/* el horario de un día puntual (MASAJES › «Solo el …») manda sobre el de la semana; NADIE = ese turno no hay masajes */
+const masDe=(f,h)=>{const s=slotDe(h),X=(S.cfg.horarioDia||{})[f];const v=X&&X[s]?X[s]:((horarioMas()[fromK(f).getDay()])||{})[s]||'';return v&&v!=='NADIE'?v.split(' Y ').map(x=>x.trim()).filter(Boolean):[]};
+/* una, dos o tres masajistas a la vez (hay 3 cabinas) */
+const opsMas=M=>[...M,...M.flatMap((a,i)=>M.slice(i+1).flatMap((b,j)=>[`${a} Y ${b}`,...(CABINAS.length>2?M.slice(i+j+2).map(c=>`${a} Y ${b} Y ${c}`):[])]))];
 const capMas=(f,h)=>masDe(f,h).length;
 /* libres = masajistas de turno menos los masajes ya agendados (y, en la web, lo ocupado en Google Calendar) */
 const enWeb=()=>typeof U!=='undefined'&&!!U&&U.view==='cliente';
@@ -3393,8 +3396,13 @@ function hMasajes(){const f=U.dd;const G=S.cfg.gcal||{};const emb=calEmbed(G.id)
  const cal=emb?`<div class="lb-cal"><div class="row between"><b>Google Calendar de masajes</b><span class="row small">${gcalOk()?`<button class="btn xs ghost" data-a="gcalTraer">Traer del calendario</button>`:''}<a class="lnk" href="https://calendar.google.com/calendar/r" target="_blank" rel="noopener">Abrir en Google ↗</a></span></div><iframe src="${emb}" title="Google Calendar de masajes" loading="lazy"></iframe></div>`
   :`<div class="lb-cal vacio"><b>Aquí se verá el Google Calendar de masajes.</b><p class="small m0">Cuando Hammam tenga su calendario, pega su ID en <button class="lnk" data-a="hoja" data-v="ajustes">AJUSTES</button> y aparecerá en esta hoja. Mientras tanto, cada masaje tiene su botón «Agregar al calendario».</p></div>`;
  return `${cal}<h4 class="lb-h4">Masajes del ${f===HOY?'día':fDM2(f)}</h4>${tabla(cols,body+nueva)}<datalist id="horas15m">${h15m.map(h=>`<option value="${h}">`).join('')}</datalist><datalist id="dl-dentro">${dentroHoy.map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
- <p class="lb-help">Aquí aparecen solos los masajes de las reservas de la web, del DIARIO (por ejemplo «SALAM - 6:00 PM» en COMENTARIOS) y los que anotes en la fila amarilla, con la hora exacta (por ejemplo 5:15 o 6:40). Si el cliente está dentro, el masaje se carga a su cuenta; si lo liberas con la papelera, también sale de su cuenta.${gcalOk()?' Con Google conectado, cada masaje nuevo pasa solo al calendario y lo que se anota allá entra aquí.':''}</p>${hHorarioMas()}`}
-function hHorarioMas(){const H=horarioMas(),M=S.cfg.masajistas;const ops=[...M,...M.flatMap((a,i)=>M.slice(i+1).map(b=>`${a} Y ${b}`))];
+ <p class="lb-help">Aquí aparecen solos los masajes de las reservas de la web, del DIARIO (por ejemplo «SALAM - 6:00 PM» en COMENTARIOS) y los que anotes en la fila amarilla, con la hora exacta (por ejemplo 5:15 o 6:40). Si el cliente está dentro, el masaje se carga a su cuenta; si lo liberas con la papelera, también sale de su cuenta.${gcalOk()?' Con Google conectado, cada masaje nuevo pasa solo al calendario y lo que se anota allá entra aquí.':''}</p>${hHorarioDia()}${hHorarioMas()}`}
+/* horario de un día puntual: por ejemplo, un domingo con las 3 masajistas, sin tocar los demás domingos */
+function hHorarioDia(){const f=U.dd,d=fromK(f).getDay(),H=horarioMas(),X=(S.cfg.horarioDia||{})[f]||{},M=S.cfg.masajistas.slice(0,CABINAS.length);
+ const body=HORAS_MAS.map((h,i)=>{const sem=(H[d]||{})[h]||'',v=X[h]||'',hay=v?v!=='NADIE':!!sem;return `<tr><th class="rn">${i+1}</th>${ro(h12(h))}${ro(esc(sem||'—'))}<td class="${hay?'hm-si':'hm-no'}">${kSel(`hd:${f}~${h}|m`,v,[...opsMas(S.cfg.masajistas),['NADIE','NADIE (sin masajes)']],'Masajistas ese día')}</td></tr>`}).join('');
+ return `<h4 class="lb-h4">Solo el ${DIA_LARGO[d].toLowerCase()} ${fDM2(f)}</h4><div class="row mb small"><button class="btn xs" data-a="hdTodas" data-v="${f}">Las ${M.length} masajistas todo el día</button>${Object.keys(X).length?`<button class="btn xs ghost" data-a="hdQuitar" data-v="${f}">Volver al horario de siempre</button>`:''}</div>${tabla([['HORA',80],['DE SIEMPRE',190],['ESE DÍA',230]],body)}
+ <p class="lb-help">Para un día con más o menos masajistas que de costumbre, sin cambiar las demás semanas. En blanco, esa hora sigue como siempre. Para otro día, cambia la fecha de arriba.</p>`}
+function hHorarioMas(){const H=horarioMas(),M=S.cfg.masajistas;const ops=opsMas(M);
  const body=HORAS_MAS.map((h,i)=>`<tr><th class="rn">${i+1}</th>${ro(h12(h))}${DIAS_MAS.map(d=>{const v=(H[d]||{})[h]||'';return `<td class="${v?'hm-si':'hm-no'}">${kSel(`hm:${d}~${h}|m`,v,ops,'Masajista')}</td>`}).join('')}</tr>`).join('');
  return `<h4 class="lb-h4">Horario de masajes</h4><div class="row mb small">Masajistas: ${kIn('hmz:lista|n',M.join(', '),'style="width:260px" aria-label="Masajistas"')}</div>${tabla([['HORA',80],...DIAS_MAS.map(d=>[DIA_LARGO[d],132])],body)}
  <p class="lb-help">Cada casilla dice quién atiende a esa hora; vacía, no hay masajes. La web y recepción solo ofrecen las horas con una masajista libre. Lo que se anote en Google Calendar también ocupa la hora (por ejemplo, «Judith no viene»), así que el calendario y este horario van juntos. Si la semana cambia, se cambia aquí.</p>`}
@@ -3411,6 +3419,7 @@ function celdaMasaje(id,k,v){const f=U.dd;
 function celdaLibro(tipo,id,k,v){
  if(tipo==='ms'){celdaMasaje(id,k,v);return}
  if(tipo==='hm'){const [d,h]=id.split('~');const H=horarioMas();(H[d]=H[d]||{})[h]=v||'';return}
+ if(tipo==='hd'){const [f,h]=id.split('~');const D=S.cfg.horarioDia=S.cfg.horarioDia||{};const X=D[f]=D[f]||{};if(v)X[h]=v;else delete X[h];if(!Object.keys(X).length)delete D[f];log(`Horario de masajes del ${fmtF(f)}, ${h12(h)}: ${v||'como siempre'}.`);return}
  if(tipo==='hmz'){const M=String(v).toUpperCase().split(/[,;\/]|\s+Y\s+/).map(x=>x.trim()).filter(Boolean);if(M.length)S.cfg.masajistas=[...new Set(M)];return}
  if(tipo==='ih'||tipo==='ihc'){celdaInvH(tipo,id,k,v);return}
  if(tipo==='b'){if(id==='new'){U.nb[k]=v;if((k==='prod'&&v)||(k==='total'&&v!=='')){const b=crearBar(U.dd,U.nb);U.nb=newNb();U.focus=`[data-cell="b:${b.id}|pago"]`}return}const b=S.barRows.find(x=>x.id===+id);if(b)barSet(b,k,v);return}
@@ -3941,6 +3950,8 @@ const A={
   if(r.porConfirmar){r.porConfirmar=false;r.pagado=false;servConfirmar('reserva',r.codigo,{pagado:false,pago:'ANULADA'})}celdaLibro('r',v,'estado','cancelada')},
  irCaja:()=>setTimeout(()=>{const e=document.getElementById('caja-dia');if(e&&e.scrollIntoView)e.scrollIntoView({behavior:'smooth',block:'start'})},60),
  msLiberar:v=>celdaLibro('ms',v,'estado','libre'),
+ hdTodas:v=>{const M=S.cfg.masajistas.slice(0,CABINAS.length),D=S.cfg.horarioDia=S.cfg.horarioDia||{};D[v]={};HORAS_MAS.forEach(h=>D[v][h]=M.join(' Y '));log(`Horario de masajes del ${fmtF(v)}: ${M.join(', ')} todo el día.`);toast(`Listo: el ${fmtFL(v)} atienden ${M.map(titulo).join(', ')} en todos los turnos.`)},
+ hdQuitar:v=>{if(S.cfg.horarioDia)delete S.cfg.horarioDia[v];log(`Horario de masajes del ${fmtF(v)}: vuelve al de siempre.`);toast('Ese día vuelve al horario de siempre.')},
  ajSec:v=>{U.ajSec=v},
  resNueva:()=>{const N=U.nr2;if(!N.fecha||!/^\d{1,2}:\d{2}$/.test(N.hora||'')){toast('Elige la fecha y la hora.');return}if(N.pagoTipo!=='nada'&&!N.pago){toast('Elige el medio de pago (Yape, Plin, transferencia, tarjeta o link).');return}const hm=toMin(N.hora);if(hm<toMin(S.cfg.horario.abre)||hm>=toMin(S.cfg.horario.cierra)){toast(`La hora debe estar entre ${h12(S.cfg.horario.abre)} y ${h12(S.cfg.horario.cierra)}.`);return}
   if(String(N.nombre||'').trim().length<3){toast('Escribe el DNI del cliente (o su nombre, si no tiene DNI).');return}if(N.cel&&!/^9\d{8}$/.test(N.cel)){toast('El celular debe tener 9 dígitos y empezar con 9; si no lo tiene, déjalo vacío.');return}
