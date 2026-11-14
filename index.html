@@ -3087,7 +3087,7 @@ function celdaInvH(tipo,id,k,v){if(tipo==='ihc'&&id==='new'){(U.nih=U.nih||{})[k
  const it=S.invH.items.find(x=>x.id===id);if(!it)return;if(k==='base'||k==='min')it[k]=+String(v).replace(/\D/g,'')||0;else if(k==='nombre')it.nombre=String(v).trim().toUpperCase()||it.nombre;else it[k]=v}
 
 /* ---------- DIARIO ---------- */
-const D_COLS=[['INGRESO',82],['SALIDA',82],['NOMBRE',188],['DNI / CÓDIGO',104],['TELÉFONO',98],['N° BOLETA',112],['CASILLERO',88],['SERVICIO',162],['COMENTARIOS',140],['EXTRA',146],['BAR',150],['MÉTODO DE PAGO',148],['S/. TOTAL',78]];
+const D_COLS=[['INGRESO',82],['SALIDA',82],['NOMBRE',188],['DNI / CÓDIGO',104],['TELÉFONO',98],['N° BOLETA',112],['CASILLERO',88],['SERVICIO',162],['COMENTARIOS',140],['EXTRA',176],['BAR',150],['MÉTODO DE PAGO',148],['S/. TOTAL',78]];
 function dFila(r,n,f,xc=''){const nueva=!r.id;const k=nueva?'new':r.id;const N=U.nf;const v=fld=>nueva?N[fld]:r[fld];
  const cl=!nueva&&r.dni?clienteDni(r.dni):null;const falta=!nueva&&f===HOY&&r.dni&&!(cl&&cl.consent);
  const horas=+((S.cfg.horario||{}).horas)||4,tarde=!nueva&&f===HOY&&!r.sal&&r.serv!=='EXTRA'&&ahoraMin()-toMin(r.ing)>=horas*60-15;const celV=v('cel')||(cl?cl.cel:'');
@@ -3116,7 +3116,7 @@ function cuentaFila(r,debe){const C=(r.cons||[]).filter(c=>!c.barId&&c.t!=='ajus
 const corto=c=>{if(c.t!=='masaje')return c.d;const m=String(c.d).match(/(\d+) min/);return m?`Masaje ${m[1]} min`:'Masaje'};
 /* columna EXTRA: lo agregado a la fila (extras y masajes cobrados aparte), con su monto; como la del BAR */
 function xlExtra(r,f){const E=(r.cons||[]).map((c,i)=>[c,i]).filter(([c])=>c.t==='masaje'||(c.t==='extra'&&(r.extSep||!c.ext)));const enT=extrasEnTotal(r).map(exn);
- const tot=sum(E,([c])=>+c.m||0),debe=E.some(([c])=>!c.pag);const res=[...enT,...E.map(([c])=>corto(c))].join(', ')+(E.length?` · ${sol(tot)}${debe?' · debe':''}`:'');
+ const tot=sum(E,([c])=>+c.m||0),debe=E.some(([c])=>!c.pag);const nom=[...enT,...E.map(([c])=>corto(c))].join(', ');const res=E.length?`${sol(tot)}${debe?' debe':''} · ${nom}`:nom;
  const det=[...enT.map(n=>`${n}: va dentro del TOTAL de la fila`),...E.map(([c])=>`${c.d} ${sol(c.m)}: ${c.pag?'pagado con '+PAGO_CORTO(c.medio||''):'se cobra al salir'}`)].join('\n');
  if(f!==HOY||r.sal)return `<td class="ro" title="${esc(det)}">${esc(res)}</td>`;
  return `<td class="${debe?'pend':''}" title="${esc(det||'Agregar un extra')}"><select class="xc" data-cell="${r.id}|ext" aria-label="Extra"><option value="" selected>${esc(res)}</option><optgroup label="Agregar">${xlExtras().map(e=>`<option value="${esc(e)}">+ ${esc(exn(e))}${e==='MASAJE'?'':' · '+precioExtra(e)}</option>`).join('')}</optgroup>${E.length?`<optgroup label="Cobrar o quitar">${E.map(([c,i])=>`<option value="e:${i}">${esc(corto(c))} · ${sol(c.m)} · ${c.pag?PAGO_CORTO(c.medio||''):'debe'} ›</option>`).join('')}</optgroup>`:''}</select></td>`}
